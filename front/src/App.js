@@ -8,10 +8,12 @@ function App() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
     setError('');
+    setSuccessMessage('');
     setUsername('');
     setPassword('');
     setConfirmPassword('');
@@ -33,6 +35,7 @@ function App() {
 
       const data = await response.json();
       console.log('Login successful:', data);
+      setSuccessMessage('Login successful!');
       // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
     } catch (error) {
       setError('Login failed: ' + error.message);
@@ -55,6 +58,7 @@ function App() {
 
       const data = await response.json();
       console.log('Signup successful:', data);
+      setSuccessMessage('Signup successful!');
       // 여기서 회원가입 성공 후 처리
     } catch (error) {
       setError('Signup failed: ' + error.message);
@@ -63,6 +67,9 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
     if (!username || !password || (!isLogin && !confirmPassword)) {
       setError('All fields are required');
       return;
@@ -71,7 +78,6 @@ function App() {
       setError('Passwords do not match');
       return;
     }
-    setError('');
 
     if (isLogin) {
       await handleLogin();
@@ -110,6 +116,7 @@ function App() {
             />
           )}
           {error && <p className="error">{error}</p>}
+          {successMessage && <p className="success">{successMessage}</p>}
           <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
         </form>
         <p className="switch-text">
