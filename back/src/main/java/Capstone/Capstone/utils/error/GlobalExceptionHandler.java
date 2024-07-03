@@ -12,6 +12,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleUserRegistrationException(UserRegistrationException ex,WebRequest request){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
 
 
 
