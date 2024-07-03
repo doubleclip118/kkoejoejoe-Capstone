@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import Capstone.Capstone.dto.UserDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,5 +25,12 @@ public class User {
     private String username;
     @NotEmpty
     private String password;
+
+    public UserDTO UserconvertToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setPassword(user.getPassword());
+        userDTO.setUsername(user.getUsername());
+        return userDTO;
+    }
 
 }
