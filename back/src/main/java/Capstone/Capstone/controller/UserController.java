@@ -24,4 +24,10 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserDTO> UserLogin(@Valid @RequestBody UserDTO userDTO){
+        UserDTO user = userService.UserLogin(userDTO);
+        return ResponseEntity.ok(user);
+    }
+
 }
