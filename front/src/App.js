@@ -19,7 +19,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await fetch('http://43.203.255.53:8080/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/signup', {
+      const response = await fetch('http://43.203.255.53:8080/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
