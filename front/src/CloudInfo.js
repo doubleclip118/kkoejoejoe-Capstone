@@ -69,17 +69,20 @@ function CloudInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let dataToSend = {
-      userId: parseInt(localStorage.getItem('userId'),10), // Get userId from localStorage
+      userId: parseInt(localStorage.getItem('userId'), 10),
       driverName: formData.driverName,
       providerName: formData.providerName,
       driverLibFileName: formData.driverLibFileName,
       credentialName: formData.credentialName,
+      credentialAccessKey: awsSpecificData.credentialAccessKey,
+      credentialAccessKeyVal: awsSpecificData.credentialAccessKeyVal,
+      credentialSecretKey: awsSpecificData.credentialSecretKey,
+      credentialSecretKeyVal: awsSpecificData.credentialSecretKeyVal,
       regionName: formData.regionName,
       regionKey: formData.regionKey,
       regionValue: formData.regionValue,
       zoneKey: formData.zoneKey,
       zoneValue: formData.zoneValue,
-      ...(cloudProvider === 'AWS' ? awsSpecificData : azureSpecificData)
     };
 
     try {
