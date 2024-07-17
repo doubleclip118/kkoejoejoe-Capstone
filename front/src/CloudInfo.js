@@ -1,139 +1,241 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import './Main.css'; // 필요한 스타일을 Main.css에서 관리
 
 function CloudInfo() {
-  const [selectedCloud, setSelectedCloud] = useState('AWS');
-  const [awsInfo, setAwsInfo] = useState({ accessKey: '', secretKey: '', region: '' });
-  const [gcpInfo, setGcpInfo] = useState({ projectId: '', clientEmail: '', privateKey: '' });
-  const [azureInfo, setAzureInfo] = useState({ clientId: '', clientSecret: '', tenantId: '' });
-  const [successMessage, setSuccessMessage] = useState('');
-  const [error, setError] = useState('');
+  const [menu, setMenu] = useState('view');
+  const [cloudProvider, setCloudProvider] = useState('AWS');
+  const [selectedCloudInfo, setSelectedCloudInfo] = useState(null);
+  const [formData, setFormData] = useState({
+    DriverName: '',
+    ProviderName: '',
+    DriverLibFileName: '',
+    CredentialName: '',
+    RegionName: '',
+    RegionKey: '',
+    RegionValue: '',
+    ZoneKey: '',
+    ZoneValue: '',
+  });
+
+  const [awsSpecificData, setAwsSpecificData] = useState({
+    CredentialAccessKey: '',
+    CredentialAccessKeyVal: '',
+    CredentialSecretKey: '',
+    CredentialSecretKeyVal: '',
+  });
+
+  const [azureSpecificData, setAzureSpecificData] = useState({
+    ClientIdKey: '',
+    ClientIdValue: '',
+    ClientSecretKey: '',
+    ClientSecretValue: '',
+    TenantIdKey: '',
+    TenantIdValue: '',
+  });
+
+  const [existingCloudInfo, setExistingCloudInfo] = useState([]);
+
+  useEffect(() => {
+    fetchExistingCloudInfo();
+  }, []);
+
+  const fetchExistingCloudInfo = async () => {
+    try {
+      const response = await fetch('http://your-api-endpoint/cloud-info');
+      if (!response.ok) {
+        throw new Error('Failed to fetch cloud info');
+      }
+      const data = await response.json();
+      setExistingCloudInfo(data);
+    } catch (error) {
+      console.error('Error fetching cloud info:', error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleProviderSpecificChange = (e) => {
+    const { name, value } = e.target;
+    if (cloudProvider === 'AWS') {
+      setAwsSpecificData(prevState => ({ ...prevState, [name]: value }));
+    } else {
+      setAzureSpecificData(prevState => ({ ...prevState, [name]: value }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let dataToSend = {
+      ...formData,
+      ...(cloudProvider === 'AWS' ? awsSpecificData : azureSpecificData)
+    };
+
     try {
-      const response = await fetch('http://43.203.255.53:8080/api/cloudinfo', {
+      const response = await fetch('http://your-api-endpoint/cloud-info', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ awsInfo, gcpInfo, azureInfo }),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit cloud info');
+        throw new Error('Network response was not ok');
       }
 
-      const data = await response.json();
-      console.log('Cloud info submitted successfully:', data);
-      setSuccessMessage('Cloud info submitted successfully!');
-      setError('');
+      const result = await response.json();
+      console.log('Success:', result);
+      fetchExistingCloudInfo();  // Refresh the list after adding new info
     } catch (error) {
-      setError('Submission failed: ' + error.message);
-      setSuccessMessage('');
+      console.error('Error:', error);
     }
   };
 
-  return (
-    <div className="App">
-      <div className="card">
-        <h2>Enter Cloud Provider Details</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Select Cloud Service: </label>
-            <select value={selectedCloud} onChange={(e) => setSelectedCloud(e.target.value)}>
-              <option value="AWS">AWS</option>
-              <option value="GCP">GCP</option>
-              <option value="Azure">Azure</option>
-            </select>
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://your-api-endpoint/cloud-info/${cloudProvider}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete cloud info');
+      }
+
+      const result = await response.json();
+      console.log('Success:', result);
+      fetchExistingCloudInfo();  // Refresh the list after deleting info
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    let dataToSend = {
+      ...formData,
+      ...(cloudProvider === 'AWS' ? awsSpecificData : azureSpecificData)
+    };
+
+    try {
+      const response = await fetch(`http://your-api-endpoint/cloud-info/${cloudProvider}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update cloud info');
+      }
+
+      const result = await response.json();
+      console.log('Success:', result);
+      fetchExistingCloudInfo();  // Refresh the list after updating info
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const renderExistingCloudInfo = () => {
+    return (
+      <div className="existing-cloud-info">
+        <h3>Existing Cloud Information</h3>
+        {existingCloudInfo.map((info, index) => (
+          <div key={index} className="cloud-info-item">
+            <h4>{info.ProviderName}</h4>
+            <p>Driver Name: {info.DriverName}</p>
+            <p>Credential Name: {info.CredentialName}</p>
+            <p>Region: {info.RegionValue}</p>
+            <p>Zone: {info.ZoneValue}</p>
           </div>
-          
-          {selectedCloud === 'AWS' && (
-            <>
-              <h3>AWS</h3>
-              <input
-                type="text"
-                placeholder="Access Key"
-                value={awsInfo.accessKey}
-                onChange={(e) => setAwsInfo({ ...awsInfo, accessKey: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Secret Key"
-                value={awsInfo.secretKey}
-                onChange={(e) => setAwsInfo({ ...awsInfo, secretKey: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Region"
-                value={awsInfo.region}
-                onChange={(e) => setAwsInfo({ ...awsInfo, region: e.target.value })}
-                required
-              />
-            </>
-          )}
-
-          {selectedCloud === 'GCP' && (
-            <>
-              <h3>GCP</h3>
-              <input
-                type="text"
-                placeholder="Project ID"
-                value={gcpInfo.projectId}
-                onChange={(e) => setGcpInfo({ ...gcpInfo, projectId: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Client Email"
-                value={gcpInfo.clientEmail}
-                onChange={(e) => setGcpInfo({ ...gcpInfo, clientEmail: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Private Key"
-                value={gcpInfo.privateKey}
-                onChange={(e) => setGcpInfo({ ...gcpInfo, privateKey: e.target.value })}
-                required
-              />
-            </>
-          )}
-
-          {selectedCloud === 'Azure' && (
-            <>
-              <h3>Azure</h3>
-              <input
-                type="text"
-                placeholder="Client ID"
-                value={azureInfo.clientId}
-                onChange={(e) => setAzureInfo({ ...azureInfo, clientId: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Client Secret"
-                value={azureInfo.clientSecret}
-                onChange={(e) => setAzureInfo({ ...azureInfo, clientSecret: e.target.value })}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Tenant ID"
-                value={azureInfo.tenantId}
-                onChange={(e) => setAzureInfo({ ...azureInfo, tenantId: e.target.value })}
-                required
-              />
-            </>
-          )}
-
-          {error && <p className="error">{error}</p>}
-          {successMessage && <p className="success">{successMessage}</p>}
-          <button type="submit">Submit</button>
-        </form>
+        ))}
       </div>
+    );
+  };
+
+  const renderForm = (handleSubmit, actionLabel) => {
+    return (
+      <form onSubmit={handleSubmit}>
+        <select value={cloudProvider} onChange={(e) => setCloudProvider(e.target.value)}>
+          <option value="AWS">AWS</option>
+          <option value="AZURE">Azure</option>
+        </select>
+
+        {/* Common fields */}
+        <input type="text" name="DriverName" value={formData.DriverName} onChange={handleChange} placeholder="Driver Name" required />
+        <input type="text" name="ProviderName" value={formData.ProviderName} onChange={handleChange} placeholder="Provider Name" required />
+        <input type="text" name="DriverLibFileName" value={formData.DriverLibFileName} onChange={handleChange} placeholder="Driver Lib File Name" required />
+        <input type="text" name="CredentialName" value={formData.CredentialName} onChange={handleChange} placeholder="Credential Name" required />
+        <input type="text" name="RegionName" value={formData.RegionName} onChange={handleChange} placeholder="Region Name" required />
+        <input type="text" name="RegionKey" value={formData.RegionKey} onChange={handleChange} placeholder="Region Key" required />
+        <input type="text" name="RegionValue" value={formData.RegionValue} onChange={handleChange} placeholder="Region Value" required />
+        <input type="text" name="ZoneKey" value={formData.ZoneKey} onChange={handleChange} placeholder="Zone Key" required />
+        <input type="text" name="ZoneValue" value={formData.ZoneValue} onChange={handleChange} placeholder="Zone Value" required />
+
+        {/* AWS specific fields */}
+        {cloudProvider === 'AWS' && (
+          <>
+            <input type="text" name="CredentialAccessKey" value={awsSpecificData.CredentialAccessKey} onChange={handleProviderSpecificChange} placeholder="Credential Access Key" required />
+            <input type="text" name="CredentialAccessKeyVal" value={awsSpecificData.CredentialAccessKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Access Key Value" required />
+            <input type="text" name="CredentialSecretKey" value={awsSpecificData.CredentialSecretKey} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key" required />
+            <input type="text" name="CredentialSecretKeyVal" value={awsSpecificData.CredentialSecretKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key Value" required />
+          </>
+        )}
+
+        {/* Azure specific fields */}
+        {cloudProvider === 'AZURE' && (
+          <>
+            <input type="text" name="ClientIdKey" value={azureSpecificData.ClientIdKey} onChange={handleProviderSpecificChange} placeholder="Client Id Key" required />
+            <input type="text" name="ClientIdValue" value={azureSpecificData.ClientIdValue} onChange={handleProviderSpecificChange} placeholder="Client Id Value" required />
+            <input type="text" name="ClientSecretKey" value={azureSpecificData.ClientSecretKey} onChange={handleProviderSpecificChange} placeholder="Client Secret Key" required />
+            <input type="text" name="ClientSecretValue" value={azureSpecificData.ClientSecretValue} onChange={handleProviderSpecificChange} placeholder="Client Secret Value" required />
+            <input type="text" name="TenantIdKey" value={azureSpecificData.TenantIdKey} onChange={handleProviderSpecificChange} placeholder="Tenant Id Key" required />
+            <input type="text" name="TenantIdValue" value={azureSpecificData.TenantIdValue} onChange={handleProviderSpecificChange} placeholder="Tenant Id Value" required />
+          </>
+        )}
+
+        <button type="submit" className="action-button">{actionLabel}</button>
+      </form>
+    );
+  };
+
+  return (
+    <div className="management-content">
+      <h2>Cloud Information Management</h2>
+      <nav>
+        <button onClick={() => setMenu('view')}>View Cloud Info</button>
+        <button onClick={() => setMenu('create')}>Create Cloud Connection</button>
+        <button onClick={() => setMenu('delete')}>Delete Cloud Connection</button>
+        <button onClick={() => setMenu('update')}>Modify Cloud Info</button>
+      </nav>
+      
+      {menu === 'view' && renderExistingCloudInfo()}
+
+      {menu === 'create' && renderForm(handleSubmit, 'Submit Cloud Info')}
+
+      {menu === 'delete' && (
+        <div>
+          <select value={cloudProvider} onChange={(e) => setCloudProvider(e.target.value)}>
+            <option value="AWS">AWS</option>
+            <option value="AZURE">Azure</option>
+          </select>
+          <button onClick={handleDelete} className="action-button">Delete Cloud Info</button>
+        </div>
+      )}
+
+      {menu === 'update' && (
+        <div>
+          <select value={cloudProvider} onChange={(e) => setCloudProvider(e.target.value)}>
+            <option value="AWS">AWS</option>
+            <option value="AZURE">Azure</option>
+          </select>
+          {renderForm(handleUpdate, 'Update Cloud Info')}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import './App.css';
 import pusanLogo from './pusan.png';
-import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
+import Main from './Main'; // Main 컴포넌트를 import 합니다.
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태를 관리하는 상태를 추가합니다.
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,8 +38,7 @@ function App() {
       const data = await response.json();
       console.log('Login successful:', data);
       setSuccessMessage('Login successful!');
-      setIsLoggedIn(true); // 로그인 성공 시 상태를 변경합니다.
-      // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
+      setIsLoggedIn(true);
     } catch (error) {
       setError('Login failed: ' + error.message);
     }
@@ -62,8 +61,7 @@ function App() {
       const data = await response.json();
       console.log('Signup successful:', data);
       setSuccessMessage('Signup successful!');
-      setIsLoggedIn(true); // 회원가입 성공 시 상태를 변경합니다.
-      // 여기서 회원가입 성공 후 처리
+      setIsLoggedIn(true);
     } catch (error) {
       setError('Signup failed: ' + error.message);
     }
@@ -95,7 +93,7 @@ function App() {
   };
 
   if (isLoggedIn) {
-    return <CloudInfo />;
+    return <Main />;
   }
 
   return (
