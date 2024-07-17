@@ -11,8 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AWSInfoResponse {
+
     @NotEmpty
-    private Long id;
+    private Long infoId;
     @NotEmpty
     private String DriverName;
     @NotEmpty

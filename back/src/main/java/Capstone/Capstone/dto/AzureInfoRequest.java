@@ -15,6 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AzureInfoRequest {
     @NotEmpty
+    private Long userId;
+    @NotEmpty
     private String DriverName;
     @NotEmpty
     private String ProviderName;

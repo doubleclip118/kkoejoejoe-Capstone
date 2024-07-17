@@ -13,6 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AWSInfoRequest {
     @NotEmpty
+    private Long userId;
+    @NotEmpty
     private String DriverName;
     @NotEmpty
     private String ProviderName;

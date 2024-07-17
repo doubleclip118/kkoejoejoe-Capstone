@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AzureInfoResponse {
     @NotEmpty
-    private Long id;
+    private Long InfoId;
     @NotEmpty
     private String DriverName;
     @NotEmpty

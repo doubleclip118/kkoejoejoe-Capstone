@@ -1,5 +1,9 @@
 package Capstone.Capstone.controller;
 
+import Capstone.Capstone.dto.AWSInfoRequest;
+import Capstone.Capstone.dto.AWSInfoResponse;
+import Capstone.Capstone.dto.AzureInfoRequest;
+import Capstone.Capstone.dto.AzureInfoResponse;
 import Capstone.Capstone.dto.UserDTO;
 import Capstone.Capstone.service.UserService;
 import jakarta.validation.Valid;
@@ -21,17 +25,30 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> UserRegister(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDTO> userRegister(@Valid @RequestBody UserDTO userDTO){
         log.info("register");
-        UserDTO user = userService.RegisterUser(userDTO);
+        UserDTO user = userService.registerUser(userDTO);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> UserLogin(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDTO> userLogin(@Valid @RequestBody UserDTO userDTO){
         log.info("login");
-        UserDTO user = userService.UserLogin(userDTO);
+        UserDTO user = userService.userLogin(userDTO);
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/cloud/aws")
+    public ResponseEntity<AWSInfoResponse> createAWSInfo(@Valid @RequestBody AWSInfoRequest awsInfoRequest){
+        log.info("aws info post");
+        AWSInfoResponse awsInfo = userService.createAWSInfo(awsInfoRequest);
+        return ResponseEntity.ok(awsInfo);
+    }
+
+    @PostMapping("/cloud/azure")
+    public ResponseEntity<AzureInfoResponse> createAWSInfo(@Valid @RequestBody AzureInfoRequest azureInfoRequest){
+        log.info("azure info post");
+        AzureInfoResponse azureInfo = userService.createAzureInfo(azureInfoRequest);
+        return ResponseEntity.ok(azureInfo);
+    }
 }
