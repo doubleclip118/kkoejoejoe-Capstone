@@ -1,6 +1,7 @@
 package Capstone.Capstone.domain;
 
 import Capstone.Capstone.dto.UserDTO;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +24,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotEmpty
+    @Column(nullable = false)
     private String username;
-    @NotEmpty
+    @Column(nullable = false)
     private String password;
 
     public UserDTO UserconvertToDTO(User user) {
