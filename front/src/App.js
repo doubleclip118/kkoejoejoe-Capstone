@@ -12,6 +12,19 @@ function App() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Local storage key for storing userId
+  const userIdKey = 'userId';
+
+  // Function to store userId in local storage
+  const storeUserIdInLocalStorage = (userId) => {
+    localStorage.setItem(userIdKey, userId);
+  };
+
+  // Function to remove userId from local storage
+  const removeUserIdFromLocalStorage = () => {
+    localStorage.removeItem(userIdKey);
+  };
+
   const handleSwitch = () => {
     setIsLogin(!isLogin);
     setError('');
@@ -38,6 +51,8 @@ function App() {
       const data = await response.json();
       console.log('Login successful:', data);
       setSuccessMessage('Login successful!');
+      // Store userId in local storage
+      storeUserIdInLocalStorage(data.id);
       setIsLoggedIn(true);
     } catch (error) {
       setError('Login failed: ' + error.message);
@@ -61,6 +76,8 @@ function App() {
       const data = await response.json();
       console.log('Signup successful:', data);
       setSuccessMessage('Signup successful!');
+      // Store userId in local storage
+      storeUserIdInLocalStorage(data.id);
       setIsLoggedIn(true);
     } catch (error) {
       setError('Signup failed: ' + error.message);
@@ -88,12 +105,28 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    // Remove userId from local storage on logout
+    removeUserIdFromLocalStorage();
+    setIsLoggedIn(false);
+  };
+
   const handleTestLogin = () => {
     setIsLoggedIn(true);
   };
 
+  // Check if user is already logged in using local storage
+  // This can be called in useEffect on component mount to persist login state
+  // if the app supports auto-login on refresh or revisit
+  const checkIfLoggedIn = () => {
+    const storedUserId = localStorage.getItem(userIdKey);
+    if (storedUserId) {
+      setIsLoggedIn(true);
+    }
+  };
+
   if (isLoggedIn) {
-    return <Main />;
+    return <Main onLogout={handleLogout} />;
   }
 
   return (

@@ -6,31 +6,31 @@ function CloudInfo() {
   const [cloudProvider, setCloudProvider] = useState('AWS');
   const [selectedCloudInfo, setSelectedCloudInfo] = useState(null);
   const [formData, setFormData] = useState({
-    DriverName: '',
-    ProviderName: '',
-    DriverLibFileName: '',
-    CredentialName: '',
-    RegionName: '',
-    RegionKey: '',
-    RegionValue: '',
-    ZoneKey: '',
-    ZoneValue: '',
+    driverName: '',
+    providerName: '',
+    driverLibFileName: '',
+    credentialName: '',
+    regionName: '',
+    regionKey: '',
+    regionValue: '',
+    zoneKey: '',
+    zoneValue: '',
   });
 
   const [awsSpecificData, setAwsSpecificData] = useState({
-    CredentialAccessKey: '',
-    CredentialAccessKeyVal: '',
-    CredentialSecretKey: '',
-    CredentialSecretKeyVal: '',
+    credentialAccessKey: '',
+    credentialAccessKeyVal: '',
+    credentialSecretKey: '',
+    credentialSecretKeyVal: '',
   });
 
   const [azureSpecificData, setAzureSpecificData] = useState({
-    ClientIdKey: '',
-    ClientIdValue: '',
-    ClientSecretKey: '',
-    ClientSecretValue: '',
-    TenantIdKey: '',
-    TenantIdValue: '',
+    clientIdKey: '',
+    clientIdValue: '',
+    clientSecretKey: '',
+    clientSecretValue: '',
+    tenantIdKey: '',
+    tenantIdValue: '',
   });
 
   const [existingCloudInfo, setExistingCloudInfo] = useState([]);
@@ -41,7 +41,7 @@ function CloudInfo() {
 
   const fetchExistingCloudInfo = async () => {
     try {
-      const response = await fetch('http://your-api-endpoint/cloud-info');
+      const response = await fetch('http://3.34.135.215:8080/api/cloud');
       if (!response.ok) {
         throw new Error('Failed to fetch cloud info');
       }
@@ -69,12 +69,21 @@ function CloudInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let dataToSend = {
-      ...formData,
+      userId: localStorage.getItem('userId'), // Get userId from localStorage
+      driverName: formData.driverName,
+      providerName: formData.providerName,
+      driverLibFileName: formData.driverLibFileName,
+      credentialName: formData.credentialName,
+      regionName: formData.regionName,
+      regionKey: formData.regionKey,
+      regionValue: formData.regionValue,
+      zoneKey: formData.zoneKey,
+      zoneValue: formData.zoneValue,
       ...(cloudProvider === 'AWS' ? awsSpecificData : azureSpecificData)
     };
 
     try {
-      const response = await fetch('http://your-api-endpoint/cloud-info', {
+      const response = await fetch(`http://3.34.135.215:8080/api/cloud/aws`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,12 +124,21 @@ function CloudInfo() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     let dataToSend = {
-      ...formData,
+      userId: localStorage.getItem('userId'), // Get userId from localStorage
+      DriverName: formData.DriverName,
+      ProviderName: formData.ProviderName,
+      DriverLibFileName: formData.DriverLibFileName,
+      CredentialName: formData.CredentialName,
+      RegionName: formData.RegionName,
+      RegionKey: formData.RegionKey,
+      RegionValue: formData.RegionValue,
+      ZoneKey: formData.ZoneKey,
+      ZoneValue: formData.ZoneValue,
       ...(cloudProvider === 'AWS' ? awsSpecificData : azureSpecificData)
     };
 
     try {
-      const response = await fetch(`http://your-api-endpoint/cloud-info/${cloudProvider}`, {
+      const response = await fetch(`http://your-api-endpoint/cloud-info/${cloudProvider.toLowerCase()}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
