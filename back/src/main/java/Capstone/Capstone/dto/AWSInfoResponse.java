@@ -1,6 +1,7 @@
 package Capstone.Capstone.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AWSInfoResponse {
 
-    @NotEmpty
+    @NotNull
     private Long infoId;
     @NotEmpty
     private String DriverName;
