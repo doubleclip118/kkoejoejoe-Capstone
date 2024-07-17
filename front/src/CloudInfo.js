@@ -177,7 +177,6 @@ function CloudInfo() {
       </div>
     );
   };
-
   const renderForm = (handleSubmit, actionLabel) => {
     return (
       <form onSubmit={handleSubmit}>
@@ -185,40 +184,40 @@ function CloudInfo() {
           <option value="AWS">AWS</option>
           <option value="AZURE">Azure</option>
         </select>
-
+  
         {/* Common fields */}
-        <input type="text" name="DriverName" value={formData.driverName} onChange={handleChange} placeholder="Driver Name" required />
-        <input type="text" name="ProviderName" value={formData.providerName} onChange={handleChange} placeholder="Provider Name" required />
-        <input type="text" name="DriverLibFileName" value={formData.driverLibFileName} onChange={handleChange} placeholder="Driver Lib File Name" required />
-        <input type="text" name="CredentialName" value={formData.credentialName} onChange={handleChange} placeholder="Credential Name" required />
-        <input type="text" name="RegionName" value={formData.regionName} onChange={handleChange} placeholder="Region Name" required />
-        <input type="text" name="RegionKey" value={formData.regionKey} onChange={handleChange} placeholder="Region Key" required />
-        <input type="text" name="RegionValue" value={formData.regionValue} onChange={handleChange} placeholder="Region Value" required />
-        <input type="text" name="ZoneKey" value={formData.zoneKey} onChange={handleChange} placeholder="Zone Key" required />
-        <input type="text" name="ZoneValue" value={formData.zoneValue} onChange={handleChange} placeholder="Zone Value" required />
-
+        <input type="text" name="driverName" value={formData.driverName} onChange={handleChange} placeholder="Driver Name" required />
+        <input type="text" name="providerName" value={formData.providerName} onChange={handleChange} placeholder="Provider Name" required />
+        <input type="text" name="driverLibFileName" value={formData.driverLibFileName} onChange={handleChange} placeholder="Driver Lib File Name" required />
+        <input type="text" name="credentialName" value={formData.credentialName} onChange={handleChange} placeholder="Credential Name" required />
+        <input type="text" name="regionName" value={formData.regionName} onChange={handleChange} placeholder="Region Name" required />
+        <input type="text" name="regionKey" value={formData.regionKey} onChange={handleChange} placeholder="Region Key" required />
+        <input type="text" name="regionValue" value={formData.regionValue} onChange={handleChange} placeholder="Region Value" required />
+        <input type="text" name="zoneKey" value={formData.zoneKey} onChange={handleChange} placeholder="Zone Key" required />
+        <input type="text" name="zoneValue" value={formData.zoneValue} onChange={handleChange} placeholder="Zone Value" required />
+  
         {/* AWS specific fields */}
         {cloudProvider === 'AWS' && (
           <>
-            <input type="text" name="CredentialAccessKey" value={awsSpecificData.credentialAccessKey} onChange={handleProviderSpecificChange} placeholder="Credential Access Key" required />
-            <input type="text" name="CredentialAccessKeyVal" value={awsSpecificData.credentialAccessKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Access Key Value" required />
-            <input type="text" name="CredentialSecretKey" value={awsSpecificData.credentialSecretKey} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key" required />
-            <input type="text" name="CredentialSecretKeyVal" value={awsSpecificData.credentialSecretKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key Value" required />
+            <input type="text" name="credentialAccessKey" value={awsSpecificData.credentialAccessKey} onChange={handleProviderSpecificChange} placeholder="Credential Access Key" required />
+            <input type="text" name="credentialAccessKeyVal" value={awsSpecificData.credentialAccessKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Access Key Value" required />
+            <input type="text" name="credentialSecretKey" value={awsSpecificData.credentialSecretKey} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key" required />
+            <input type="text" name="credentialSecretKeyVal" value={awsSpecificData.credentialSecretKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key Value" required />
           </>
         )}
-
+  
         {/* Azure specific fields */}
         {cloudProvider === 'AZURE' && (
           <>
-            <input type="text" name="ClientIdKey" value={azureSpecificData.ClientIdKey} onChange={handleProviderSpecificChange} placeholder="Client Id Key" required />
-            <input type="text" name="ClientIdValue" value={azureSpecificData.ClientIdValue} onChange={handleProviderSpecificChange} placeholder="Client Id Value" required />
-            <input type="text" name="ClientSecretKey" value={azureSpecificData.ClientSecretKey} onChange={handleProviderSpecificChange} placeholder="Client Secret Key" required />
-            <input type="text" name="ClientSecretValue" value={azureSpecificData.ClientSecretValue} onChange={handleProviderSpecificChange} placeholder="Client Secret Value" required />
-            <input type="text" name="TenantIdKey" value={azureSpecificData.TenantIdKey} onChange={handleProviderSpecificChange} placeholder="Tenant Id Key" required />
-            <input type="text" name="TenantIdValue" value={azureSpecificData.TenantIdValue} onChange={handleProviderSpecificChange} placeholder="Tenant Id Value" required />
+            <input type="text" name="clientIdKey" value={azureSpecificData.clientIdKey} onChange={handleProviderSpecificChange} placeholder="Client Id Key" required />
+            <input type="text" name="clientIdValue" value={azureSpecificData.clientIdValue} onChange={handleProviderSpecificChange} placeholder="Client Id Value" required />
+            <input type="text" name="clientSecretKey" value={azureSpecificData.clientSecretKey} onChange={handleProviderSpecificChange} placeholder="Client Secret Key" required />
+            <input type="text" name="clientSecretValue" value={azureSpecificData.clientSecretValue} onChange={handleProviderSpecificChange} placeholder="Client Secret Value" required />
+            <input type="text" name="tenantIdKey" value={azureSpecificData.tenantIdKey} onChange={handleProviderSpecificChange} placeholder="Tenant Id Key" required />
+            <input type="text" name="tenantIdValue" value={azureSpecificData.tenantIdValue} onChange={handleProviderSpecificChange} placeholder="Tenant Id Value" required />
           </>
         )}
-
+  
         <button type="submit" className="action-button">{actionLabel}</button>
       </form>
     );
