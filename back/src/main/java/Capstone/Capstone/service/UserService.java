@@ -7,7 +7,8 @@ import Capstone.Capstone.dto.AWSInfoRequest;
 import Capstone.Capstone.dto.AWSInfoResponse;
 import Capstone.Capstone.dto.AzureInfoRequest;
 import Capstone.Capstone.dto.AzureInfoResponse;
-import Capstone.Capstone.dto.UserDTO;
+import Capstone.Capstone.dto.UserRequest;
+import Capstone.Capstone.dto.UserResponse;
 import Capstone.Capstone.repository.AWSCloudInfoRepository;
 import Capstone.Capstone.repository.AzureCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
@@ -34,19 +35,19 @@ public class UserService {
     }
 
 
-    public UserDTO registerUser(UserDTO userDTO) {
-        Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
+    public UserResponse registerUser(UserRequest userRequest) {
+        Optional<User> existingUser = userRepository.findByUsername(userRequest.getUsername());
         if (existingUser.isPresent()) {
             throw new UserRegistrationException("user already exists");
         }
-        User savedUser = userRepository.save(userDTO.UserconvertToEntity(userDTO));
+        User savedUser = userRepository.save(userRequest.UserconvertToEntity(userRequest));
         log.info("register User service");
         return savedUser.UserconvertToDTO(savedUser);
 
     }
 
-    public UserDTO userLogin(UserDTO userDTO){
-        Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
+    public UserResponse userLogin(UserRequest userRequest){
+        Optional<User> existingUser = userRepository.findByUsername(userRequest.getUsername());
         if (existingUser.isEmpty()) {
             throw new UserNotFoundException("user not found");
         }
@@ -140,6 +141,52 @@ public class UserService {
             savedAzureCloudInfo.getRigionValue(),
             savedAzureCloudInfo.getZoneKey(),
             savedAzureCloudInfo.getZoneValue()
+        );
+    }
+
+    public AWSInfoResponse getAWSInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        return new AWSInfoResponse(
+            user.getAwsCloudInfo().getId(),
+            user.getAwsCloudInfo().getDriverName(),
+            user.getAwsCloudInfo().getProviderName(),
+            user.getAwsCloudInfo().getDriverLibFileName(),
+            user.getAwsCloudInfo().getCredentialName(),
+            user.getAwsCloudInfo().getCredentialAccessKey(),
+            user.getAwsCloudInfo().getCredentialAccessKeyVal(),
+            user.getAwsCloudInfo().getCredentialSecretKey(),
+            user.getAwsCloudInfo().getCredentialSecretKeyVal(),
+            user.getAwsCloudInfo().getRegionName(),
+            user.getAwsCloudInfo().getRegionKey(),
+            user.getAwsCloudInfo().getRegionValue(),
+            user.getAwsCloudInfo().getZoneKey(),
+            user.getAwsCloudInfo().getZoneValue()
+        );
+    }
+
+    public AzureInfoResponse getAzureInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        return new AzureInfoResponse(
+            user.getAzureCloudInfo().getId(),
+            user.getAzureCloudInfo().getDriverName(),
+            user.getAzureCloudInfo().getProviderName(),
+            user.getAzureCloudInfo().getDriverLibFileName(),
+            user.getAzureCloudInfo().getCredentialName(),
+            user.getAzureCloudInfo().getClientIdkey(),
+            user.getAzureCloudInfo().getClientIdValue(),
+            user.getAzureCloudInfo().getClientSecretKey(),
+            user.getAzureCloudInfo().getClientSecretValue(),
+            user.getAzureCloudInfo().getTenantIdKey(),
+            user.getAzureCloudInfo().getTenantIdValue(),
+            user.getAzureCloudInfo().getRegionName(),
+            user.getAzureCloudInfo().getRegionKey(),
+            user.getAzureCloudInfo().getRigionValue(),
+            user.getAzureCloudInfo().getZoneKey(),
+            user.getAzureCloudInfo().getZoneValue()
         );
     }
 

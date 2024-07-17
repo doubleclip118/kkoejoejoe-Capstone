@@ -4,15 +4,18 @@ import Capstone.Capstone.dto.AWSInfoRequest;
 import Capstone.Capstone.dto.AWSInfoResponse;
 import Capstone.Capstone.dto.AzureInfoRequest;
 import Capstone.Capstone.dto.AzureInfoResponse;
-import Capstone.Capstone.dto.UserDTO;
+import Capstone.Capstone.dto.UserRequest;
+import Capstone.Capstone.dto.UserResponse;
 import Capstone.Capstone.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
@@ -25,16 +28,16 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> userRegister(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<UserResponse> userRegister(@Valid @RequestBody UserRequest userRequest){
         log.info("register");
-        UserDTO user = userService.registerUser(userDTO);
+        UserResponse user = userService.registerUser(userRequest);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> userLogin(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<UserResponse> userLogin(@Valid @RequestBody UserRequest userRequest){
         log.info("login");
-        UserDTO user = userService.userLogin(userDTO);
+        UserResponse user = userService.userLogin(userRequest);
         return ResponseEntity.ok(user);
     }
 
@@ -46,9 +49,23 @@ public class UserController {
     }
 
     @PostMapping("/cloud/azure")
-    public ResponseEntity<AzureInfoResponse> createAWSInfo(@Valid @RequestBody AzureInfoRequest azureInfoRequest){
+    public ResponseEntity<AzureInfoResponse> createAzureInfo(@Valid @RequestBody AzureInfoRequest azureInfoRequest){
         log.info("azure info post");
         AzureInfoResponse azureInfo = userService.createAzureInfo(azureInfoRequest);
+        return ResponseEntity.ok(azureInfo);
+    }
+
+    @GetMapping("/cloud/aws/{id}")
+    public ResponseEntity<AWSInfoResponse> getAWSInfo(@RequestParam("id") Long id){
+        log.info("aws info get");
+        AWSInfoResponse awsInfo = userService.getAWSInfo(id);
+        return ResponseEntity.ok(awsInfo);
+    }
+
+    @GetMapping("/cloud/azure/{id}")
+    public ResponseEntity<AzureInfoResponse> getAzureInfo(@RequestParam("id") Long id){
+        log.info("azure info get");
+        AzureInfoResponse azureInfo = userService.getAzureInfo(id);
         return ResponseEntity.ok(azureInfo);
     }
 }

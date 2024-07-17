@@ -1,6 +1,7 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.dto.UserDTO;
+import Capstone.Capstone.dto.UserRequest;
+import Capstone.Capstone.dto.UserResponse;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,11 +42,12 @@ public class User {
     private AWSCloudInfo awsCloudInfo;
 
 
-    public UserDTO UserconvertToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setPassword(user.getPassword());
-        userDTO.setUsername(user.getUsername());
-        return userDTO;
+    public UserResponse UserconvertToDTO(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setUsername(user.getUsername());
+        return userResponse;
     }
 
 }

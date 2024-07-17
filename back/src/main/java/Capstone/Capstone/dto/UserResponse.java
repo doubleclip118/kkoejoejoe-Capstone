@@ -11,13 +11,15 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class UserResponse {
+    @NotEmpty
+    private Long id;
     @NotEmpty
     private String username;
     @NotEmpty
     private String password;
 
-    public User UserconvertToEntity(UserDTO userDTO){
+    public User UserconvertToEntity(UserResponse userDTO){
         User user = new User();
         user.setUsername(userDTO.username);
         user.setPassword(userDTO.password);
