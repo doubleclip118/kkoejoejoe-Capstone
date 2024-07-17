@@ -190,6 +190,22 @@ public class UserService {
         );
     }
 
+    public String deleteAWSInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        awsCloudInfoRepository.deleteById(user.getAwsCloudInfo().getId());
+        return "SUSSES";
+    }
+
+    public String deleteAzureInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        azureCloudInfoRepository.deleteById(user.getAzureCloudInfo().getId());
+        return "SUSSES";
+    }
+
 
 
 }
