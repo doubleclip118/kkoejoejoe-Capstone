@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import './App.css';
 import pusanLogo from './pusan.png';
+import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태를 관리하는 상태를 추가합니다.
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
     setError('');
+    setSuccessMessage('');
     setUsername('');
     setPassword('');
     setConfirmPassword('');
@@ -33,6 +37,8 @@ function App() {
 
       const data = await response.json();
       console.log('Login successful:', data);
+      setSuccessMessage('Login successful!');
+      setIsLoggedIn(true); // 로그인 성공 시 상태를 변경합니다.
       // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
     } catch (error) {
       setError('Login failed: ' + error.message);
@@ -55,6 +61,8 @@ function App() {
 
       const data = await response.json();
       console.log('Signup successful:', data);
+      setSuccessMessage('Signup successful!');
+      setIsLoggedIn(true); // 회원가입 성공 시 상태를 변경합니다.
       // 여기서 회원가입 성공 후 처리
     } catch (error) {
       setError('Signup failed: ' + error.message);
@@ -63,6 +71,9 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
     if (!username || !password || (!isLogin && !confirmPassword)) {
       setError('All fields are required');
       return;
@@ -71,7 +82,6 @@ function App() {
       setError('Passwords do not match');
       return;
     }
-    setError('');
 
     if (isLogin) {
       await handleLogin();
@@ -79,6 +89,14 @@ function App() {
       await handleSignup();
     }
   };
+
+  const handleTestLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  if (isLoggedIn) {
+    return <CloudInfo />;
+  }
 
   return (
     <div className="App">
@@ -110,8 +128,10 @@ function App() {
             />
           )}
           {error && <p className="error">{error}</p>}
+          {successMessage && <p className="success">{successMessage}</p>}
           <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
         </form>
+        <button onClick={handleTestLogin}>Test Login</button>
         <p className="switch-text">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
