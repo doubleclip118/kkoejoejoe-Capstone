@@ -69,7 +69,7 @@ function CloudInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let dataToSend = {
-      userId: parseInt(localStorage.getItem('userId'), 10),
+      userId: localStorage.getItem('userId'),,
       driverName: formData.driverName,
       providerName: formData.providerName,
       driverLibFileName: formData.driverLibFileName,
