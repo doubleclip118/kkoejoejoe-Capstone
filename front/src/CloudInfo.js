@@ -187,23 +187,23 @@ function CloudInfo() {
         </select>
 
         {/* Common fields */}
-        <input type="text" name="DriverName" value={formData.DriverName} onChange={handleChange} placeholder="Driver Name" required />
-        <input type="text" name="ProviderName" value={formData.ProviderName} onChange={handleChange} placeholder="Provider Name" required />
-        <input type="text" name="DriverLibFileName" value={formData.DriverLibFileName} onChange={handleChange} placeholder="Driver Lib File Name" required />
-        <input type="text" name="CredentialName" value={formData.CredentialName} onChange={handleChange} placeholder="Credential Name" required />
-        <input type="text" name="RegionName" value={formData.RegionName} onChange={handleChange} placeholder="Region Name" required />
-        <input type="text" name="RegionKey" value={formData.RegionKey} onChange={handleChange} placeholder="Region Key" required />
-        <input type="text" name="RegionValue" value={formData.RegionValue} onChange={handleChange} placeholder="Region Value" required />
-        <input type="text" name="ZoneKey" value={formData.ZoneKey} onChange={handleChange} placeholder="Zone Key" required />
-        <input type="text" name="ZoneValue" value={formData.ZoneValue} onChange={handleChange} placeholder="Zone Value" required />
+        <input type="text" name="DriverName" value={formData.driverName} onChange={handleChange} placeholder="Driver Name" required />
+        <input type="text" name="ProviderName" value={formData.providerName} onChange={handleChange} placeholder="Provider Name" required />
+        <input type="text" name="DriverLibFileName" value={formData.driverLibFileName} onChange={handleChange} placeholder="Driver Lib File Name" required />
+        <input type="text" name="CredentialName" value={formData.credentialName} onChange={handleChange} placeholder="Credential Name" required />
+        <input type="text" name="RegionName" value={formData.regionName} onChange={handleChange} placeholder="Region Name" required />
+        <input type="text" name="RegionKey" value={formData.regionKey} onChange={handleChange} placeholder="Region Key" required />
+        <input type="text" name="RegionValue" value={formData.regionValue} onChange={handleChange} placeholder="Region Value" required />
+        <input type="text" name="ZoneKey" value={formData.zoneKey} onChange={handleChange} placeholder="Zone Key" required />
+        <input type="text" name="ZoneValue" value={formData.zoneValue} onChange={handleChange} placeholder="Zone Value" required />
 
         {/* AWS specific fields */}
         {cloudProvider === 'AWS' && (
           <>
-            <input type="text" name="CredentialAccessKey" value={awsSpecificData.CredentialAccessKey} onChange={handleProviderSpecificChange} placeholder="Credential Access Key" required />
-            <input type="text" name="CredentialAccessKeyVal" value={awsSpecificData.CredentialAccessKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Access Key Value" required />
-            <input type="text" name="CredentialSecretKey" value={awsSpecificData.CredentialSecretKey} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key" required />
-            <input type="text" name="CredentialSecretKeyVal" value={awsSpecificData.CredentialSecretKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key Value" required />
+            <input type="text" name="CredentialAccessKey" value={awsSpecificData.credentialAccessKey} onChange={handleProviderSpecificChange} placeholder="Credential Access Key" required />
+            <input type="text" name="CredentialAccessKeyVal" value={awsSpecificData.credentialAccessKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Access Key Value" required />
+            <input type="text" name="CredentialSecretKey" value={awsSpecificData.credentialSecretKey} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key" required />
+            <input type="text" name="CredentialSecretKeyVal" value={awsSpecificData.credentialSecretKeyVal} onChange={handleProviderSpecificChange} placeholder="Credential Secret Key Value" required />
           </>
         )}
 
