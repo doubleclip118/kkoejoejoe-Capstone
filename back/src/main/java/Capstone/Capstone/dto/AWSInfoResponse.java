@@ -16,29 +16,29 @@ public class AWSInfoResponse {
     @NotNull
     private Long infoId;
     @NotEmpty
-    private String DriverName;
+    private String driverName;
     @NotEmpty
-    private String ProviderName;
+    private String providerName;
     @NotEmpty
-    private String DriverLibFileName;
+    private String driverLibFileName;
     @NotEmpty
-    private String CredentialName;
+    private String credentialName;
     @NotEmpty
-    private String CredentialAccessKey;
+    private String credentialAccessKey;
     @NotEmpty
-    private String CredentialAccessKeyVal;
+    private String credentialAccessKeyVal;
     @NotEmpty
-    private String CredentialSecretKey;
+    private String credentialSecretKey;
     @NotEmpty
-    private String CredentialSecretKeyVal;
+    private String credentialSecretKeyVal;
     @NotEmpty
-    private String RegionName;
+    private String regionName;
     @NotEmpty
-    private String RegionKey;
+    private String regionKey;
     @NotEmpty
-    private String RegionValue;
+    private String regionValue;
     @NotEmpty
-    private String ZoneKey;
+    private String zoneKey;
     @NotEmpty
-    private String ZoneValue;
+    private String zoneValue;
 }

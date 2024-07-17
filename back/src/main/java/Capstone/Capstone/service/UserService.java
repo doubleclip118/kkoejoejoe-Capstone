@@ -115,7 +115,7 @@ public class UserService {
         azureCloudInfo.setTenantIdValue(azureInfoRequest.getTenantIdValue());
         azureCloudInfo.setRegionName(azureInfoRequest.getRegionName());
         azureCloudInfo.setRegionKey(azureInfoRequest.getRegionKey());
-        azureCloudInfo.setRigionValue(azureInfoRequest.getRigionValue());
+        azureCloudInfo.setRigionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
         azureCloudInfo.setZoneValue(azureInfoRequest.getZoneValue());
 
