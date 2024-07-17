@@ -115,7 +115,7 @@ public class UserService {
         azureCloudInfo.setTenantIdValue(azureInfoRequest.getTenantIdValue());
         azureCloudInfo.setRegionName(azureInfoRequest.getRegionName());
         azureCloudInfo.setRegionKey(azureInfoRequest.getRegionKey());
-        azureCloudInfo.setRigionValue(azureInfoRequest.getRigionValue());
+        azureCloudInfo.setRigionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
         azureCloudInfo.setZoneValue(azureInfoRequest.getZoneValue());
 
@@ -188,6 +188,22 @@ public class UserService {
             user.getAzureCloudInfo().getZoneKey(),
             user.getAzureCloudInfo().getZoneValue()
         );
+    }
+
+    public String deleteAWSInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        awsCloudInfoRepository.deleteById(user.getAwsCloudInfo().getId());
+        return "SUSSES";
+    }
+
+    public String deleteAzureInfo(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        azureCloudInfoRepository.deleteById(user.getAzureCloudInfo().getId());
+        return "SUSSES";
     }
 
 

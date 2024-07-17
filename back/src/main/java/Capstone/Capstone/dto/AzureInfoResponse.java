@@ -1,6 +1,7 @@
 package Capstone.Capstone.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,36 +12,36 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AzureInfoResponse {
+    @NotNull
+    private Long infoId;
     @NotEmpty
-    private Long InfoId;
+    private String driverName;
     @NotEmpty
-    private String DriverName;
+    private String providerName;
     @NotEmpty
-    private String ProviderName;
+    private String driverLibFileName;
     @NotEmpty
-    private String DriverLibFileName;
+    private String credentialName;
     @NotEmpty
-    private String CredentialName;
+    private String clientIdkey;
     @NotEmpty
-    private String ClientIdkey;
+    private String clientIdValue;
     @NotEmpty
-    private String ClientIdValue;
+    private String clientSecretKey;
     @NotEmpty
-    private String ClientSecretKey;
+    private String clientSecretValue;
     @NotEmpty
-    private String ClientSecretValue;
+    private String tenantIdKey;
     @NotEmpty
-    private String TenantIdKey;
+    private String tenantIdValue;
     @NotEmpty
-    private String TenantIdValue;
+    private String regionName;
     @NotEmpty
-    private String RegionName;
+    private String regionKey;
     @NotEmpty
-    private String RegionKey;
+    private String regionValue;
     @NotEmpty
-    private String RigionValue;
+    private String zoneKey;
     @NotEmpty
-    private String ZoneKey;
-    @NotEmpty
-    private String ZoneValue;
+    private String zoneValue;
 }

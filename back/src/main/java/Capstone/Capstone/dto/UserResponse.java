@@ -2,6 +2,7 @@ package Capstone.Capstone.dto;
 
 import Capstone.Capstone.domain.User;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    @NotEmpty
+    @NotNull
     private Long id;
     @NotEmpty
     private String username;

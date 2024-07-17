@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,5 +68,19 @@ public class UserController {
         log.info("azure info get");
         AzureInfoResponse azureInfo = userService.getAzureInfo(id);
         return ResponseEntity.ok(azureInfo);
+    }
+
+    @DeleteMapping("/cloud/aws/{id}")
+    public ResponseEntity<String> deleteAWSInfo(@RequestParam("id") Long id){
+        log.info("aws info delete");
+        String s = userService.deleteAWSInfo(id);
+        return ResponseEntity.ok(s);
+    }
+
+    @DeleteMapping("/cloud/azure/{id}")
+    public ResponseEntity<String> deleteAzureInfo(@RequestParam("id") Long id){
+        log.info("azure info delete");
+        String s = userService.deleteAzureInfo(id);
+        return ResponseEntity.ok(s);
     }
 }

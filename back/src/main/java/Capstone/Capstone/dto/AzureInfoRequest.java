@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,36 +15,36 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AzureInfoRequest {
-    @NotEmpty
+    @NotNull
     private Long userId;
     @NotEmpty
-    private String DriverName;
+    private String driverName;
     @NotEmpty
-    private String ProviderName;
+    private String providerName;
     @NotEmpty
-    private String DriverLibFileName;
+    private String driverLibFileName;
     @NotEmpty
-    private String CredentialName;
+    private String credentialName;
     @NotEmpty
-    private String ClientIdkey;
+    private String clientIdkey;
     @NotEmpty
-    private String ClientIdValue;
+    private String clientIdValue;
     @NotEmpty
-    private String ClientSecretKey;
+    private String clientSecretKey;
     @NotEmpty
-    private String ClientSecretValue;
+    private String clientSecretValue;
     @NotEmpty
-    private String TenantIdKey;
+    private String tenantIdKey;
     @NotEmpty
-    private String TenantIdValue;
+    private String tenantIdValue;
     @NotEmpty
-    private String RegionName;
+    private String regionName;
     @NotEmpty
-    private String RegionKey;
+    private String regionKey;
     @NotEmpty
-    private String RigionValue;
+    private String regionValue;
     @NotEmpty
-    private String ZoneKey;
+    private String zoneKey;
     @NotEmpty
-    private String ZoneValue;
+    private String zoneValue;
 }
