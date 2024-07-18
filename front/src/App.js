@@ -39,6 +39,7 @@ function App() {
       const data = await response.json();
       console.log('Login successful:', data);
       setSuccessMessage('Login successful!');
+      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
       setIsLoggedIn(true); // 로그인 성공 시 상태를 변경합니다.
       // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
     } catch (error) {
@@ -63,6 +64,7 @@ function App() {
       const data = await response.json();
       console.log('Signup successful:', data);
       setSuccessMessage('Signup successful!');
+      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
       setIsLoggedIn(true); // 회원가입 성공 시 상태를 변경합니다.
       // 여기서 회원가입 성공 후 처리
     } catch (error) {
