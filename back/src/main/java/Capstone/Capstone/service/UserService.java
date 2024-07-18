@@ -94,7 +94,8 @@ public class UserService {
             savedAWSCloudInfo.getRegionKey(),
             savedAWSCloudInfo.getRegionValue(),
             savedAWSCloudInfo.getZoneKey(),
-            savedAWSCloudInfo.getZoneValue()
+            savedAWSCloudInfo.getZoneValue(),
+            savedAWSCloudInfo.getConfigname()
         );
     }
     @Transactional
@@ -140,7 +141,8 @@ public class UserService {
             savedAzureCloudInfo.getRegionKey(),
             savedAzureCloudInfo.getRigionValue(),
             savedAzureCloudInfo.getZoneKey(),
-            savedAzureCloudInfo.getZoneValue()
+            savedAzureCloudInfo.getZoneValue(),
+            savedAzureCloudInfo.getConfigName()
         );
     }
 
@@ -148,23 +150,9 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
-        return new AWSInfoResponse(
-            user.getAwsCloudInfo().getId(),
-            user.getAwsCloudInfo().getDriverName(),
-            user.getAwsCloudInfo().getProviderName(),
-            user.getAwsCloudInfo().getDriverLibFileName(),
-            user.getAwsCloudInfo().getCredentialName(),
-            user.getAwsCloudInfo().getCredentialAccessKey(),
-            user.getAwsCloudInfo().getCredentialAccessKeyVal(),
-            user.getAwsCloudInfo().getCredentialSecretKey(),
-            user.getAwsCloudInfo().getCredentialSecretKeyVal(),
-            user.getAwsCloudInfo().getRegionName(),
-            user.getAwsCloudInfo().getRegionKey(),
-            user.getAwsCloudInfo().getRegionValue(),
-            user.getAwsCloudInfo().getZoneKey(),
-            user.getAwsCloudInfo().getZoneValue()
-        );
+        return getAwsInfoResponse(user);
     }
+
 
     public AzureInfoResponse getAzureInfo(Long id){
         User user = userRepository.findById(id).orElseThrow(
@@ -186,7 +174,8 @@ public class UserService {
             user.getAzureCloudInfo().getRegionKey(),
             user.getAzureCloudInfo().getRigionValue(),
             user.getAzureCloudInfo().getZoneKey(),
-            user.getAzureCloudInfo().getZoneValue()
+            user.getAzureCloudInfo().getZoneValue(),
+            user.getAzureCloudInfo().getConfigName()
         );
     }
 
@@ -206,6 +195,33 @@ public class UserService {
         return "SUSSES";
     }
 
+    public AWSInfoResponse changeAWSInfo(Long id , AWSInfoRequest awsInfoRequest){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        user.getAwsCloudInfo().updateAWSInfo(awsInfoRequest);
 
+        return getAwsInfoResponse(user);
+    }
+
+    private AWSInfoResponse getAwsInfoResponse(User user) {
+        return new AWSInfoResponse(
+            user.getAwsCloudInfo().getId(),
+            user.getAwsCloudInfo().getDriverName(),
+            user.getAwsCloudInfo().getProviderName(),
+            user.getAwsCloudInfo().getDriverLibFileName(),
+            user.getAwsCloudInfo().getCredentialName(),
+            user.getAwsCloudInfo().getCredentialAccessKey(),
+            user.getAwsCloudInfo().getCredentialAccessKeyVal(),
+            user.getAwsCloudInfo().getCredentialSecretKey(),
+            user.getAwsCloudInfo().getCredentialSecretKeyVal(),
+            user.getAwsCloudInfo().getRegionName(),
+            user.getAwsCloudInfo().getRegionKey(),
+            user.getAwsCloudInfo().getRegionValue(),
+            user.getAwsCloudInfo().getZoneKey(),
+            user.getAwsCloudInfo().getZoneValue(),
+            user.getAwsCloudInfo().getConfigname()
+        );
+    }
 
 }

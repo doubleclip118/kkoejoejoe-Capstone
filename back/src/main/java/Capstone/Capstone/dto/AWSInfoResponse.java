@@ -41,4 +41,6 @@ public class AWSInfoResponse {
     private String zoneKey;
     @NotEmpty
     private String zoneValue;
+    @NotEmpty
+    private String configName;
 }

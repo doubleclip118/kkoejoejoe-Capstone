@@ -44,4 +44,6 @@ public class AzureInfoResponse {
     private String zoneKey;
     @NotEmpty
     private String zoneValue;
+    @NotEmpty
+    private String configName;
 }

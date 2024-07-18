@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import Capstone.Capstone.dto.AWSInfoRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,4 +52,21 @@ public class AWSCloudInfo {
     private String ZoneValue;
     @Column
     private String Configname;
+
+    public void updateAWSInfo(AWSInfoRequest awsInfoRequest){
+        this.DriverName = awsInfoRequest.getDriverName();
+        this.ProviderName = awsInfoRequest.getProviderName();
+        this.DriverLibFileName = awsInfoRequest.getDriverLibFileName();
+        this.CredentialName = awsInfoRequest.getCredentialName();
+        this.CredentialAccessKey = awsInfoRequest.getCredentialAccessKey();
+        this.CredentialAccessKeyVal = awsInfoRequest.getCredentialAccessKeyVal();
+        this.CredentialSecretKey = awsInfoRequest.getCredentialSecretKey();
+        this.CredentialSecretKeyVal = awsInfoRequest.getCredentialSecretKeyVal();
+        this.RegionName = awsInfoRequest.getRegionName();
+        this.RegionKey = awsInfoRequest.getRegionKey();
+        this.RegionValue = awsInfoRequest.getRegionValue();
+        this.ZoneKey = awsInfoRequest.getZoneKey();
+        this.ZoneValue = awsInfoRequest.getZoneValue();
+        this.Configname = awsInfoRequest.getConfigName();
+    }
 }
