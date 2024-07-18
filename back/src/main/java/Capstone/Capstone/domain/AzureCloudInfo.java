@@ -53,5 +53,6 @@ public class AzureCloudInfo {
     private String ZoneKey;
     @Column
     private String ZoneValue;
-
+    @Column
+    private String Comfigname;
 }

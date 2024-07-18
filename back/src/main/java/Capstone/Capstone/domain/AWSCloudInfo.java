@@ -49,4 +49,6 @@ public class AWSCloudInfo {
     private String ZoneKey;
     @Column
     private String ZoneValue;
+    @Column
+    private String Configname;
 }

@@ -14,7 +14,7 @@ import lombok.Setter;
 public class AWSInfoResponse {
 
     @NotNull
-    private Long infoId;
+    private Long userId;
     @NotEmpty
     private String driverName;
     @NotEmpty

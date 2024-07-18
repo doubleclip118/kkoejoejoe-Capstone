@@ -81,7 +81,7 @@ public class UserService {
         AWSCloudInfo savedAWSCloudInfo = awsCloudInfoRepository.save(awsCloudInfo);
         log.info("AWS INFO CREATE service");
         return new AWSInfoResponse(
-            savedAWSCloudInfo.getId(),
+            awsInfoRequest.getUserId(),
             savedAWSCloudInfo.getDriverName(),
             savedAWSCloudInfo.getProviderName(),
             savedAWSCloudInfo.getDriverLibFileName(),
@@ -125,7 +125,7 @@ public class UserService {
         AzureCloudInfo savedAzureCloudInfo = azureCloudInfoRepository.save(azureCloudInfo);
         log.info("AZURE INFO CREATE service");
         return new AzureInfoResponse(
-            savedAzureCloudInfo.getId(),
+            azureInfoRequest.getUserId(),
             savedAzureCloudInfo.getDriverName(),
             savedAzureCloudInfo.getProviderName(),
             savedAzureCloudInfo.getDriverLibFileName(),
