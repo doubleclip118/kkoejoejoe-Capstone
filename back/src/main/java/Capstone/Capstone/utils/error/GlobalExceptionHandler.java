@@ -17,6 +17,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AWSCloudInfoNotFoundException.class)
+    public ResponseEntity<?> handleAWSCloudInfoNotFoundException(AWSCloudInfoNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AzureCloudInfoNotFoundException.class)
+    public ResponseEntity<?> handleAzureCloudInfoNotFoundException(AzureCloudInfoNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
 
 
 }

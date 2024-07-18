@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,35 +59,35 @@ public class UserController {
     }
 
     @GetMapping("/cloud/aws/{id}")
-    public ResponseEntity<AWSInfoResponse> getAWSInfo(@RequestParam("id") Long id){
+    public ResponseEntity<AWSInfoResponse> getAWSInfo(@PathVariable("id") Long id){
         log.info("aws info get");
         AWSInfoResponse awsInfo = userService.getAWSInfo(id);
         return ResponseEntity.ok(awsInfo);
     }
 
     @GetMapping("/cloud/azure/{id}")
-    public ResponseEntity<AzureInfoResponse> getAzureInfo(@RequestParam("id") Long id){
+    public ResponseEntity<AzureInfoResponse> getAzureInfo(@PathVariable("id") Long id){
         log.info("azure info get");
         AzureInfoResponse azureInfo = userService.getAzureInfo(id);
         return ResponseEntity.ok(azureInfo);
     }
 
     @DeleteMapping("/cloud/aws/{id}")
-    public ResponseEntity<String> deleteAWSInfo(@RequestParam("id") Long id){
+    public ResponseEntity<String> deleteAWSInfo(@PathVariable("id") Long id){
         log.info("aws info delete");
         String s = userService.deleteAWSInfo(id);
         return ResponseEntity.ok(s);
     }
 
     @DeleteMapping("/cloud/azure/{id}")
-    public ResponseEntity<String> deleteAzureInfo(@RequestParam("id") Long id){
+    public ResponseEntity<String> deleteAzureInfo(@PathVariable("id") Long id){
         log.info("azure info delete");
         String s = userService.deleteAzureInfo(id);
         return ResponseEntity.ok(s);
     }
 
     @PutMapping("/cloud/aws/{id}")
-    public ResponseEntity<AWSInfoResponse> changeAWSInfo(@RequestParam("id") Long id,
+    public ResponseEntity<AWSInfoResponse> changeAWSInfo(@PathVariable("id") Long id,
         @RequestBody AWSInfoRequest awsInfoRequest){
         log.info("aws info change");
         AWSInfoResponse awsInfoResponse = userService.changeAWSInfo(id, awsInfoRequest);
@@ -94,7 +95,7 @@ public class UserController {
     }
 
     @PutMapping("/cloud/azure/{id}")
-    public ResponseEntity<AzureInfoResponse> changeAzureInfo(@RequestParam("id") Long id,
+    public ResponseEntity<AzureInfoResponse> changeAzureInfo(@PathVariable("id") Long id,
         @RequestBody AzureInfoRequest azureInfoRequest){
         log.info("aws info change");
         AzureInfoResponse azureInfoResponse = userService.changeAzureInfo(id, azureInfoRequest);

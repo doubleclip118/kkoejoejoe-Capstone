@@ -12,6 +12,8 @@ import Capstone.Capstone.dto.UserResponse;
 import Capstone.Capstone.repository.AWSCloudInfoRepository;
 import Capstone.Capstone.repository.AzureCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
+import Capstone.Capstone.utils.error.AWSCloudInfoNotFoundException;
+import Capstone.Capstone.utils.error.AzureCloudInfoNotFoundException;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.UserRegistrationException;
 import java.util.Optional;
@@ -74,6 +76,7 @@ public class UserService {
         awsCloudInfo.setRegionValue(awsInfoRequest.getRegionValue());
         awsCloudInfo.setZoneKey(awsInfoRequest.getZoneKey());
         awsCloudInfo.setZoneValue(awsInfoRequest.getZoneValue());
+        awsCloudInfo.setConfigname(awsInfoRequest.getConfigName());
 
         awsCloudInfo.setUser(user);
         user.setAwsCloudInfo(awsCloudInfo);
@@ -119,6 +122,7 @@ public class UserService {
         azureCloudInfo.setRigionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
         azureCloudInfo.setZoneValue(azureInfoRequest.getZoneValue());
+        azureCloudInfo.setConfigName(azureInfoRequest.getConfigName());
 
         azureCloudInfo.setUser(user);
         user.setAzureCloudInfo(azureCloudInfo);
@@ -147,58 +151,67 @@ public class UserService {
     }
 
     public AWSInfoResponse getAWSInfo(Long id){
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userRepository.findByUserIdWithAWSCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
+        if (user.getAwsCloudInfo() == null) {
+            throw new AWSCloudInfoNotFoundException("AWS INFO Not Found");
+        }
         return getAwsInfoResponse(user);
     }
 
 
     public AzureInfoResponse getAzureInfo(Long id){
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userRepository.findByUserIdWithAzureCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
+        if (user.getAzureCloudInfo() == null) {
+            throw new AzureCloudInfoNotFoundException("Azure INFO Not Found");
+        }
         return getAzureInfoResponse(user);
     }
 
-
+    @Transactional
     public String deleteAWSInfo(Long id){
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userRepository.findByUserIdWithAWSCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
         awsCloudInfoRepository.deleteById(user.getAwsCloudInfo().getId());
-        return "SUSSES";
-    }
+        user.removeAwsCloudInfo();
 
+        return "성공";
+    }
+    @Transactional
     public String deleteAzureInfo(Long id){
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userRepository.findByUserIdWithAzureCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
         azureCloudInfoRepository.deleteById(user.getAzureCloudInfo().getId());
-        return "SUSSES";
+        user.removeAzureCloudInfo();
+        return "성공";
     }
-
+    @Transactional
     public AWSInfoResponse changeAWSInfo(Long id , AWSInfoRequest awsInfoRequest){
-        User user = userRepository.findById(id).orElseThrow(
+        User user = userRepository.findById( id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
         user.getAwsCloudInfo().updateAWSInfo(awsInfoRequest);
-
+        userRepository.save(user);
         return getAwsInfoResponse(user);
     }
-
+    @Transactional
     public AzureInfoResponse changeAzureInfo(Long id, AzureInfoRequest azureInfoRequest){
         User user = userRepository.findById(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
         user.getAzureCloudInfo().updateAzureInfo(azureInfoRequest);
-
+        userRepository.save(user);
         return getAzureInfoResponse(user);
     }
 
     private AWSInfoResponse getAwsInfoResponse(User user) {
         return new AWSInfoResponse(
-            user.getAwsCloudInfo().getId(),
+            user.getId(),
             user.getAwsCloudInfo().getDriverName(),
             user.getAwsCloudInfo().getProviderName(),
             user.getAwsCloudInfo().getDriverLibFileName(),
@@ -218,7 +231,7 @@ public class UserService {
 
     private AzureInfoResponse getAzureInfoResponse(User user) {
         return new AzureInfoResponse(
-            user.getAzureCloudInfo().getId(),
+            user.getId(),
             user.getAzureCloudInfo().getDriverName(),
             user.getAzureCloudInfo().getProviderName(),
             user.getAzureCloudInfo().getDriverLibFileName(),

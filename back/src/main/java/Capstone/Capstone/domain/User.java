@@ -33,11 +33,11 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "azure_cloud_info_id")
     private AzureCloudInfo azureCloudInfo;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "aws_cloud_info_id")
     private AWSCloudInfo awsCloudInfo;
 
@@ -48,6 +48,14 @@ public class User {
         userResponse.setPassword(user.getPassword());
         userResponse.setUsername(user.getUsername());
         return userResponse;
+    }
+
+    public void removeAwsCloudInfo(){
+        this.setAwsCloudInfo(null);
+    }
+
+    public void removeAzureCloudInfo(){
+        this.setAzureCloudInfo(null);
     }
 
 }
