@@ -164,7 +164,6 @@ function CloudInfo() {
   const renderExistingCloudInfo = () => {
     return (
       <div className="existing-cloud-info">
-        <h3>Existing Cloud Information</h3>
         {existingCloudInfo.map((info, index) => (
           <div key={index} className="cloud-info-item">
             <h4>{info.ProviderName}</h4>
@@ -177,6 +176,7 @@ function CloudInfo() {
       </div>
     );
   };
+
   const renderForm = (handleSubmit, actionLabel) => {
     return (
       <form onSubmit={handleSubmit}>
@@ -226,7 +226,7 @@ function CloudInfo() {
   return (
     <div className="management-content">
       <h2>Cloud Information Management</h2>
-      <nav>
+      <nav className="nav-menu">
         <button onClick={() => setMenu('view')}>View Cloud Info</button>
         <button onClick={() => setMenu('create')}>Create Cloud Connection</button>
         <button onClick={() => setMenu('delete')}>Delete Cloud Connection</button>

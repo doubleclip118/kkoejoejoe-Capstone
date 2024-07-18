@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css';
+import styles from './App.css';
 import pusanLogo from './pusan.png';
 import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
 import Main from './Main';
@@ -132,7 +132,7 @@ function App() {
           {successMessage && <p className="success">{successMessage}</p>}
           <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
         </form>
-           {/*<button onClick={handleTestLogin}>Test Login</button>*/}
+          {/* <button onClick={handleTestLogin}>Test Login</button>*/}
         <p className="switch-text">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
