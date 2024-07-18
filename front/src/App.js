@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import './App.css';
+import styles from './App.css';
 import pusanLogo from './pusan.png';
-import Main from './Main'; // Main 컴포넌트를 import 합니다.
+import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
+import Main from './Main';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태를 관리하는 상태를 추가합니다.
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +24,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://43.203.255.53:8080/api/login', {
+      const response = await fetch('http://3.34.135.215:8080/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +39,9 @@ function App() {
       const data = await response.json();
       console.log('Login successful:', data);
       setSuccessMessage('Login successful!');
-      setIsLoggedIn(true);
+      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
+      setIsLoggedIn(true); // 로그인 성공 시 상태를 변경합니다.
+      // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
     } catch (error) {
       setError('Login failed: ' + error.message);
     }
@@ -46,7 +49,7 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch('http://43.203.255.53:8080/api/register', {
+      const response = await fetch('http://3.34.135.215:8080/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +64,9 @@ function App() {
       const data = await response.json();
       console.log('Signup successful:', data);
       setSuccessMessage('Signup successful!');
-      setIsLoggedIn(true);
+      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
+      setIsLoggedIn(true); // 회원가입 성공 시 상태를 변경합니다.
+      // 여기서 회원가입 성공 후 처리
     } catch (error) {
       setError('Signup failed: ' + error.message);
     }
@@ -129,7 +134,7 @@ function App() {
           {successMessage && <p className="success">{successMessage}</p>}
           <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
         </form>
-        <button onClick={handleTestLogin}>Test Login</button>
+          {/* <button onClick={handleTestLogin}>Test Login</button>*/}
         <p className="switch-text">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
