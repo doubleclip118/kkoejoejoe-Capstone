@@ -1,6 +1,6 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.dto.AWSInfoRequest;
+import Capstone.Capstone.controller.dto.AWSInfoRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

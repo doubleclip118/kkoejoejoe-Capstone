@@ -1,4 +1,4 @@
-package Capstone.Capstone.dto;
+package Capstone.Capstone.controller.dto;
 
 import Capstone.Capstone.domain.User;
 import jakarta.validation.constraints.NotEmpty;

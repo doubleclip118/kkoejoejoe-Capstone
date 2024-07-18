@@ -27,6 +27,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CbSpiderServerException.class)
+    public ResponseEntity<?> handleCbSpiderServerException(CbSpiderServerException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.GATEWAY_TIMEOUT);
+    }
+
+    @ExceptionHandler(CloudInfoIncorrectException.class)
+    public ResponseEntity<?> handleCloudInfoIncorrectException(CloudInfoIncorrectException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
 
 
 }

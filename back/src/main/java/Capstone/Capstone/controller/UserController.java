@@ -1,11 +1,11 @@
 package Capstone.Capstone.controller;
 
-import Capstone.Capstone.dto.AWSInfoRequest;
-import Capstone.Capstone.dto.AWSInfoResponse;
-import Capstone.Capstone.dto.AzureInfoRequest;
-import Capstone.Capstone.dto.AzureInfoResponse;
-import Capstone.Capstone.dto.UserRequest;
-import Capstone.Capstone.dto.UserResponse;
+import Capstone.Capstone.controller.dto.AWSInfoRequest;
+import Capstone.Capstone.controller.dto.AWSInfoResponse;
+import Capstone.Capstone.controller.dto.AzureInfoRequest;
+import Capstone.Capstone.controller.dto.AzureInfoResponse;
+import Capstone.Capstone.controller.dto.UserRequest;
+import Capstone.Capstone.controller.dto.UserResponse;
 import Capstone.Capstone.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j

@@ -1,7 +1,6 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.dto.UserRequest;
-import Capstone.Capstone.dto.UserResponse;
+import Capstone.Capstone.controller.dto.UserResponse;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

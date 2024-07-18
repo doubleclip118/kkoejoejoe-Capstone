@@ -1,4 +1,4 @@
-package Capstone.Capstone.dto;
+package Capstone.Capstone.controller.dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;

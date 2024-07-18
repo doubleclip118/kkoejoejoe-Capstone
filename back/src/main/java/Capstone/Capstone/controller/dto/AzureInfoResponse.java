@@ -1,6 +1,5 @@
-package Capstone.Capstone.dto;
+package Capstone.Capstone.controller.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -8,11 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-public class AWSInfoRequest {
+@NoArgsConstructor
+public class AzureInfoResponse {
     @NotNull
     private Long userId;
     @NotEmpty
@@ -24,13 +23,17 @@ public class AWSInfoRequest {
     @NotEmpty
     private String credentialName;
     @NotEmpty
-    private String credentialAccessKey;
+    private String clientIdkey;
     @NotEmpty
-    private String credentialAccessKeyVal;
+    private String clientIdValue;
     @NotEmpty
-    private String credentialSecretKey;
+    private String clientSecretKey;
     @NotEmpty
-    private String credentialSecretKeyVal;
+    private String clientSecretValue;
+    @NotEmpty
+    private String tenantIdKey;
+    @NotEmpty
+    private String tenantIdValue;
     @NotEmpty
     private String regionName;
     @NotEmpty

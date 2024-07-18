@@ -1,6 +1,6 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.dto.AzureInfoRequest;
+import Capstone.Capstone.controller.dto.AzureInfoRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

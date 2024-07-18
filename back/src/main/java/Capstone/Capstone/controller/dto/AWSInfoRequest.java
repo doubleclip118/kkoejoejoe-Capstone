@@ -1,5 +1,6 @@
-package Capstone.Capstone.dto;
+package Capstone.Capstone.controller.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AWSInfoResponse {
-
+public class AWSInfoRequest {
     @NotNull
     private Long userId;
     @NotEmpty

@@ -1,4 +1,4 @@
-package Capstone.Capstone.dto;
+package Capstone.Capstone.controller.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -7,11 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-public class AzureInfoResponse {
+@AllArgsConstructor
+public class AWSInfoResponse {
+
     @NotNull
     private Long userId;
     @NotEmpty
@@ -23,17 +24,13 @@ public class AzureInfoResponse {
     @NotEmpty
     private String credentialName;
     @NotEmpty
-    private String clientIdkey;
+    private String credentialAccessKey;
     @NotEmpty
-    private String clientIdValue;
+    private String credentialAccessKeyVal;
     @NotEmpty
-    private String clientSecretKey;
+    private String credentialSecretKey;
     @NotEmpty
-    private String clientSecretValue;
-    @NotEmpty
-    private String tenantIdKey;
-    @NotEmpty
-    private String tenantIdValue;
+    private String credentialSecretKeyVal;
     @NotEmpty
     private String regionName;
     @NotEmpty
