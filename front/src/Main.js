@@ -16,8 +16,8 @@ function Main() {
         return <VMManagement />;
       case 'blockchain':
         return <BlockchainManagement />;
-      default:
-        return <CloudInfo />;
+/*      default:
+        return <CloudInfo />;*/
     }
   };
 
@@ -27,9 +27,24 @@ function Main() {
         <img src={pusanLogo} alt="Pusan Logo" className="logo" />
         <h2>Cloud Management Dashboard</h2>
         <div className="tab-buttons">
-          <button onClick={() => setActiveTab('cloud')}>Cloud Info</button>
-          <button onClick={() => setActiveTab('vm')}>VM Management</button>
-          <button onClick={() => setActiveTab('blockchain')}>Blockchain Network</button>
+          <button 
+            onClick={() => setActiveTab('cloud')} 
+            className={activeTab === 'cloud' ? 'active' : ''}
+          >
+            Cloud Info
+          </button>
+          <button 
+            onClick={() => setActiveTab('vm')} 
+            className={activeTab === 'vm' ? 'active' : ''}
+          >
+            VM Management
+          </button>
+          <button 
+            onClick={() => setActiveTab('blockchain')} 
+            className={activeTab === 'blockchain' ? 'active' : ''}
+          >
+            Blockchain Network
+          </button>
         </div>
         {renderContent()}
       </div>
