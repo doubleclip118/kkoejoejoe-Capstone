@@ -158,26 +158,9 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
-        return new AzureInfoResponse(
-            user.getAzureCloudInfo().getId(),
-            user.getAzureCloudInfo().getDriverName(),
-            user.getAzureCloudInfo().getProviderName(),
-            user.getAzureCloudInfo().getDriverLibFileName(),
-            user.getAzureCloudInfo().getCredentialName(),
-            user.getAzureCloudInfo().getClientIdkey(),
-            user.getAzureCloudInfo().getClientIdValue(),
-            user.getAzureCloudInfo().getClientSecretKey(),
-            user.getAzureCloudInfo().getClientSecretValue(),
-            user.getAzureCloudInfo().getTenantIdKey(),
-            user.getAzureCloudInfo().getTenantIdValue(),
-            user.getAzureCloudInfo().getRegionName(),
-            user.getAzureCloudInfo().getRegionKey(),
-            user.getAzureCloudInfo().getRigionValue(),
-            user.getAzureCloudInfo().getZoneKey(),
-            user.getAzureCloudInfo().getZoneValue(),
-            user.getAzureCloudInfo().getConfigName()
-        );
+        return getAzureInfoResponse(user);
     }
+
 
     public String deleteAWSInfo(Long id){
         User user = userRepository.findById(id).orElseThrow(
@@ -204,6 +187,15 @@ public class UserService {
         return getAwsInfoResponse(user);
     }
 
+    public AzureInfoResponse changeAzureInfo(Long id, AzureInfoRequest azureInfoRequest){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        user.getAzureCloudInfo().updateAzureInfo(azureInfoRequest);
+
+        return getAzureInfoResponse(user);
+    }
+
     private AWSInfoResponse getAwsInfoResponse(User user) {
         return new AWSInfoResponse(
             user.getAwsCloudInfo().getId(),
@@ -221,6 +213,28 @@ public class UserService {
             user.getAwsCloudInfo().getZoneKey(),
             user.getAwsCloudInfo().getZoneValue(),
             user.getAwsCloudInfo().getConfigname()
+        );
+    }
+
+    private AzureInfoResponse getAzureInfoResponse(User user) {
+        return new AzureInfoResponse(
+            user.getAzureCloudInfo().getId(),
+            user.getAzureCloudInfo().getDriverName(),
+            user.getAzureCloudInfo().getProviderName(),
+            user.getAzureCloudInfo().getDriverLibFileName(),
+            user.getAzureCloudInfo().getCredentialName(),
+            user.getAzureCloudInfo().getClientIdkey(),
+            user.getAzureCloudInfo().getClientIdValue(),
+            user.getAzureCloudInfo().getClientSecretKey(),
+            user.getAzureCloudInfo().getClientSecretValue(),
+            user.getAzureCloudInfo().getTenantIdKey(),
+            user.getAzureCloudInfo().getTenantIdValue(),
+            user.getAzureCloudInfo().getRegionName(),
+            user.getAzureCloudInfo().getRegionKey(),
+            user.getAzureCloudInfo().getRigionValue(),
+            user.getAzureCloudInfo().getZoneKey(),
+            user.getAzureCloudInfo().getZoneValue(),
+            user.getAzureCloudInfo().getConfigName()
         );
     }
 

@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import Capstone.Capstone.dto.AzureInfoRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -55,4 +56,23 @@ public class AzureCloudInfo {
     private String ZoneValue;
     @Column
     private String ConfigName;
+
+    public void updateAzureInfo(AzureInfoRequest azureInfoRequest){
+        this.DriverName = azureInfoRequest.getDriverName();
+        this.ProviderName = azureInfoRequest.getProviderName();
+        this.DriverLibFileName = azureInfoRequest.getDriverLibFileName();
+        this.CredentialName = azureInfoRequest.getCredentialName();
+        this.ClientIdkey = azureInfoRequest.getClientIdkey();
+        this.ClientIdValue = azureInfoRequest.getClientIdValue();
+        this.ClientSecretKey = azureInfoRequest.getClientSecretKey();
+        this.ClientSecretValue = azureInfoRequest.getClientSecretValue();
+        this.TenantIdKey = azureInfoRequest.getTenantIdKey();
+        this.TenantIdValue = azureInfoRequest.getTenantIdValue();
+        this.RegionName = azureInfoRequest.getRegionName();
+        this.RegionKey = azureInfoRequest.getRegionKey();
+        this.RigionValue = azureInfoRequest.getRegionValue();
+        this.ZoneKey = azureInfoRequest.getZoneKey();
+        this.ZoneValue = azureInfoRequest.getZoneValue();
+        this.ConfigName = azureInfoRequest.getConfigName();
+    }
 }

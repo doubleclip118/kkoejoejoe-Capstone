@@ -92,4 +92,12 @@ public class UserController {
         AWSInfoResponse awsInfoResponse = userService.changeAWSInfo(id, awsInfoRequest);
         return ResponseEntity.ok(awsInfoResponse);
     }
+
+    @PutMapping("/cloud/azure/{id}")
+    public ResponseEntity<AzureInfoResponse> changeAzureInfo(@RequestParam("id") Long id,
+        @RequestBody AzureInfoRequest azureInfoRequest){
+        log.info("aws info change");
+        AzureInfoResponse azureInfoResponse = userService.changeAzureInfo(id, azureInfoRequest);
+        return ResponseEntity.ok(azureInfoResponse);
+    }
 }
