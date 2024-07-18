@@ -16,8 +16,8 @@ function Main() {
         return <VMManagement />;
       case 'blockchain':
         return <BlockchainManagement />;
-/*      default:
-        return <CloudInfo />;*/
+      default:
+        return <CloudInfo />;
     }
   };
 
@@ -46,7 +46,9 @@ function Main() {
             Blockchain Network
           </button>
         </div>
-        {renderContent()}
+        <div className="tab-content">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

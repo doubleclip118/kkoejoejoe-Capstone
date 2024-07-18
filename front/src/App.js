@@ -96,7 +96,7 @@ function App() {
   };
 
   if (isLoggedIn) {
-    return <CloudInfo />;
+    return <Main />;
   }
 
   return (
@@ -132,6 +132,7 @@ function App() {
           {successMessage && <p className="success">{successMessage}</p>}
           <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
         </form>
+           {/*<button onClick={handleTestLogin}>Test Login</button>*/}
         <p className="switch-text">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>

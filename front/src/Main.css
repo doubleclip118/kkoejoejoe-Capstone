@@ -1,110 +1,42 @@
-body {
-    background-color: #ddd;
-    font-family: Arial, sans-serif;
-  }
-  
-  .logo {
-    width: 100px;
-    margin-bottom: 20px;
-  }
-  
-  .success {
-    color: green;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  /* 카드의 패딩을 조금 줄여 로고를 위한 공간 확보 */
-  .card {
-    padding: 30px;
-  }
-  
-  .App {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 40px;
-    width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  input {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  button {
-    background-color: #00a86b;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-  }
-  
-  .switch-text {
-    margin-top: 20px;
-    font-size: 14px;
-  }
-  
-  .switch-text a {
-    color: #00a86b;
-    text-decoration: none;
-  }
-  
-  .error {
-    color: red;
-    font-size: 14px;
-    margin-bottom: 10px;
-  }
-  
-  /* 메인 화면 스타일 */
-  .main {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .main h1 {
-    font-size: 2.5em;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .main ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .main li {
-    font-size: 1.5em;
-    color: #555;
-    margin: 10px 0;
-  }
-  
-  .main li:hover {
-    color: #007BFF;
-    cursor: pointer;
-  }
-  
+.App {
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin: 20px auto;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.tab-buttons {
+  margin-bottom: 20px;
+}
+
+.tab-buttons button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.tab-buttons button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tab-content {
+  margin-top: 20px;
+}
