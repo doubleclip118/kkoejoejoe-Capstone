@@ -49,7 +49,7 @@ public class AzureCloudInfo {
     @Column
     private String RegionKey;
     @Column
-    private String RigionValue;
+    private String RegionValue;
     @Column
     private String ZoneKey;
     @Column
@@ -70,7 +70,7 @@ public class AzureCloudInfo {
         this.TenantIdValue = azureInfoRequest.getTenantIdValue();
         this.RegionName = azureInfoRequest.getRegionName();
         this.RegionKey = azureInfoRequest.getRegionKey();
-        this.RigionValue = azureInfoRequest.getRegionValue();
+        this.RegionValue = azureInfoRequest.getRegionValue();
         this.ZoneKey = azureInfoRequest.getZoneKey();
         this.ZoneValue = azureInfoRequest.getZoneValue();
         this.ConfigName = azureInfoRequest.getConfigName();

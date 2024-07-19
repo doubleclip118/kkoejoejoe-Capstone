@@ -51,7 +51,7 @@ public class AWSCloudInfo {
     @Column
     private String ZoneValue;
     @Column
-    private String Configname;
+    private String ConfigName;
 
     public void updateAWSInfo(AWSInfoRequest awsInfoRequest){
         this.DriverName = awsInfoRequest.getDriverName();
@@ -67,6 +67,6 @@ public class AWSCloudInfo {
         this.RegionValue = awsInfoRequest.getRegionValue();
         this.ZoneKey = awsInfoRequest.getZoneKey();
         this.ZoneValue = awsInfoRequest.getZoneValue();
-        this.Configname = awsInfoRequest.getConfigName();
+        this.ConfigName = awsInfoRequest.getConfigName();
     }
 }

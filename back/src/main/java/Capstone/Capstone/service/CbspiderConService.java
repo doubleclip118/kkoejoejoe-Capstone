@@ -6,9 +6,12 @@ import Capstone.Capstone.repository.AzureCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.CloudDriver;
 import Capstone.Capstone.utils.error.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class CbspiderConService {
     private final UserRepository userRepository;
     private final AWSCloudInfoRepository awsCloudInfoRepository;
@@ -23,11 +26,13 @@ public class CbspiderConService {
         this.azureCloudInfoRepository = azureCloudInfoRepository;
         this.externalApiService = externalApiService;
     }
-
+    @Transactional
     public String conAWS(Long id){
         User user = userRepository.findByUserIdWithAWSCloudInfo(id).orElseThrow(
-            () -> new UserNotFoundException("User Not Found")
-        );
+            () -> {
+                log.error("User not found for id: {}", id);
+                return new UserNotFoundException("User Not Found");
+            });
         CloudDriver cloudDriver = new CloudDriver(user.getAwsCloudInfo().getDriverName(),
             user.getAwsCloudInfo().getProviderName(),
             user.getAwsCloudInfo().getDriverLibFileName());

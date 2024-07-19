@@ -76,7 +76,7 @@ public class UserService {
         awsCloudInfo.setRegionValue(awsInfoRequest.getRegionValue());
         awsCloudInfo.setZoneKey(awsInfoRequest.getZoneKey());
         awsCloudInfo.setZoneValue(awsInfoRequest.getZoneValue());
-        awsCloudInfo.setConfigname(awsInfoRequest.getConfigName());
+        awsCloudInfo.setConfigName(awsInfoRequest.getConfigName());
 
         awsCloudInfo.setUser(user);
         user.setAwsCloudInfo(awsCloudInfo);
@@ -98,7 +98,7 @@ public class UserService {
             savedAWSCloudInfo.getRegionValue(),
             savedAWSCloudInfo.getZoneKey(),
             savedAWSCloudInfo.getZoneValue(),
-            savedAWSCloudInfo.getConfigname()
+            savedAWSCloudInfo.getConfigName()
         );
     }
     @Transactional
@@ -119,7 +119,7 @@ public class UserService {
         azureCloudInfo.setTenantIdValue(azureInfoRequest.getTenantIdValue());
         azureCloudInfo.setRegionName(azureInfoRequest.getRegionName());
         azureCloudInfo.setRegionKey(azureInfoRequest.getRegionKey());
-        azureCloudInfo.setRigionValue(azureInfoRequest.getRegionValue());
+        azureCloudInfo.setRegionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
         azureCloudInfo.setZoneValue(azureInfoRequest.getZoneValue());
         azureCloudInfo.setConfigName(azureInfoRequest.getConfigName());
@@ -143,7 +143,7 @@ public class UserService {
             savedAzureCloudInfo.getTenantIdValue(),
             savedAzureCloudInfo.getRegionName(),
             savedAzureCloudInfo.getRegionKey(),
-            savedAzureCloudInfo.getRigionValue(),
+            savedAzureCloudInfo.getRegionValue(),
             savedAzureCloudInfo.getZoneKey(),
             savedAzureCloudInfo.getZoneValue(),
             savedAzureCloudInfo.getConfigName()
@@ -225,7 +225,7 @@ public class UserService {
             user.getAwsCloudInfo().getRegionValue(),
             user.getAwsCloudInfo().getZoneKey(),
             user.getAwsCloudInfo().getZoneValue(),
-            user.getAwsCloudInfo().getConfigname()
+            user.getAwsCloudInfo().getConfigName()
         );
     }
 
@@ -244,7 +244,7 @@ public class UserService {
             user.getAzureCloudInfo().getTenantIdValue(),
             user.getAzureCloudInfo().getRegionName(),
             user.getAzureCloudInfo().getRegionKey(),
-            user.getAzureCloudInfo().getRigionValue(),
+            user.getAzureCloudInfo().getRegionValue(),
             user.getAzureCloudInfo().getZoneKey(),
             user.getAzureCloudInfo().getZoneValue(),
             user.getAzureCloudInfo().getConfigName()
