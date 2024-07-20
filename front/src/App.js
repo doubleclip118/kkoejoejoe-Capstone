@@ -101,46 +101,45 @@ function App() {
     return <Main />;
   }
 
-  return (
-    <div className="App">
-      <div className="card">
-        <img src={pusanLogo} alt="Pusan Logo" className="logo" />
-        <h2>{isLogin ? 'Login' : 'Signup'}</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+  return (        <div className="App">
+    <div className="card">
+      <img src={pusanLogo} alt="Pusan Logo" className="logo" />
+      <h2>{isLogin ? 'Login' : 'Signup'}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter your username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder={isLogin ? "Enter your password" : "Create a password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {!isLogin && (
           <input
             type="password"
-            placeholder={isLogin ? "Enter your password" : "Create a password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-          {!isLogin && (
-            <input
-              type="password"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          )}
-          {error && <p className="error">{error}</p>}
-          {successMessage && <p className="success">{successMessage}</p>}
-          <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
-        </form>
-          {/* <button onClick={handleTestLogin}>Test Login</button>*/}
-        <p className="switch-text">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
-        </p>
-      </div>
+        )}
+        {error && <p className="error">{error}</p>}
+        {successMessage && <p className="success">{successMessage}</p>}
+        <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
+      </form>
+        {<button onClick={handleTestLogin}>Test Login</button>}
+      <p className="switch-text">
+        {isLogin ? "Don't have an account? " : "Already have an account? "}
+        <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
+      </p>
     </div>
+  </div>
   );
 }
 
