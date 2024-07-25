@@ -6,6 +6,8 @@ import CloudInfoForm from './CloudInfoForm';
 import CloudInfoDelete from './CloudInfoDelete';
 import CloudInfoNav from './CloudInfoNav';
 import Connect from './Connect';
+import ViewConnection from './ViewConnection';
+import DeleteConnection from './CloudManagement/DeleteConnection';
 
 function CloudInfo() {
   const [menu, setMenu] = useState('view');
@@ -35,13 +37,13 @@ function CloudInfo() {
       <h2>Cloud Information Management</h2>
       <CloudInfoNav setMenu={setMenu} />
 
-      {menu === 'connect && <Connect/>' &&<Connect 
+      {menu === 'connect' &&<Connect 
           cloudProvider={cloudProvider} 
           setCloudProvider={setCloudProvider}
           fetchExistingCloudInfo={fetchExistingCloudInfo}
         />}
-      {menu === 'view_connection'}
-      {menu === 'delete_connection'}
+      {menu === 'view_connection' &&<ViewConnection/>}
+      {menu === 'delete_connection' && <DeleteConnection/>}
       {menu === 'view_information' && <CloudInfoView existingCloudInfo={existingCloudInfo} />}
 
       {menu === 'create' && (

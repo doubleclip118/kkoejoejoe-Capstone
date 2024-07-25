@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 
-function ViewConnection() {
+function DeleteConnection() {
   const [cloudProvider, setCloudProvider] = useState("AWS");
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState(null);
 
-  const connectToCloudProvider = async () => {
-    setIsConnecting(true);
+  const deleteCloudProvider = async () => {
+    setIsDeleting(true);
     setError(null);
     setConnectionStatus(null);
 
     try {
-      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}/connect`, {
-        method: 'GET',
+      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}/delete`, {
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -21,42 +21,48 @@ function ViewConnection() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to connect to cloud provider');
+        throw new Error('Failed to delete cloud provider connection');
       }
 
       const result = await response.json();
 
-      // Check if the response includes userId to determine successful connection
+      // Check if the response includes userId to determine successful deletion
       if (result.userId) {
-        setConnectionStatus(`Successfully connected to ${cloudProvider}`);
+        setConnectionStatus(`Successfully deleted connection to ${cloudProvider}`);
+        // Reset local storage flag based on the cloud provider
+        if (cloudProvider === 'AWS') {
+          localStorage.setItem('aws_is_available', 'false');
+        } else if (cloudProvider === 'AZURE') {
+          localStorage.setItem('azure_is_available', 'false');
+        }
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
       setError(error.message);
     } finally {
-      setIsConnecting(false);
+      setIsDeleting(false);
     }
   };
 
   return (
     <div className="cloud-info-view">
-      <h3>View Cloud Connection</h3>
+      <h3>Delete Cloud Connection</h3>
       <select
         value={cloudProvider}
         onChange={(e) => setCloudProvider(e.target.value)}
-        disabled={isConnecting}
+        disabled={isDeleting}
       >
         <option value="AWS">AWS</option>
         <option value="AZURE">Azure</option>
         <option value="OPENSTACK">Openstack</option>
       </select>
       <button
-        onClick={connectToCloudProvider}
+        onClick={deleteCloudProvider}
         className="action-button view-connection-button"
-        disabled={isConnecting}
+        disabled={isDeleting}
       >
-        {isConnecting ? 'Viewing...' : 'View Cloud Connection'}
+        {isDeleting ? 'Deleting...' : 'Delete Cloud Connection'}
       </button>
       {error && <p className="error-message">{error}</p>}
       {connectionStatus && <p className="success-message">{connectionStatus}</p>}
@@ -64,4 +70,4 @@ function ViewConnection() {
   );
 }
 
-export default ViewConnection;
+export default DeleteConnection;
