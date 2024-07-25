@@ -5,6 +5,7 @@ import CloudInfoView from './CloudInfoView';
 import CloudInfoForm from './CloudInfoForm';
 import CloudInfoDelete from './CloudInfoDelete';
 import CloudInfoNav from './CloudInfoNav';
+import Connect from './Connect';
 
 function CloudInfo() {
   const [menu, setMenu] = useState('view');
@@ -14,6 +15,7 @@ function CloudInfo() {
   useEffect(() => {
     fetchExistingCloudInfo();
   }, []);
+
 
   const fetchExistingCloudInfo = async () => {
     try {
@@ -32,8 +34,15 @@ function CloudInfo() {
     <div className="management-content">
       <h2>Cloud Information Management</h2>
       <CloudInfoNav setMenu={setMenu} />
-      
-      {menu === 'view' && <CloudInfoView existingCloudInfo={existingCloudInfo} />}
+
+      {menu === 'connect && <Connect/>' &&<Connect 
+          cloudProvider={cloudProvider} 
+          setCloudProvider={setCloudProvider}
+          fetchExistingCloudInfo={fetchExistingCloudInfo}
+        />}
+      {menu === 'view_connection'}
+      {menu === 'delete_connection'}
+      {menu === 'view_information' && <CloudInfoView existingCloudInfo={existingCloudInfo} />}
 
       {menu === 'create' && (
         <CloudInfoForm 
