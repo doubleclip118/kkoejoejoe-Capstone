@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -123,6 +125,158 @@ public class ExternalApiService {
         } catch (HttpServerErrorException e) {
             // 5xx 서버 오류
             throw new CbSpiderServerException("cbspider not working");
+        }
+    }
+    public boolean deleteSpiderDriver(String driverName) {
+        String endpoint = "/spider/driver/" + driverName;
+        String fullUrl = baseUrl + endpoint;
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            log.info("클라우드 드라이버 삭제 요청 전송: {}", fullUrl);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.DELETE,
+                entity,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("클라우드 드라이버 삭제 성공: {}", driverName);
+                return true;
+            } else {
+                log.warn("클라우드 드라이버 삭제 실패. 상태 코드: {}", response.getStatusCode());
+                return false;
+            }
+
+        } catch (HttpClientErrorException e) {
+            log.error("클라우드 드라이버 삭제 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 드라이버 삭제 실패: " + e.getMessage());
+        } catch (HttpServerErrorException e) {
+            log.error("클라우드 드라이버 삭제 중 서버 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 드라이버 삭제 중 서버 오류 발생: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("클라우드 드라이버 삭제 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("클라우드 드라이버 삭제 중 예상치 못한 오류 발생", e);
+        }
+    }
+    public boolean deleteSpiderCredential(String credentialName) {
+        String endpoint = "/spider/credential/" + credentialName;
+        String fullUrl = baseUrl + endpoint;
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            log.info("클라우드 Credential 정보 삭제 요청 전송: {}", fullUrl);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.DELETE,
+                entity,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("클라우드 Credential 정보 삭제 성공: {}", credentialName);
+                return true;
+            } else {
+                log.warn("클라우드 Credential 정보 삭제 실패. 상태 코드: {}", response.getStatusCode());
+                return false;
+            }
+
+        } catch (HttpClientErrorException e) {
+            log.error("클라우드 Credential 정보 삭제 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Credential 정보 삭제 실패: " + e.getMessage());
+        } catch (HttpServerErrorException e) {
+            log.error("클라우드 Credential 정보 삭제 중 서버 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Credential 정보 삭제 중 서버 오류 발생: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("클라우드 Credential 정보 삭제 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("클라우드 Credential 정보 삭제 중 예상치 못한 오류 발생", e);
+        }
+    }
+    public boolean deleteSpiderRegion(String regionName) {
+        String endpoint = "/spider/region/" + regionName;
+        String fullUrl = baseUrl + endpoint;
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            log.info("클라우드 Region/Zone 정보 삭제 요청 전송: {}", fullUrl);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.DELETE,
+                entity,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("클라우드 Region/Zone 정보 삭제 성공: {}", regionName);
+                return true;
+            } else {
+                log.warn("클라우드 Region/Zone 정보 삭제 실패. 상태 코드: {}", response.getStatusCode());
+                return false;
+            }
+
+        } catch (HttpClientErrorException e) {
+            log.error("클라우드 Region/Zone 정보 삭제 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Region/Zone 정보 삭제 실패: " + e.getMessage());
+        } catch (HttpServerErrorException e) {
+            log.error("클라우드 Region/Zone 정보 삭제 중 서버 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Region/Zone 정보 삭제 중 서버 오류 발생: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("클라우드 Region/Zone 정보 삭제 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("클라우드 Region/Zone 정보 삭제 중 예상치 못한 오류 발생", e);
+        }
+    }
+    public boolean deleteSpiderConnectionConfig(String configName) {
+        String endpoint = "/spider/connectionconfig/" + configName;
+        String fullUrl = baseUrl + endpoint;
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            log.info("클라우드 Connection Configuration 정보 삭제 요청 전송: {}", fullUrl);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.DELETE,
+                entity,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("클라우드 Connection Configuration 정보 삭제 성공: {}", configName);
+                return true;
+            } else {
+                log.warn("클라우드 Connection Configuration 정보 삭제 실패. 상태 코드: {}", response.getStatusCode());
+                return false;
+            }
+
+        } catch (HttpClientErrorException e) {
+            log.error("클라우드 Connection Configuration 정보 삭제 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Connection Configuration 정보 삭제 실패: " + e.getMessage());
+        } catch (HttpServerErrorException e) {
+            log.error("클라우드 Connection Configuration 정보 삭제 중 서버 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("클라우드 Connection Configuration 정보 삭제 중 서버 오류 발생: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("클라우드 Connection Configuration 정보 삭제 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("클라우드 Connection Configuration 정보 삭제 중 예상치 못한 오류 발생", e);
         }
     }
 

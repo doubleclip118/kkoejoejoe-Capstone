@@ -4,6 +4,7 @@ import Capstone.Capstone.service.CbspiderConService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,12 @@ public class CbspiderConController {
     @PostMapping("/aws/{id}")
     public ResponseEntity<String> conAWS(@PathVariable("id")Long id){
         String s = cbspiderConService.conAWS(id);
+        return ResponseEntity.ok(s);
+    }
+
+    @DeleteMapping("/aws/{id}")
+    public ResponseEntity<String> deleteconAWS(@PathVariable("id")Long id){
+        String s = cbspiderConService.deleteconAWS(id);
         return ResponseEntity.ok(s);
     }
 }

@@ -99,6 +99,25 @@ public class CbspiderConService {
         return "생성 완료";
     }
 
+    @Transactional
+    public String deleteconAWS(Long id){
+        User user = userRepository.findByUserIdWithAWSCloudInfo(id).orElseThrow(
+            () -> {
+                log.error("User not found for id: {}", id);
+                return new UserNotFoundException("User Not Found");
+            });
+        // 드라이버 삭제
+        externalApiService.deleteSpiderDriver(user.getAwsCloudInfo().getDriverName());
+        // 크리덴셜 삭제
+        externalApiService.deleteSpiderCredential(user.getAwsCloudInfo().getCredentialName());
+        // 리즌 삭제
+        externalApiService.deleteSpiderRegion(user.getAwsCloudInfo().getRegionName());
+        // 커넥션 삭제
+        externalApiService.deleteSpiderRegion(user.getAwsCloudInfo().getConfigName());
+
+        return "삭제 완료";
+    }
+
 
 
 
