@@ -146,7 +146,17 @@ public class CbspiderConService {
             user.getAzureCloudInfo().getClientSecretValue()
         );
 
-        List<KeyValueInfo> keyValueInfoList = Arrays.asList(azureAccess, azureSecret);
+        KeyValueInfo azureTenant = new KeyValueInfo(
+            user.getAzureCloudInfo().getTenantIdKey(),
+            user.getAzureCloudInfo().getTenantIdValue()
+        );
+
+        KeyValueInfo azureSubscription = new KeyValueInfo(
+            user.getAzureCloudInfo().getSubscriptionIdKey(),
+            user.getAzureCloudInfo().getSubscriptionIdValue()
+        );
+
+        List<KeyValueInfo> keyValueInfoList = Arrays.asList(azureAccess, azureSecret,azureTenant,azureSubscription);
 
         AzureCredentialDTO azureCredentialDTO = new AzureCredentialDTO(user.getAzureCloudInfo().getCredentialName(),
             user.getAzureCloudInfo().getProviderName(),keyValueInfoList);
@@ -161,8 +171,8 @@ public class CbspiderConService {
         );
 
         KeyValueInfo azureZone = new KeyValueInfo(
-            user.getAzureCloudInfo().getClientSecretKey(),
-            user.getAzureCloudInfo().getClientSecretValue()
+            user.getAzureCloudInfo().getZoneKey(),
+            user.getAzureCloudInfo().getZoneValue()
         );
 
         List<KeyValueInfo> keyValueRegionInfoList = Arrays.asList(azureRegion, azureZone);

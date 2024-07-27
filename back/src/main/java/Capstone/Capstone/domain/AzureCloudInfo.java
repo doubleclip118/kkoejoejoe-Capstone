@@ -43,6 +43,10 @@ public class AzureCloudInfo {
     @Column
     private String TenantIdKey;
     @Column
+    private String SubscriptionIdKey;
+    @Column
+    private String SubscriptionIdValue;
+    @Column
     private String TenantIdValue;
     @Column
     private String RegionName;
@@ -62,7 +66,7 @@ public class AzureCloudInfo {
         this.ProviderName = azureInfoRequest.getProviderName();
         this.DriverLibFileName = azureInfoRequest.getDriverLibFileName();
         this.CredentialName = azureInfoRequest.getCredentialName();
-        this.ClientIdkey = azureInfoRequest.getClientIdkey();
+        this.ClientIdkey = azureInfoRequest.getClientIdKey();
         this.ClientIdValue = azureInfoRequest.getClientIdValue();
         this.ClientSecretKey = azureInfoRequest.getClientSecretKey();
         this.ClientSecretValue = azureInfoRequest.getClientSecretValue();
@@ -74,5 +78,7 @@ public class AzureCloudInfo {
         this.ZoneKey = azureInfoRequest.getZoneKey();
         this.ZoneValue = azureInfoRequest.getZoneValue();
         this.ConfigName = azureInfoRequest.getConfigName();
+        this.SubscriptionIdKey = azureInfoRequest.getSubscriptionIdKey();
+        this.SubscriptionIdValue = azureInfoRequest.getSubscriptionIdValue();
     }
 }

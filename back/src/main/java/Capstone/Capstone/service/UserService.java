@@ -111,13 +111,15 @@ public class UserService {
         azureCloudInfo.setProviderName(azureInfoRequest.getProviderName());
         azureCloudInfo.setDriverLibFileName(azureInfoRequest.getDriverLibFileName());
         azureCloudInfo.setCredentialName(azureInfoRequest.getCredentialName());
-        azureCloudInfo.setClientIdkey(azureInfoRequest.getClientIdkey());
+        azureCloudInfo.setClientIdkey(azureInfoRequest.getClientIdKey());
         azureCloudInfo.setClientIdValue(azureInfoRequest.getClientIdValue());
         azureCloudInfo.setClientSecretKey(azureInfoRequest.getClientSecretKey());
         azureCloudInfo.setClientSecretValue(azureInfoRequest.getClientSecretValue());
         azureCloudInfo.setTenantIdKey(azureInfoRequest.getTenantIdKey());
         azureCloudInfo.setTenantIdValue(azureInfoRequest.getTenantIdValue());
         azureCloudInfo.setRegionName(azureInfoRequest.getRegionName());
+        azureCloudInfo.setSubscriptionIdKey(azureCloudInfo.getSubscriptionIdKey());
+        azureCloudInfo.setSubscriptionIdValue(azureCloudInfo.getSubscriptionIdValue());
         azureCloudInfo.setRegionKey(azureInfoRequest.getRegionKey());
         azureCloudInfo.setRegionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
@@ -141,6 +143,8 @@ public class UserService {
             savedAzureCloudInfo.getClientSecretValue(),
             savedAzureCloudInfo.getTenantIdKey(),
             savedAzureCloudInfo.getTenantIdValue(),
+            savedAzureCloudInfo.getSubscriptionIdKey(),
+            savedAzureCloudInfo.getSubscriptionIdValue(),
             savedAzureCloudInfo.getRegionName(),
             savedAzureCloudInfo.getRegionKey(),
             savedAzureCloudInfo.getRegionValue(),
@@ -242,6 +246,8 @@ public class UserService {
             user.getAzureCloudInfo().getClientSecretValue(),
             user.getAzureCloudInfo().getTenantIdKey(),
             user.getAzureCloudInfo().getTenantIdValue(),
+            user.getAzureCloudInfo().getSubscriptionIdKey(),
+            user.getAzureCloudInfo().getSubscriptionIdValue(),
             user.getAzureCloudInfo().getRegionName(),
             user.getAzureCloudInfo().getRegionKey(),
             user.getAzureCloudInfo().getRegionValue(),

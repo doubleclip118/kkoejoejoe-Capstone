@@ -35,6 +35,10 @@ public class AzureInfoResponse {
     @NotEmpty
     private String tenantIdValue;
     @NotEmpty
+    private String subscriptionIdKey;
+    @NotEmpty
+    private String subscriptionIdValue;
+    @NotEmpty
     private String regionName;
     @NotEmpty
     private String regionKey;

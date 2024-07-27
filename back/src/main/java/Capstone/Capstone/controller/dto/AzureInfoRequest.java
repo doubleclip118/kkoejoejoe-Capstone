@@ -26,7 +26,7 @@ public class AzureInfoRequest {
     @NotEmpty
     private String credentialName;
     @NotEmpty
-    private String clientIdkey;
+    private String clientIdKey;
     @NotEmpty
     private String clientIdValue;
     @NotEmpty
@@ -37,6 +37,10 @@ public class AzureInfoRequest {
     private String tenantIdKey;
     @NotEmpty
     private String tenantIdValue;
+    @NotEmpty
+    private String subscriptionIdKey;
+    @NotEmpty
+    private String subscriptionIdValue;
     @NotEmpty
     private String regionName;
     @NotEmpty
