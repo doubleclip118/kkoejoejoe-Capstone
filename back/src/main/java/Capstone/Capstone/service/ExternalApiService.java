@@ -4,6 +4,10 @@ import Capstone.Capstone.service.dto.AWSCloudDriverDTO;
 import Capstone.Capstone.service.dto.AWSConfigDTO;
 import Capstone.Capstone.service.dto.AWSCredentialDTO;
 import Capstone.Capstone.service.dto.AWSRegionDTO;
+import Capstone.Capstone.service.dto.AzureCloudDriverDTO;
+import Capstone.Capstone.service.dto.AzureConfigDTO;
+import Capstone.Capstone.service.dto.AzureCredentialDTO;
+import Capstone.Capstone.service.dto.AzureRegionDTO;
 import Capstone.Capstone.utils.error.CbSpiderServerException;
 import Capstone.Capstone.utils.error.CloudInfoIncorrectException;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +32,7 @@ public class ExternalApiService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public AWSCloudDriverDTO postToSpiderDriver(AWSCloudDriverDTO AWSCloudDriverDTO) {
+    public AWSCloudDriverDTO postToSpiderAWSDriver(AWSCloudDriverDTO AWSCloudDriverDTO) {
         String endpoint = "/spider/driver";
         String fullUrl = baseUrl + endpoint;
 
@@ -53,7 +57,7 @@ public class ExternalApiService {
         }
     }
 
-    public AWSCredentialDTO postToSpiderCredential(AWSCredentialDTO awsCredentialDTO) {
+    public AWSCredentialDTO postToSpiderAWSCredential(AWSCredentialDTO awsCredentialDTO) {
         String endpoint = "/spider/credential";
         String fullUrl = baseUrl + endpoint;
 
@@ -79,7 +83,7 @@ public class ExternalApiService {
         }
     }
 
-    public AWSRegionDTO postToSpiderRegion(AWSRegionDTO awsRegionDTO) {
+    public AWSRegionDTO postToSpiderAWSRegion(AWSRegionDTO awsRegionDTO) {
         String endpoint = "/spider/region";
         String fullUrl = baseUrl + endpoint;
 
@@ -104,7 +108,7 @@ public class ExternalApiService {
         }
     }
 
-    public AWSConfigDTO postToSpiderConfig(AWSConfigDTO awsConfigDTO) {
+    public AWSConfigDTO postToSpiderAWSConfig(AWSConfigDTO awsConfigDTO) {
         String endpoint = "/spider/connectionconfig";
         String fullUrl = baseUrl + endpoint;
 
@@ -277,6 +281,106 @@ public class ExternalApiService {
         } catch (Exception e) {
             log.error("클라우드 Connection Configuration 정보 삭제 중 예상치 못한 오류 발생", e);
             throw new RuntimeException("클라우드 Connection Configuration 정보 삭제 중 예상치 못한 오류 발생", e);
+        }
+    }
+
+    public AzureCloudDriverDTO postToSpiderAZUREDriver(AzureCloudDriverDTO azureCloudDriverDTO) {
+        String endpoint = "/spider/driver";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AzureCloudDriverDTO> request = new HttpEntity<>(azureCloudDriverDTO, headers);
+        try {
+            log.info("cloud azure Diver 응답요청 ");
+            AzureCloudDriverDTO azureCloudDriverDTO1 = restTemplate.postForObject(fullUrl, request,
+                AzureCloudDriverDTO.class);
+            System.out.println(
+                azureCloudDriverDTO1.getDriverName() +"\n"+ azureCloudDriverDTO1.getDriverLibFileName() +"\n" + azureCloudDriverDTO1.getProviderName());
+            return azureCloudDriverDTO1;
+        } catch (HttpClientErrorException e) {
+            // 4xx 클라이언트 오류
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            System.out.println(e);
+            // 5xx 서버 오류
+            throw new CbSpiderServerException("cbspider not working");
+        }
+    }
+
+    public AzureCredentialDTO postToSpiderAzureCredential(AzureCredentialDTO azureCredentialDTO) {
+        String endpoint = "/spider/credential";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AzureCredentialDTO> request = new HttpEntity<>(azureCredentialDTO, headers);
+        try {
+            log.info("cloud azure credential 응답요청 ");
+            AzureCredentialDTO azureCredentialDTO1 = restTemplate.postForObject(fullUrl, request,
+                AzureCredentialDTO.class);
+            System.out.println(azureCredentialDTO1.toString());
+            System.out.println(azureCredentialDTO1);
+            return azureCredentialDTO1;
+
+        } catch (HttpClientErrorException e) {
+            // 4xx 클라이언트 오류
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            System.out.println(e);
+            // 5xx 서버 오류
+            throw new CbSpiderServerException("cbspider not working");
+        }
+    }
+
+    public AzureRegionDTO postToSpiderAzureRegion(AzureRegionDTO azureRegionDTO) {
+        String endpoint = "/spider/region";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AzureRegionDTO> request = new HttpEntity<>(azureRegionDTO, headers);
+        try {
+            log.info("cloud azure region 응답요청 ");
+            AzureRegionDTO azureRegionDTO1 = restTemplate.postForObject(fullUrl, request,
+                AzureRegionDTO.class);
+            System.out.println(azureRegionDTO1);
+            return azureRegionDTO1;
+
+        } catch (HttpClientErrorException e) {
+            // 4xx 클라이언트 오류
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            System.out.println(e);
+            // 5xx 서버 오류
+            throw new CbSpiderServerException("cbspider not working");
+        }
+    }
+
+    public AzureConfigDTO postToSpiderAzureConfig(AzureConfigDTO azureConfigDTO) {
+        String endpoint = "/spider/connectionconfig";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AzureConfigDTO> request = new HttpEntity<>(azureConfigDTO, headers);
+        try {
+            log.info("cloud aws region 응답요청 ");
+            AzureConfigDTO azureConfigDTO1 = restTemplate.postForObject(fullUrl, request,
+                AzureConfigDTO.class);
+            System.out.println(azureConfigDTO1.toString());
+            return azureConfigDTO1;
+
+        } catch (HttpClientErrorException e) {
+            // 4xx 클라이언트 오류
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            // 5xx 서버 오류
+            throw new CbSpiderServerException("cbspider not working");
         }
     }
 

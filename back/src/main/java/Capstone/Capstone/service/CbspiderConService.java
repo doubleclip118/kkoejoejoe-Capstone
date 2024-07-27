@@ -7,6 +7,10 @@ import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.AWSCloudDriverDTO;
 import Capstone.Capstone.service.dto.AWSConfigDTO;
 import Capstone.Capstone.service.dto.AWSCredentialDTO;
+import Capstone.Capstone.service.dto.AzureCloudDriverDTO;
+import Capstone.Capstone.service.dto.AzureConfigDTO;
+import Capstone.Capstone.service.dto.AzureCredentialDTO;
+import Capstone.Capstone.service.dto.AzureRegionDTO;
 import Capstone.Capstone.service.dto.KeyValueInfo;
 import Capstone.Capstone.service.dto.AWSRegionDTO;
 import Capstone.Capstone.utils.error.UserNotFoundException;
@@ -45,7 +49,7 @@ public class CbspiderConService {
         AWSCloudDriverDTO AWSCloudDriverDTO = new AWSCloudDriverDTO(user.getAwsCloudInfo().getDriverName(),
             user.getAwsCloudInfo().getProviderName(),
             user.getAwsCloudInfo().getDriverLibFileName());
-        externalApiService.postToSpiderDriver(
+        externalApiService.postToSpiderAWSDriver(
             AWSCloudDriverDTO);
 
         //클라우드 크리덴셜 등록
@@ -66,7 +70,7 @@ public class CbspiderConService {
             user.getAwsCloudInfo().getProviderName(),
             keyValueInfoList
         );
-        externalApiService.postToSpiderCredential(awsCredentialDTO);
+        externalApiService.postToSpiderAWSCredential(awsCredentialDTO);
 
         //리전 등록
 
@@ -86,14 +90,14 @@ public class CbspiderConService {
             user.getAwsCloudInfo().getProviderName(),
             RegionkeyValueInfoList);
 
-        externalApiService.postToSpiderRegion(awsRegionDTO);
+        externalApiService.postToSpiderAWSRegion(awsRegionDTO);
 
         //커넥션 생성
         AWSConfigDTO awsConfigDTO = new AWSConfigDTO(user.getAwsCloudInfo().getConfigName(),
             user.getAwsCloudInfo().getProviderName(),
             user.getAwsCloudInfo().getDriverName(), user.getAwsCloudInfo().getCredentialName(),
             user.getAwsCloudInfo().getRegionName());
-        externalApiService.postToSpiderConfig(awsConfigDTO);
+        externalApiService.postToSpiderAWSConfig(awsConfigDTO);
 
 
         return "생성 완료";
@@ -113,9 +117,90 @@ public class CbspiderConService {
         // 리즌 삭제
         externalApiService.deleteSpiderRegion(user.getAwsCloudInfo().getRegionName());
         // 커넥션 삭제
-        externalApiService.deleteSpiderRegion(user.getAwsCloudInfo().getConfigName());
+        externalApiService.deleteSpiderConnectionConfig(user.getAwsCloudInfo().getConfigName());
 
         return "삭제 완료";
+    }
+
+    @Transactional
+    public String conAZURE(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        // azure 클라우드 드라이버 생성
+        AzureCloudDriverDTO azureCloudDriverDTO = new AzureCloudDriverDTO(
+            user.getAzureCloudInfo().getDriverName(), user.getAzureCloudInfo().getProviderName(),
+            user.getAwsCloudInfo().getDriverLibFileName());
+
+        externalApiService.postToSpiderAZUREDriver(azureCloudDriverDTO);
+
+        //azure 클라우드 크리덴셜 생성
+
+        KeyValueInfo azureAccess = new KeyValueInfo(
+            user.getAzureCloudInfo().getClientIdkey(),
+            user.getAzureCloudInfo().getClientIdValue()
+        );
+
+        KeyValueInfo azureSecret = new KeyValueInfo(
+            user.getAzureCloudInfo().getClientSecretKey(),
+            user.getAzureCloudInfo().getClientSecretValue()
+        );
+
+        List<KeyValueInfo> keyValueInfoList = Arrays.asList(azureAccess, azureSecret);
+
+        AzureCredentialDTO azureCredentialDTO = new AzureCredentialDTO(user.getAzureCloudInfo().getCredentialName(),
+            user.getAzureCloudInfo().getProviderName(),keyValueInfoList);
+
+        externalApiService.postToSpiderAzureCredential(azureCredentialDTO);
+
+        //azure 클라우드 리전등록
+
+        KeyValueInfo azureRegion = new KeyValueInfo(
+            user.getAzureCloudInfo().getRegionKey(),
+            user.getAzureCloudInfo().getRegionValue()
+        );
+
+        KeyValueInfo azureZone = new KeyValueInfo(
+            user.getAzureCloudInfo().getClientSecretKey(),
+            user.getAzureCloudInfo().getClientSecretValue()
+        );
+
+        List<KeyValueInfo> keyValueRegionInfoList = Arrays.asList(azureRegion, azureZone);
+
+        AzureRegionDTO azureRegionDTO = new AzureRegionDTO(user.getAzureCloudInfo().getRegionName(),
+            user.getAzureCloudInfo().getProviderName(),
+            keyValueRegionInfoList);
+
+        externalApiService.postToSpiderAzureRegion(azureRegionDTO);
+
+        //azure 커넥트 연결
+
+        AzureConfigDTO azureConfigDTO = new AzureConfigDTO(user.getAzureCloudInfo().getConfigName(),
+            user.getAzureCloudInfo().getProviderName(),
+            user.getAzureCloudInfo().getDriverName(), user.getAzureCloudInfo().getCredentialName(),
+            user.getAzureCloudInfo().getRegionName());
+
+        externalApiService.postToSpiderAzureConfig(azureConfigDTO);
+
+        return "연결 성공";
+    }
+
+    @Transactional
+    public String deleteconAzure(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+
+        // 드라이버 삭제
+        externalApiService.deleteSpiderDriver(user.getAzureCloudInfo().getDriverName());
+        // 크리덴셜 삭제
+        externalApiService.deleteSpiderCredential(user.getAzureCloudInfo().getCredentialName());
+        // 리즌 삭제
+        externalApiService.deleteSpiderRegion(user.getAzureCloudInfo().getRegionName());
+        // 커넥션 삭제
+        externalApiService.deleteSpiderConnectionConfig(user.getAzureCloudInfo().getConfigName());
+
+        return "삭제 성공";
     }
 
 

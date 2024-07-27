@@ -50,25 +50,11 @@ public class UserController {
         return ResponseEntity.ok(awsInfo);
     }
 
-    @PostMapping("/cloud/azure")
-    public ResponseEntity<AzureInfoResponse> createAzureInfo(@Valid @RequestBody AzureInfoRequest azureInfoRequest){
-        log.info("azure info post");
-        AzureInfoResponse azureInfo = userService.createAzureInfo(azureInfoRequest);
-        return ResponseEntity.ok(azureInfo);
-    }
-
     @GetMapping("/cloud/aws/{id}")
     public ResponseEntity<AWSInfoResponse> getAWSInfo(@PathVariable("id") Long id){
         log.info("aws info get");
         AWSInfoResponse awsInfo = userService.getAWSInfo(id);
         return ResponseEntity.ok(awsInfo);
-    }
-
-    @GetMapping("/cloud/azure/{id}")
-    public ResponseEntity<AzureInfoResponse> getAzureInfo(@PathVariable("id") Long id){
-        log.info("azure info get");
-        AzureInfoResponse azureInfo = userService.getAzureInfo(id);
-        return ResponseEntity.ok(azureInfo);
     }
 
     @DeleteMapping("/cloud/aws/{id}")
@@ -78,19 +64,33 @@ public class UserController {
         return ResponseEntity.ok(s);
     }
 
-    @DeleteMapping("/cloud/azure/{id}")
-    public ResponseEntity<String> deleteAzureInfo(@PathVariable("id") Long id){
-        log.info("azure info delete");
-        String s = userService.deleteAzureInfo(id);
-        return ResponseEntity.ok(s);
-    }
-
     @PutMapping("/cloud/aws/{id}")
     public ResponseEntity<AWSInfoResponse> changeAWSInfo(@PathVariable("id") Long id,
         @RequestBody AWSInfoRequest awsInfoRequest){
         log.info("aws info change");
         AWSInfoResponse awsInfoResponse = userService.changeAWSInfo(id, awsInfoRequest);
         return ResponseEntity.ok(awsInfoResponse);
+    }
+
+    @GetMapping("/cloud/azure/{id}")
+    public ResponseEntity<AzureInfoResponse> getAzureInfo(@PathVariable("id") Long id){
+        log.info("azure info get");
+        AzureInfoResponse azureInfo = userService.getAzureInfo(id);
+        return ResponseEntity.ok(azureInfo);
+    }
+
+    @PostMapping("/cloud/azure")
+    public ResponseEntity<AzureInfoResponse> createAzureInfo(@Valid @RequestBody AzureInfoRequest azureInfoRequest){
+        log.info("azure info post");
+        AzureInfoResponse azureInfo = userService.createAzureInfo(azureInfoRequest);
+        return ResponseEntity.ok(azureInfo);
+    }
+
+    @DeleteMapping("/cloud/azure/{id}")
+    public ResponseEntity<String> deleteAzureInfo(@PathVariable("id") Long id){
+        log.info("azure info delete");
+        String s = userService.deleteAzureInfo(id);
+        return ResponseEntity.ok(s);
     }
 
     @PutMapping("/cloud/azure/{id}")

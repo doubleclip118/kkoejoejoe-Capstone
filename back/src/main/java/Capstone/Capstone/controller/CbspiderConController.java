@@ -30,4 +30,16 @@ public class CbspiderConController {
         String s = cbspiderConService.deleteconAWS(id);
         return ResponseEntity.ok(s);
     }
+
+    @PostMapping("/azure/{id}")
+    public ResponseEntity<String> conAzure(@PathVariable("id")Long id){
+        String s = cbspiderConService.conAZURE(id);
+        return ResponseEntity.ok(s);
+    }
+
+    @DeleteMapping("/azure/{id}")
+    public ResponseEntity<String> deleteconAzure(@PathVariable("id")Long id){
+        String s = cbspiderConService.deleteconAzure(id);
+        return ResponseEntity.ok(s);
+    }
 }
