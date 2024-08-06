@@ -6,23 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateVPCResponseDTO {
+public class CreateSecurityGroupResponseDTO {
 
-    @NotEmpty
     private IId IId;
 
-    @NotEmpty
-    private String IPv4_CIDR;
+    private VpcIID VpcIID;
 
-    @NotEmpty
-    private List<SubnetInfo> SubnetInfoList;
+    private List<SecurityRule> SecurityRules;
 
     private List<Tag> TagList;
     private List<KeyValue> KeyValueList;
@@ -33,7 +29,6 @@ public class CreateVPCResponseDTO {
     @AllArgsConstructor
     public static class IId {
         private String NameId;
-
         private String SystemId;
     }
 
@@ -41,15 +36,23 @@ public class CreateVPCResponseDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SubnetInfo {
-        private IId IId;
+    public static class VpcIID {
+        private String NameId;
+        private String SystemId;
+    }
 
-        private String Zone;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SecurityRule {
+        private String Direction;
 
-        private String IPv4_CIDR;
+        private String IPProtocol;
 
-        private List<Tag> TagList;
-        private List<KeyValue> KeyValueList;
+        private String FromPort;
+        private String ToPort;
+        private String CIDR;
     }
 
     @Getter
@@ -67,7 +70,6 @@ public class CreateVPCResponseDTO {
     @AllArgsConstructor
     public static class KeyValue {
         private String Key;
-
         private String Value;
     }
 }
