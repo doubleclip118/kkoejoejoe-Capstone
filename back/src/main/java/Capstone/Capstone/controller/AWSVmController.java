@@ -25,7 +25,7 @@ public class AWSVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoDTO> getVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
+    public ResponseEntity<VmInfoDTO> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
         VmInfoDTO awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
 
         return ResponseEntity.ok(awsVmInfo);

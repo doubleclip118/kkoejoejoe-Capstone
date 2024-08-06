@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ExternalApiService {
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://54.180.246.122:1024";
+    private final String baseUrl = "http://43.201.54.192:1024";
 
     public ExternalApiService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
