@@ -34,7 +34,7 @@ public class AWSVmInfoService {
     }
 
     @Transactional
-    public VmInfoDTO createAWSVmInfo(VmInfoDTO vmInfoDTO) {
+    public VmInfoResponse createAWSVmInfo(VmInfoDTO vmInfoDTO) {
         User user = userRepository.findById(vmInfoDTO.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
@@ -106,9 +106,10 @@ public class AWSVmInfoService {
         return new VmcreateResponse(vmInfo.getUserInfo().getId(), vmInfo.getId(), vmInfo.getSecretkey(), vmInfo.getIp());
     }
 
-    private VmInfoDTO convertToVmInfoDTO(AWSVmInfo awsVmInfo) {
-        VmInfoDTO dto = new VmInfoDTO();
+    private VmInfoResponse convertToVmInfoDTO(AWSVmInfo awsVmInfo) {
+        VmInfoResponse dto = new VmInfoResponse();
         dto.setUserId(awsVmInfo.getUserInfo().getId());
+        dto.setVmId(awsVmInfo.getId());
         dto.setConnectionName(awsVmInfo.getConnectionName());
         dto.setVmName(awsVmInfo.getVmName());
         dto.setVpcName(awsVmInfo.getVpcName());

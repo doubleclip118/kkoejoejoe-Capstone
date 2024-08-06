@@ -2,6 +2,7 @@ package Capstone.Capstone.controller;
 
 
 import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,8 @@ public class AWSVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoDTO> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
-        VmInfoDTO awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
+    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
+        VmInfoResponse awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
 
         return ResponseEntity.ok(awsVmInfo);
     }

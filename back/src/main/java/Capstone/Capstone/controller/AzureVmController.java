@@ -2,6 +2,7 @@ package Capstone.Capstone.controller;
 
 
 import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
 import Capstone.Capstone.service.AzureVmInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,9 @@ public class AzureVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoDTO> getVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
-        VmInfoDTO awsVmInfo = azureVmInfoService.createAzureVmInfo(vmInfoDTO);
-        return ResponseEntity.ok(awsVmInfo);
+    public ResponseEntity<VmInfoResponse> getVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
+        VmInfoResponse azureVmInfo = azureVmInfoService.createAzureVmInfo(vmInfoDTO);
+        return ResponseEntity.ok(azureVmInfo);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteInfo(@PathVariable("id")Long vmid){

@@ -2,6 +2,7 @@ package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.domain.AzureVmInfo;
 import Capstone.Capstone.domain.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
@@ -31,7 +32,7 @@ public class AzureVmInfoService {
     }
 
     @Transactional
-    public VmInfoDTO createAzureVmInfo(VmInfoDTO vmInfoDTO) {
+    public VmInfoResponse createAzureVmInfo(VmInfoDTO vmInfoDTO) {
         User user = userRepository.findById(vmInfoDTO.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
@@ -78,9 +79,10 @@ public class AzureVmInfoService {
         return "삭제 완료";
     }
 
-    private VmInfoDTO convertToVmInfoDTO(AzureVmInfo azureVmInfo) {
-        VmInfoDTO dto = new VmInfoDTO();
+    private VmInfoResponse convertToVmInfoDTO(AzureVmInfo azureVmInfo) {
+        VmInfoResponse dto = new VmInfoResponse();
         dto.setUserId(azureVmInfo.getUserInfo().getId());
+        dto.setVmId(azureVmInfo.getId());
         dto.setConnectionName(azureVmInfo.getConnectionName());
         dto.setVmName(azureVmInfo.getVmName());
         dto.setVpcName(azureVmInfo.getVpcName());
