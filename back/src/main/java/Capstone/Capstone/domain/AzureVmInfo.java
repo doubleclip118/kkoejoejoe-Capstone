@@ -49,7 +49,7 @@ public class AzureVmInfo {
     private String subnetName;
 
     @Column(name = "subnet_ipv4_cidr")
-    private String subnetIPv4_CIDR;
+    private String subnetIPv4CIDR;
 
     @Column(name = "security_group_name")
     private String securityGroupName;
@@ -95,4 +95,25 @@ public class AzureVmInfo {
         private String direction;
     }
 
+    public AzureVmInfo(User userInfo, String connectionName, String vmName, String vpcName,
+        String vpcIPv4CIDR, String subnetName, String subnetIPv4CIDR, String securityGroupName,
+        List<AWSVmInfo.SecurityGroupRule> securityGroupRules, String keypairName, String imageName,
+        String vmSpec, String regionName, String zoneName, String secretkey, String ip) {
+        this.userInfo = userInfo;
+        this.connectionName = connectionName;
+        this.vmName = vmName;
+        this.vpcName = vpcName;
+        this.vpcIPv4CIDR = vpcIPv4CIDR;
+        this.subnetName = subnetName;
+        this.subnetIPv4CIDR = subnetIPv4CIDR;
+        this.securityGroupName = securityGroupName;
+        this.securityGroupRules = securityGroupRules;
+        this.keypairName = keypairName;
+        this.imageName = imageName;
+        this.vmSpec = vmSpec;
+        this.regionName = regionName;
+        this.zoneName = zoneName;
+        this.secretkey = secretkey;
+        this.ip = ip;
+    }
 }
