@@ -37,8 +37,16 @@ public class User {
     private AzureCloudInfo azureCloudInfo;
 
     @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "aws_vm_info_id")
+    private AWSVmInfo awsVmInfo;
+
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "aws_cloud_info_id")
     private AWSCloudInfo awsCloudInfo;
+
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "azure_vm_info_id")
+    private AzureVmInfo azureVmInfo;
 
 
     public UserResponse UserconvertToDTO(User user) {
