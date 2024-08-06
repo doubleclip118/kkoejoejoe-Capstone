@@ -142,11 +142,11 @@ public class AWSVmInfoService {
     private CreateVPCRequestDTO prepareVPCRequest(AWSVmInfo vmInfo) {
         CreateVPCRequestDTO.ReqInfo reqInfo = new CreateVPCRequestDTO.ReqInfo();
         reqInfo.setName(vmInfo.getVpcName());
-        reqInfo.setIpv4Cidr(vmInfo.getVpcIPv4CIDR());
+        reqInfo.setIPv4CIDR(vmInfo.getVpcIPv4CIDR());
 
         CreateVPCRequestDTO.SubnetInfo subnetInfo = new CreateVPCRequestDTO.SubnetInfo();
         subnetInfo.setName(vmInfo.getSubnetName());
-        subnetInfo.setIpv4Cidr(vmInfo.getSubnetIPv4CIDR());
+        subnetInfo.setIPv4CIDR(vmInfo.getSubnetIPv4CIDR());
 
         List<CreateVPCRequestDTO.SubnetInfo> subnetInfoList = new ArrayList<>();
         subnetInfoList.add(subnetInfo);

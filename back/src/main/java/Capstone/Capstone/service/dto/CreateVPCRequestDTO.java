@@ -33,7 +33,7 @@ public class CreateVPCRequestDTO {
 
         @NotEmpty
         @JsonProperty("IPv4_CIDR")
-        private String IPv4_CIDR;
+        private String IPv4CIDR;
 
         @JsonProperty("SubnetInfoList")
         private List<SubnetInfo> SubnetInfoList;
@@ -50,7 +50,7 @@ public class CreateVPCRequestDTO {
 
         @NotEmpty
         @JsonProperty("IPv4_CIDR")
-        private String IPv4_CIDR;
+        private String IPv4CIDR;
     }
 
 }
