@@ -4,6 +4,7 @@ package Capstone.Capstone.controller;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmResponse;
+import Capstone.Capstone.controller.dto.VmcreateResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,6 @@ public class AWSVmController {
     @PostMapping()
     public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
         VmInfoResponse awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
-
         return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")
@@ -39,14 +39,15 @@ public class AWSVmController {
     }
 
     @PostMapping("/con/{id}")
-    public ResponseEntity<VmResponse> createVm(@PathVariable("id")Long id){
-        awsVmInfoService.createVm(id);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<VmcreateResponse> createVm(@PathVariable("id")Long id){
+        VmcreateResponse vm = awsVmInfoService.createVm(id);
+        log.info("컨트롤러로 들어옴");
+        return ResponseEntity.ok(vm);
     }
 
     @DeleteMapping("/con/{id}")
-    public ResponseEntity<VmResponse> deleteVm(@PathVariable("id")Long id){
+    public ResponseEntity<String> deleteVm(@PathVariable("id")Long id){
         awsVmInfoService.createVm(id);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok("성공");
     }
 }
