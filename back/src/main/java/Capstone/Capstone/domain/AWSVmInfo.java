@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -56,9 +58,9 @@ public class AWSVmInfo {
     @Column(name = "security_group_name")
     private String securityGroupName;
 
-    @ElementCollection
-    @CollectionTable(name = "security_group_rules", joinColumns = @JoinColumn(name = "vm_configuration_id"))
+    @OneToMany(mappedBy = "awsVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SecurityGroupRule> securityGroupRules = new ArrayList<>();
+
 
     @Column(name = "keypair_name")
     private String keypairName;
@@ -82,24 +84,7 @@ public class AWSVmInfo {
     private String ip;
 
 
-    @Embeddable
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class SecurityGroupRule {
-        @Column(name = "from_port")
-        private String fromPort;
 
-        @Column(name = "to_port")
-        private String toPort;
-
-        @Column(name = "ip_protocol")
-        private String ipProtocol;
-
-        @Column(name = "direction")
-        private String direction;
-    }
 
     public AWSVmInfo(User userInfo, String connectionName, String vmName, String vpcName,
         String vpcIPv4CIDR, String subnetName, String subnetIPv4CIDR, String securityGroupName,
@@ -122,5 +107,10 @@ public class AWSVmInfo {
         this.zoneName = zoneName;
         this.secretkey = secretkey;
         this.ip = ip;
+    }
+
+    public void addSecurityGroupRule(SecurityGroupRule rule) {
+        securityGroupRules.add(rule);
+        rule.setAwsVmInfo(this);
     }
 }

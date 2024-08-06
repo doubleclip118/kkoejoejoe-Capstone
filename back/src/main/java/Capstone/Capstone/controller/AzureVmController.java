@@ -25,12 +25,12 @@ public class AzureVmController {
 
     @PostMapping()
     public ResponseEntity<VmInfoDTO> getVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
-        VmInfoDTO awsVmInfo = azureVmInfoService.createAWSVmInfo(vmInfoDTO);
+        VmInfoDTO awsVmInfo = azureVmInfoService.createAzureVmInfo(vmInfoDTO);
         return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteInfo(@RequestParam("id")Long vmid){
-        String vmInfoDTO = azureVmInfoService.deleteAWSVmInfo(vmid);
+        String vmInfoDTO = azureVmInfoService.deleteAzureVmInfo(vmid);
         return ResponseEntity.ok(vmInfoDTO);
     }
 }

@@ -2,42 +2,40 @@ package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
-import Capstone.Capstone.domain.AWSVmInfo;
-import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
 import Capstone.Capstone.domain.AzureVmInfo;
+import Capstone.Capstone.domain.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
-import Capstone.Capstone.repository.AWSVmInfoRepository;
-import Capstone.Capstone.repository.AzureCloudInfoRepository;
 import Capstone.Capstone.repository.AzureVmInfoRepository;
+import Capstone.Capstone.repository.SecurityGroupRuleRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.utils.error.UserNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AzureVmInfoService {
     private final AzureVmInfoRepository azureVmInfoRepository;
     private final UserRepository userRepository;
+    private final SecurityGroupRuleRepository securityGroupRuleRepository;
 
     public AzureVmInfoService(AzureVmInfoRepository azureVmInfoRepository,
-        UserRepository userRepository) {
+        UserRepository userRepository,
+        SecurityGroupRuleRepository securityGroupRuleRepository) {
         this.azureVmInfoRepository = azureVmInfoRepository;
         this.userRepository = userRepository;
+        this.securityGroupRuleRepository = securityGroupRuleRepository;
     }
 
+    @Transactional
+    public VmInfoDTO createAzureVmInfo(VmInfoDTO vmInfoDTO) {
+        User user = userRepository.findById(vmInfoDTO.getUserId())
+            .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
-
-    public VmInfoDTO createAWSVmInfo(VmInfoDTO vmInfoDTO) {
-        User user = userRepository.findById(vmInfoDTO.getUserId()).orElseThrow(
-            () -> new UserNotFoundException("User Not Found")
-        );
-
-        List<SecurityGroupRule> securityGroupRules = vmInfoDTO.getSecurityGroupRules().stream()
-            .map(this::convertToSecurityGroupRule)
-            .collect(Collectors.toList());
-
-        AzureVmInfo awsVmInfo = new AzureVmInfo(
+        AzureVmInfo azureVmInfo = new AzureVmInfo(
             user,
             vmInfoDTO.getConnectionName(),
             vmInfoDTO.getVmName(),
@@ -46,53 +44,57 @@ public class AzureVmInfoService {
             vmInfoDTO.getSubnetName(),
             vmInfoDTO.getSubnetIPv4Cidr(),
             vmInfoDTO.getSecurityGroupName(),
-            securityGroupRules,
+            new ArrayList<>(),  // SecurityGroupRules will be added separately
             vmInfoDTO.getKeypairName(),
             vmInfoDTO.getImageName(),
             vmInfoDTO.getVmSpec(),
             vmInfoDTO.getRegionName(),
             vmInfoDTO.getZoneName(),
-            null,  // secretkey는 DTO에 없으므로 null로 설정
-            null   // ip도 DTO에 없으므로 null로 설정
+            null,
+            null
         );
 
-        AzureVmInfo save = azureVmInfoRepository.save(awsVmInfo);
+        AzureVmInfo savedAzureVmInfo = azureVmInfoRepository.save(azureVmInfo);
 
-        // 저장된 엔티티를 다시 DTO로 변환하여 반환
-        return convertToVmInfoDTO(save);
+        for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
+            SecurityGroupRule rule = new SecurityGroupRule(
+                null,
+                savedAzureVmInfo,
+                ruleDTO.getFromPort(),
+                ruleDTO.getToPort(),
+                ruleDTO.getIpProtocol(),
+                ruleDTO.getDirection()
+            );
+            securityGroupRuleRepository.save(rule);
+            savedAzureVmInfo.addSecurityGroupRule(rule);
+        }
+
+        return convertToVmInfoDTO(savedAzureVmInfo);
     }
-    public String deleteAWSVmInfo(Long id){
-        azureVmInfoRepository.deleteById(id);
 
+    @Transactional
+    public String deleteAzureVmInfo(Long id) {
+        azureVmInfoRepository.deleteById(id);
         return "삭제 완료";
     }
 
-    private SecurityGroupRule convertToSecurityGroupRule(SecurityGroupRuleDTO dto) {
-        SecurityGroupRule rule = new SecurityGroupRule();
-        rule.setFromPort(dto.getFromPort());
-        rule.setToPort(dto.getToPort());
-        rule.setIpProtocol(dto.getIpProtocol());
-        rule.setDirection(dto.getDirection());
-        return rule;
-    }
-
-    private VmInfoDTO convertToVmInfoDTO(AzureVmInfo awsVmInfo) {
+    private VmInfoDTO convertToVmInfoDTO(AzureVmInfo azureVmInfo) {
         VmInfoDTO dto = new VmInfoDTO();
-        dto.setUserId(awsVmInfo.getUserInfo().getId());
-        dto.setConnectionName(awsVmInfo.getConnectionName());
-        dto.setVmName(awsVmInfo.getVmName());
-        dto.setVpcName(awsVmInfo.getVpcName());
-        dto.setVpcIPv4Cidr(awsVmInfo.getVpcIPv4CIDR());
-        dto.setSubnetName(awsVmInfo.getSubnetName());
-        dto.setSubnetIPv4Cidr(awsVmInfo.getSubnetIPv4CIDR());
-        dto.setSecurityGroupName(awsVmInfo.getSecurityGroupName());
-        dto.setKeypairName(awsVmInfo.getKeypairName());
-        dto.setImageName(awsVmInfo.getImageName());
-        dto.setVmSpec(awsVmInfo.getVmSpec());
-        dto.setRegionName(awsVmInfo.getRegionName());
-        dto.setZoneName(awsVmInfo.getZoneName());
+        dto.setUserId(azureVmInfo.getUserInfo().getId());
+        dto.setConnectionName(azureVmInfo.getConnectionName());
+        dto.setVmName(azureVmInfo.getVmName());
+        dto.setVpcName(azureVmInfo.getVpcName());
+        dto.setVpcIPv4Cidr(azureVmInfo.getVpcIPv4CIDR());
+        dto.setSubnetName(azureVmInfo.getSubnetName());
+        dto.setSubnetIPv4Cidr(azureVmInfo.getSubnetIPv4CIDR());
+        dto.setSecurityGroupName(azureVmInfo.getSecurityGroupName());
+        dto.setKeypairName(azureVmInfo.getKeypairName());
+        dto.setImageName(azureVmInfo.getImageName());
+        dto.setVmSpec(azureVmInfo.getVmSpec());
+        dto.setRegionName(azureVmInfo.getRegionName());
+        dto.setZoneName(azureVmInfo.getZoneName());
 
-        List<SecurityGroupRuleDTO> ruleDTOs = awsVmInfo.getSecurityGroupRules().stream()
+        List<SecurityGroupRuleDTO> ruleDTOs = azureVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)
             .collect(Collectors.toList());
         dto.setSecurityGroupRules(ruleDTOs);
@@ -108,6 +110,4 @@ public class AzureVmInfoService {
         dto.setDirection(rule.getDirection());
         return dto;
     }
-
-
 }

@@ -1,51 +1,42 @@
 package Capstone.Capstone.service;
 
-import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
-import Capstone.Capstone.controller.dto.VmInfoDTO;
-import Capstone.Capstone.controller.dto.VmResponse;
-import Capstone.Capstone.controller.dto.VmcreateResponse;
+import Capstone.Capstone.controller.dto.*;
 import Capstone.Capstone.domain.AWSVmInfo;
-import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
+import Capstone.Capstone.domain.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.AWSVmInfoRepository;
+import Capstone.Capstone.repository.SecurityGroupRuleRepository;
 import Capstone.Capstone.repository.UserRepository;
-import Capstone.Capstone.service.dto.CreateKeyPairRequestDTO;
-import Capstone.Capstone.service.dto.CreateKeyPairResponseDTO;
-import Capstone.Capstone.service.dto.CreateSecurityGroupRequestDTO;
-import Capstone.Capstone.service.dto.CreateSecurityGroupResponseDTO;
-import Capstone.Capstone.service.dto.CreateVMRequestDTO;
-import Capstone.Capstone.service.dto.CreateVMResponseDTO;
-import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
+import Capstone.Capstone.service.dto.*;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.VmInfoNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AWSVmInfoService {
     private final AWSVmInfoRepository awsVmInfoRepository;
     private final UserRepository userRepository;
-
+    private final SecurityGroupRuleRepository securityGroupRuleRepository;
     private final ExternalApiService externalApiService;
 
     public AWSVmInfoService(AWSVmInfoRepository awsVmInfoRepository, UserRepository userRepository,
+        SecurityGroupRuleRepository securityGroupRuleRepository,
         ExternalApiService externalApiService) {
         this.awsVmInfoRepository = awsVmInfoRepository;
         this.userRepository = userRepository;
+        this.securityGroupRuleRepository = securityGroupRuleRepository;
         this.externalApiService = externalApiService;
     }
 
+    @Transactional
     public VmInfoDTO createAWSVmInfo(VmInfoDTO vmInfoDTO) {
-        User user = userRepository.findById(vmInfoDTO.getUserId()).orElseThrow(
-            () -> new UserNotFoundException("User Not Found")
-        );
-
-        List<SecurityGroupRule> securityGroupRules = vmInfoDTO.getSecurityGroupRules().stream()
-            .map(this::convertToSecurityGroupRule)
-            .collect(Collectors.toList());
+        User user = userRepository.findById(vmInfoDTO.getUserId())
+            .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         AWSVmInfo awsVmInfo = new AWSVmInfo(
             user,
@@ -56,68 +47,63 @@ public class AWSVmInfoService {
             vmInfoDTO.getSubnetName(),
             vmInfoDTO.getSubnetIPv4Cidr(),
             vmInfoDTO.getSecurityGroupName(),
-            securityGroupRules,
+            new ArrayList<>(),  // SecurityGroupRules will be added separately
             vmInfoDTO.getKeypairName(),
             vmInfoDTO.getImageName(),
             vmInfoDTO.getVmSpec(),
             vmInfoDTO.getRegionName(),
             vmInfoDTO.getZoneName(),
-            null,  // secretkey는 DTO에 없으므로 null로 설정
-            null   // ip도 DTO에 없으므로 null로 설정
+            null,
+            null
         );
-
 
         AWSVmInfo savedAWSVmInfo = awsVmInfoRepository.save(awsVmInfo);
 
-        // 저장된 엔티티를 다시 DTO로 변환하여 반환
+        for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
+            SecurityGroupRule rule = new SecurityGroupRule(
+                null,
+                savedAWSVmInfo,
+                ruleDTO.getFromPort(),
+                ruleDTO.getToPort(),
+                ruleDTO.getIpProtocol(),
+                ruleDTO.getDirection()
+            );
+            securityGroupRuleRepository.save(rule);
+            savedAWSVmInfo.addSecurityGroupRule(rule);
+        }
+
         return convertToVmInfoDTO(savedAWSVmInfo);
     }
 
-    public String deleteAWSVmInfo(Long id){
+    @Transactional
+    public String deleteAWSVmInfo(Long id) {
         awsVmInfoRepository.deleteById(id);
         return "삭제 완료";
     }
+
     @Transactional
-    public VmcreateResponse createVm(Long id){
-        AWSVmInfo vmInfo = awsVmInfoRepository.findById(id).orElseThrow(
-            () -> new VmInfoNotFoundException("VM Not Found")
-        );
+    public VmcreateResponse createVm(Long id) {
+        AWSVmInfo vmInfo = awsVmInfoRepository.findById(id)
+            .orElseThrow(() -> new VmInfoNotFoundException("VM Not Found"));
 
-        // VPC 생성 요청 DTO 준비
         CreateVPCRequestDTO createVPCRequestDTO = prepareVPCRequest(vmInfo);
-
         externalApiService.createVPC(createVPCRequestDTO);
 
-        // 보안 그룹 생성 요청 DTO 준비
         CreateSecurityGroupRequestDTO createSGRequestDTO = prepareSecurityGroupRequest(vmInfo, vmInfo.getVpcName());
-
-        // 보안 그룹 생성
         CreateSecurityGroupResponseDTO sgResponse = externalApiService.createSecurityGroup(createSGRequestDTO);
 
         CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
         CreateKeyPairResponseDTO keyPairResponse = externalApiService.createKeypair(createKeyPairRequestDTO);
 
-        // key db 저장
         vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
 
         CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo, vmInfo.getVpcName(), vmInfo.getSecurityGroupName(), vmInfo.getKeypairName());
         CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
 
-        // ip db 저장
         vmInfo.setIp(vmResponse.getPublicIP());
+        awsVmInfoRepository.save(vmInfo);
 
-        return new VmcreateResponse(vmInfo.getUserInfo().getId(),vmInfo.getId(),vmInfo.getSecretkey(),vmInfo.getIp());
-
-
-    }
-
-    private AWSVmInfo.SecurityGroupRule convertToSecurityGroupRule(SecurityGroupRuleDTO dto) {
-        AWSVmInfo.SecurityGroupRule rule = new AWSVmInfo.SecurityGroupRule();
-        rule.setFromPort(dto.getFromPort());
-        rule.setToPort(dto.getToPort());
-        rule.setIpProtocol(dto.getIpProtocol());
-        rule.setDirection(dto.getDirection());
-        return rule;
+        return new VmcreateResponse(vmInfo.getUserInfo().getId(), vmInfo.getId(), vmInfo.getSecretkey(), vmInfo.getIp());
     }
 
     private VmInfoDTO convertToVmInfoDTO(AWSVmInfo awsVmInfo) {
@@ -144,7 +130,7 @@ public class AWSVmInfoService {
         return dto;
     }
 
-    private SecurityGroupRuleDTO convertToSecurityGroupRuleDTO(AWSVmInfo.SecurityGroupRule rule) {
+    private SecurityGroupRuleDTO convertToSecurityGroupRuleDTO(SecurityGroupRule rule) {
         SecurityGroupRuleDTO dto = new SecurityGroupRuleDTO();
         dto.setFromPort(rule.getFromPort());
         dto.setToPort(rule.getToPort());
@@ -223,8 +209,4 @@ public class AWSVmInfoService {
 
         return createVMRequestDTO;
     }
-
-
-
-
 }

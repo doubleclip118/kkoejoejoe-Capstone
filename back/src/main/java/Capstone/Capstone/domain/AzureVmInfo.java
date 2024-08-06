@@ -1,6 +1,6 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +55,8 @@ public class AzureVmInfo {
     @Column(name = "security_group_name")
     private String securityGroupName;
 
-    @ElementCollection
-    @CollectionTable(name = "security_group_rules", joinColumns = @JoinColumn(name = "vm_configuration_id"))
-    private List<AWSVmInfo.SecurityGroupRule> securityGroupRules = new ArrayList<>();
+    @OneToMany(mappedBy = "awsVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Capstone.Capstone.domain.SecurityGroupRule> securityGroupRules = new ArrayList<>();
 
     @Column(name = "keypair_name")
     private String keypairName;
@@ -80,25 +80,11 @@ public class AzureVmInfo {
     private String ip;
 
 
-    @Embeddable
-    public static class SecurityGroupRule {
-        @Column(name = "from_port")
-        private String fromPort;
-
-        @Column(name = "to_port")
-        private String toPort;
-
-        @Column(name = "ip_protocol")
-        private String ipProtocol;
-
-        @Column(name = "direction")
-        private String direction;
-    }
-
     public AzureVmInfo(User userInfo, String connectionName, String vmName, String vpcName,
         String vpcIPv4CIDR, String subnetName, String subnetIPv4CIDR, String securityGroupName,
-        List<AWSVmInfo.SecurityGroupRule> securityGroupRules, String keypairName, String imageName,
-        String vmSpec, String regionName, String zoneName, String secretkey, String ip) {
+        List<SecurityGroupRule> securityGroupRules, String keypairName, String imageName,
+        String vmSpec,
+        String regionName, String zoneName, String secretkey, String ip) {
         this.userInfo = userInfo;
         this.connectionName = connectionName;
         this.vmName = vmName;
@@ -115,5 +101,10 @@ public class AzureVmInfo {
         this.zoneName = zoneName;
         this.secretkey = secretkey;
         this.ip = ip;
+    }
+
+    public void addSecurityGroupRule(SecurityGroupRule rule) {
+        securityGroupRules.add(rule);
+        rule.setAzureVmInfo(this);
     }
 }
