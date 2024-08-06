@@ -1,12 +1,16 @@
 package Capstone.Capstone.controller;
 
 
+import Capstone.Capstone.controller.dto.VmInfoDTO;
 import Capstone.Capstone.service.AWSVmInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +23,15 @@ public class AWSVmController {
         this.awsVmInfoService = awsVmInfoService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getVmInfo(){
-        return ResponseEntity.ok(null);
+    @PostMapping()
+    public ResponseEntity<VmInfoDTO> getVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
+        VmInfoDTO awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
+
+        return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteInfo(){
-        return ResponseEntity.ok(null);
+    public ResponseEntity<VmInfoDTO> deleteInfo(@RequestParam("id")Long vmid){
+        VmInfoDTO vmInfoDTO = awsVmInfoService.deleteAWSVmInfo(vmid);
+        return ResponseEntity.ok(vmInfoDTO);
     }
 }
