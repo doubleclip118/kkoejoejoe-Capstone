@@ -3,19 +3,26 @@ package Capstone.Capstone.service;
 import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
 import Capstone.Capstone.controller.dto.VmResponse;
+import Capstone.Capstone.controller.dto.VmcreateResponse;
 import Capstone.Capstone.domain.AWSVmInfo;
 import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.AWSVmInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
+import Capstone.Capstone.service.dto.CreateKeyPairRequestDTO;
+import Capstone.Capstone.service.dto.CreateKeyPairResponseDTO;
+import Capstone.Capstone.service.dto.CreateSecurityGroupRequestDTO;
+import Capstone.Capstone.service.dto.CreateSecurityGroupResponseDTO;
+import Capstone.Capstone.service.dto.CreateVMRequestDTO;
+import Capstone.Capstone.service.dto.CreateVMResponseDTO;
 import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
-import Capstone.Capstone.service.dto.CreateVPCResponseDTO;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.VmInfoNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AWSVmInfoService {
@@ -70,8 +77,8 @@ public class AWSVmInfoService {
         awsVmInfoRepository.deleteById(id);
         return "삭제 완료";
     }
-
-    public VmResponse createVm(Long id){
+    @Transactional
+    public VmcreateResponse createVm(Long id){
         AWSVmInfo vmInfo = awsVmInfoRepository.findById(id).orElseThrow(
             () -> new VmInfoNotFoundException("VM Not Found")
         );
@@ -81,11 +88,25 @@ public class AWSVmInfoService {
 
         externalApiService.createVPC(createVPCRequestDTO);
 
+        // 보안 그룹 생성 요청 DTO 준비
+        CreateSecurityGroupRequestDTO createSGRequestDTO = prepareSecurityGroupRequest(vmInfo, vmInfo.getVpcName());
 
+        // 보안 그룹 생성
+        CreateSecurityGroupResponseDTO sgResponse = externalApiService.createSecurityGroup(createSGRequestDTO);
 
+        CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
+        CreateKeyPairResponseDTO keyPairResponse = externalApiService.createKeypair(createKeyPairRequestDTO);
 
+        // key db 저장
+        vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
 
+        CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo, vmInfo.getVpcName(), vmInfo.getSecurityGroupName(), vmInfo.getKeypairName());
+        CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
 
+        // ip db 저장
+        vmInfo.setIp(vmResponse.getPublicIP());
+
+        return new VmcreateResponse(vmInfo.getUserInfo().getId(),vmInfo.getId(),vmInfo.getSecretkey(),vmInfo.getIp());
 
 
     }
@@ -150,6 +171,57 @@ public class AWSVmInfoService {
         createVPCRequestDTO.setReqInfo(reqInfo);
 
         return createVPCRequestDTO;
+    }
+
+    private CreateSecurityGroupRequestDTO prepareSecurityGroupRequest(AWSVmInfo vmInfo, String vpcName) {
+        CreateSecurityGroupRequestDTO.ReqInfo reqInfo = new CreateSecurityGroupRequestDTO.ReqInfo();
+        reqInfo.setName(vmInfo.getSecurityGroupName());
+        reqInfo.setVpcName(vpcName);
+
+        List<CreateSecurityGroupRequestDTO.SecurityRule> securityRules = vmInfo.getSecurityGroupRules().stream()
+            .map(rule -> new CreateSecurityGroupRequestDTO.SecurityRule(
+                rule.getFromPort(),
+                rule.getToPort(),
+                rule.getIpProtocol(),
+                rule.getDirection()
+            ))
+            .collect(Collectors.toList());
+
+        reqInfo.setSecurityRules(securityRules);
+
+        CreateSecurityGroupRequestDTO createSGRequestDTO = new CreateSecurityGroupRequestDTO();
+        createSGRequestDTO.setConnectionName(vmInfo.getConnectionName());
+        createSGRequestDTO.setReqInfo(reqInfo);
+
+        return createSGRequestDTO;
+    }
+
+    private CreateKeyPairRequestDTO prepareKeyPairRequest(AWSVmInfo vmInfo) {
+        CreateKeyPairRequestDTO.ReqInfo reqInfo = new CreateKeyPairRequestDTO.ReqInfo();
+        reqInfo.setName(vmInfo.getKeypairName());
+
+        CreateKeyPairRequestDTO createKeyPairRequestDTO = new CreateKeyPairRequestDTO();
+        createKeyPairRequestDTO.setConnectionName(vmInfo.getConnectionName());
+        createKeyPairRequestDTO.setReqInfo(reqInfo);
+
+        return createKeyPairRequestDTO;
+    }
+
+    private CreateVMRequestDTO prepareVMRequest(AWSVmInfo vmInfo, String vpcName, String securityGroupName, String keyPairName) {
+        CreateVMRequestDTO.ReqInfo reqInfo = new CreateVMRequestDTO.ReqInfo();
+        reqInfo.setName(vmInfo.getVmName());
+        reqInfo.setImageName(vmInfo.getImageName());
+        reqInfo.setVpcName(vpcName);
+        reqInfo.setSubnetName(vmInfo.getSubnetName());
+        reqInfo.setSecurityGroupNames(List.of(securityGroupName));
+        reqInfo.setVmSpecName(vmInfo.getVmSpec());
+        reqInfo.setKeyPairName(keyPairName);
+
+        CreateVMRequestDTO createVMRequestDTO = new CreateVMRequestDTO();
+        createVMRequestDTO.setConnectionName(vmInfo.getConnectionName());
+        createVMRequestDTO.setReqInfo(reqInfo);
+
+        return createVMRequestDTO;
     }
 
 

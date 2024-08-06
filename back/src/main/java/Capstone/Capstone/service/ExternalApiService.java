@@ -8,6 +8,12 @@ import Capstone.Capstone.service.dto.AzureCloudDriverDTO;
 import Capstone.Capstone.service.dto.AzureConfigDTO;
 import Capstone.Capstone.service.dto.AzureCredentialDTO;
 import Capstone.Capstone.service.dto.AzureRegionDTO;
+import Capstone.Capstone.service.dto.CreateKeyPairRequestDTO;
+import Capstone.Capstone.service.dto.CreateKeyPairResponseDTO;
+import Capstone.Capstone.service.dto.CreateSecurityGroupRequestDTO;
+import Capstone.Capstone.service.dto.CreateSecurityGroupResponseDTO;
+import Capstone.Capstone.service.dto.CreateVMRequestDTO;
+import Capstone.Capstone.service.dto.CreateVMResponseDTO;
 import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
 import Capstone.Capstone.service.dto.CreateVPCResponseDTO;
 import Capstone.Capstone.utils.error.CbSpiderServerException;
@@ -108,7 +114,8 @@ public class ExternalApiService {
         }
     }
 
-    public CreateSecurityGroupResponseDTO createSecurityGroup(CreateSecurityGroupRequestDTO createSecurityGroupRequestDTO) {
+    public CreateSecurityGroupResponseDTO createSecurityGroup(
+        CreateSecurityGroupRequestDTO createSecurityGroupRequestDTO) {
         String endpoint = "/spider/securitygroup";
         String fullUrl = baseUrl + endpoint;
 
