@@ -9,8 +9,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,17 +39,15 @@ public class User {
     @JoinColumn(name = "azure_cloud_info_id")
     private AzureCloudInfo azureCloudInfo;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "aws_vm_info_id")
-    private AWSVmInfo awsVmInfo;
+    @OneToMany(mappedBy = "user_tb", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AWSVmInfo> awsVmInfos = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "aws_cloud_info_id")
     private AWSCloudInfo awsCloudInfo;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "azure_vm_info_id")
-    private AzureVmInfo azureVmInfo;
+    @OneToMany(mappedBy = "user_tb", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AzureVmInfo> azureVmInfos = new ArrayList<>();
 
 
     public UserResponse UserconvertToDTO(User user) {
