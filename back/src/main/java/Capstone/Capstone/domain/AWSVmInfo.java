@@ -76,7 +76,7 @@ public class AWSVmInfo {
     @Column(name = "zone_name")
     private String zoneName;
 
-    @Column(name = "secret_key")
+    @Column(name = "secret_key", length = 2000)
     private String secretkey;
 
     @Column(name = "ip")

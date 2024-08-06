@@ -1,5 +1,6 @@
 package Capstone.Capstone.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,16 +13,25 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateKeyPairResponseDTO {
 
-    private IId IId;
+    @JsonProperty("IId")
+    private IId iId;
 
+    @JsonProperty("Fingerprint")
     private String fingerprint;
 
+    @JsonProperty("PublicKey")
     private String publicKey;
 
+    @JsonProperty("PrivateKey")
     private String privateKey;
 
-    private String vmUserID;
+    @JsonProperty("VMUserID")
+    private String vmUserId;
+
+    @JsonProperty("TagList")
     private List<Tag> tagList;
+
+    @JsonProperty("KeyValueList")
     private List<KeyValue> keyValueList;
 
     @Getter
@@ -29,8 +39,10 @@ public class CreateKeyPairResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class IId {
+        @JsonProperty("NameId")
         private String nameId;
 
+        @JsonProperty("SystemId")
         private String systemId;
     }
 
@@ -39,8 +51,10 @@ public class CreateKeyPairResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Tag {
+        @JsonProperty("Key")
         private String key;
 
+        @JsonProperty("Value")
         private String value;
     }
 
@@ -49,8 +63,10 @@ public class CreateKeyPairResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KeyValue {
+        @JsonProperty("Key")
         private String key;
 
+        @JsonProperty("Value")
         private String value;
     }
 }

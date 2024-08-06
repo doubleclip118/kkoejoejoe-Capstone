@@ -1,6 +1,6 @@
 package Capstone.Capstone.service.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,22 +14,31 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateSecurityGroupResponseDTO {
 
-    private IId IId;
+    @JsonProperty("IId")
+    private IId iId;
 
-    private VpcIID VpcIID;
+    @JsonProperty("VpcIID")
+    private VpcIID vpcIId;
 
-    private List<SecurityRule> SecurityRules;
+    @JsonProperty("SecurityRules")
+    private List<SecurityRule> securityRules;
 
-    private List<Tag> TagList;
-    private List<KeyValue> KeyValueList;
+    @JsonProperty("TagList")
+    private List<Tag> tagList;
+
+    @JsonProperty("KeyValueList")
+    private List<KeyValue> keyValueList;
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class IId {
-        private String NameId;
-        private String SystemId;
+        @JsonProperty("NameId")
+        private String nameId;
+
+        @JsonProperty("SystemId")
+        private String systemId;
     }
 
     @Getter
@@ -37,8 +46,11 @@ public class CreateSecurityGroupResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class VpcIID {
-        private String NameId;
-        private String SystemId;
+        @JsonProperty("NameId")
+        private String nameId;
+
+        @JsonProperty("SystemId")
+        private String systemId;
     }
 
     @Getter
@@ -46,13 +58,20 @@ public class CreateSecurityGroupResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SecurityRule {
-        private String Direction;
+        @JsonProperty("Direction")
+        private String direction;
 
-        private String IPProtocol;
+        @JsonProperty("IPProtocol")
+        private String ipProtocol;
 
-        private String FromPort;
-        private String ToPort;
-        private String CIDR;
+        @JsonProperty("FromPort")
+        private String fromPort;
+
+        @JsonProperty("ToPort")
+        private String toPort;
+
+        @JsonProperty("CIDR")
+        private String cidr;
     }
 
     @Getter
@@ -60,8 +79,11 @@ public class CreateSecurityGroupResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Tag {
-        private String Key;
-        private String Value;
+        @JsonProperty("Key")
+        private String key;
+
+        @JsonProperty("Value")
+        private String value;
     }
 
     @Getter
@@ -69,7 +91,10 @@ public class CreateSecurityGroupResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KeyValue {
-        private String Key;
-        private String Value;
+        @JsonProperty("Key")
+        private String key;
+
+        @JsonProperty("Value")
+        private String value;
     }
 }

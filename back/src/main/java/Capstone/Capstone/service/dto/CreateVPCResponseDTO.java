@@ -1,11 +1,11 @@
 package Capstone.Capstone.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 import java.util.List;
 
@@ -15,26 +15,34 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateVPCResponseDTO {
 
+    @JsonProperty("IId")
     @NotEmpty
-    private IId IId;
+    private IId iId;
 
+    @JsonProperty("IPv4_CIDR")
     @NotEmpty
-    private String IPv4_CIDR;
+    private String ipv4Cidr;
 
+    @JsonProperty("SubnetInfoList")
     @NotEmpty
-    private List<SubnetInfo> SubnetInfoList;
+    private List<SubnetInfo> subnetInfoList;
 
-    private List<Tag> TagList;
-    private List<KeyValue> KeyValueList;
+    @JsonProperty("TagList")
+    private List<Tag> tagList;
+
+    @JsonProperty("KeyValueList")
+    private List<KeyValue> keyValueList;
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class IId {
-        private String NameId;
+        @JsonProperty("NameId")
+        private String nameId;
 
-        private String SystemId;
+        @JsonProperty("SystemId")
+        private String systemId;
     }
 
     @Getter
@@ -42,14 +50,20 @@ public class CreateVPCResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SubnetInfo {
-        private IId IId;
+        @JsonProperty("IId")
+        private IId iId;
 
-        private String Zone;
+        @JsonProperty("Zone")
+        private String zone;
 
-        private String IPv4_CIDR;
+        @JsonProperty("IPv4_CIDR")
+        private String ipv4Cidr;
 
-        private List<Tag> TagList;
-        private List<KeyValue> KeyValueList;
+        @JsonProperty("TagList")
+        private List<Tag> tagList;
+
+        @JsonProperty("KeyValueList")
+        private List<KeyValue> keyValueList;
     }
 
     @Getter
@@ -57,8 +71,11 @@ public class CreateVPCResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Tag {
-        private String Key;
-        private String Value;
+        @JsonProperty("Key")
+        private String key;
+
+        @JsonProperty("Value")
+        private String value;
     }
 
     @Getter
@@ -66,8 +83,10 @@ public class CreateVPCResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KeyValue {
-        private String Key;
+        @JsonProperty("Key")
+        private String key;
 
-        private String Value;
+        @JsonProperty("Value")
+        private String value;
     }
 }
