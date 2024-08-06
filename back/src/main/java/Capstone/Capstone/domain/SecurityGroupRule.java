@@ -13,7 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SecurityGroupRule {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,18 +52,26 @@ public class SecurityGroupRule {
         }
     }
 
-    public SecurityGroupRule(Long id, AWSVmInfo awsVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
-        this.id = id;
-        this.awsVmInfo = awsVmInfo;
-        this.fromPort = fromPort;
-        this.toPort = toPort;
-        this.ipProtocol = ipProtocol;
-        this.direction = direction;
-    }
+//    public SecurityGroupRule(Long id, AWSVmInfo awsVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
+//        this.awsVmInfo = awsVmInfo;
+//        this.fromPort = fromPort;
+//        this.toPort = toPort;
+//        this.ipProtocol = ipProtocol;
+//        this.direction = direction;
+//    }
+//
+//    // Azure VM Info를 위한 생성자
+//    public SecurityGroupRule(Long id, AzureVmInfo azureVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
+//        this.azureVmInfo = azureVmInfo;
+//        this.fromPort = fromPort;
+//        this.toPort = toPort;
+//        this.ipProtocol = ipProtocol;
+//        this.direction = direction;
+//    }
 
-    // Azure VM Info를 위한 생성자
-    public SecurityGroupRule(Long id, AzureVmInfo azureVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
-        this.id = id;
+    public SecurityGroupRule(AWSVmInfo awsVmInfo, AzureVmInfo azureVmInfo, String fromPort,
+        String toPort, String ipProtocol, String direction) {
+        this.awsVmInfo = awsVmInfo;
         this.azureVmInfo = azureVmInfo;
         this.fromPort = fromPort;
         this.toPort = toPort;

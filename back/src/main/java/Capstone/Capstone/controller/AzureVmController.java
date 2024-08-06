@@ -7,6 +7,7 @@ import Capstone.Capstone.service.AzureVmInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ public class AzureVmController {
         return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteInfo(@RequestParam("id")Long vmid){
+    public ResponseEntity<String> deleteInfo(@PathVariable("id")Long vmid){
         String vmInfoDTO = azureVmInfoService.deleteAzureVmInfo(vmid);
         return ResponseEntity.ok(vmInfoDTO);
     }

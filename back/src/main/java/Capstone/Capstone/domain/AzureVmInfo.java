@@ -55,8 +55,8 @@ public class AzureVmInfo {
     @Column(name = "security_group_name")
     private String securityGroupName;
 
-    @OneToMany(mappedBy = "awsVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Capstone.Capstone.domain.SecurityGroupRule> securityGroupRules = new ArrayList<>();
+    @OneToMany(mappedBy = "azureVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SecurityGroupRule> securityGroupRules = new ArrayList<>();
 
     @Column(name = "keypair_name")
     private String keypairName;

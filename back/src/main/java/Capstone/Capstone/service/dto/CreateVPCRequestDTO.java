@@ -46,4 +46,12 @@ public class CreateVPCRequestDTO {
         @NotEmpty
         private String ipv4Cidr;
     }
+
+    @Override
+    public String toString() {
+        return "CreateVPCRequestDTO{" +
+            "connectionName='" + connectionName + '\'' +
+            ", reqInfo=" + reqInfo +
+            '}';
+    }
 }
