@@ -30,8 +30,8 @@ public class AWSVmController {
         return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<VmInfoDTO> deleteInfo(@RequestParam("id")Long vmid){
-        VmInfoDTO vmInfoDTO = awsVmInfoService.deleteAWSVmInfo(vmid);
+    public ResponseEntity<String> deleteInfo(@RequestParam("id")Long vmid){
+        String vmInfoDTO = awsVmInfoService.deleteAWSVmInfo(vmid);
         return ResponseEntity.ok(vmInfoDTO);
     }
 }

@@ -57,8 +57,10 @@ public class AWSVmInfoService {
         // 저장된 엔티티를 다시 DTO로 변환하여 반환
         return convertToVmInfoDTO(savedAWSVmInfo);
     }
-    public VmInfoDTO deleteAWSVmInfo(Long id){
+    public String deleteAWSVmInfo(Long id){
+        awsVmInfoRepository.deleteById(id);
 
+        return "삭제 완료";
     }
 
     private AWSVmInfo.SecurityGroupRule convertToSecurityGroupRule(SecurityGroupRuleDTO dto) {
