@@ -8,7 +8,11 @@ import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.AWSVmInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
+import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
+import Capstone.Capstone.service.dto.CreateVPCResponseDTO;
 import Capstone.Capstone.utils.error.UserNotFoundException;
+import Capstone.Capstone.utils.error.VmInfoNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -18,10 +22,13 @@ public class AWSVmInfoService {
     private final AWSVmInfoRepository awsVmInfoRepository;
     private final UserRepository userRepository;
 
-    public AWSVmInfoService(AWSVmInfoRepository awsVmInfoRepository,
-        UserRepository userRepository) {
+    private final ExternalApiService externalApiService;
+
+    public AWSVmInfoService(AWSVmInfoRepository awsVmInfoRepository, UserRepository userRepository,
+        ExternalApiService externalApiService) {
         this.awsVmInfoRepository = awsVmInfoRepository;
         this.userRepository = userRepository;
+        this.externalApiService = externalApiService;
     }
 
     public VmInfoDTO createAWSVmInfo(VmInfoDTO vmInfoDTO) {
@@ -61,14 +68,21 @@ public class AWSVmInfoService {
 
     public String deleteAWSVmInfo(Long id){
         awsVmInfoRepository.deleteById(id);
-
         return "삭제 완료";
     }
 
     public VmResponse createVm(Long id){
-        awsVmInfoRepository.findById(id).orElseThrow(
-            () -> new
+        AWSVmInfo vmInfo = awsVmInfoRepository.findById(id).orElseThrow(
+            () -> new VmInfoNotFoundException("VM Not Found")
         );
+
+        // VPC 생성 요청 DTO 준비
+        CreateVPCRequestDTO createVPCRequestDTO = prepareVPCRequest(vmInfo);
+
+        externalApiService.createVPC(createVPCRequestDTO);
+
+
+
 
 
 
@@ -114,6 +128,26 @@ public class AWSVmInfoService {
         dto.setIpProtocol(rule.getIpProtocol());
         dto.setDirection(rule.getDirection());
         return dto;
+    }
+
+    private CreateVPCRequestDTO prepareVPCRequest(AWSVmInfo vmInfo) {
+        CreateVPCRequestDTO.ReqInfo reqInfo = new CreateVPCRequestDTO.ReqInfo();
+        reqInfo.setName(vmInfo.getVpcName());
+        reqInfo.setIpv4Cidr(vmInfo.getVpcIPv4CIDR());
+
+        CreateVPCRequestDTO.SubnetInfo subnetInfo = new CreateVPCRequestDTO.SubnetInfo();
+        subnetInfo.setName(vmInfo.getSubnetName());
+        subnetInfo.setIpv4Cidr(vmInfo.getSubnetIPv4CIDR());
+
+        List<CreateVPCRequestDTO.SubnetInfo> subnetInfoList = new ArrayList<>();
+        subnetInfoList.add(subnetInfo);
+        reqInfo.setSubnetInfoList(subnetInfoList);
+
+        CreateVPCRequestDTO createVPCRequestDTO = new CreateVPCRequestDTO();
+        createVPCRequestDTO.setConnectionName(vmInfo.getConnectionName());
+        createVPCRequestDTO.setReqInfo(reqInfo);
+
+        return createVPCRequestDTO;
     }
 
 

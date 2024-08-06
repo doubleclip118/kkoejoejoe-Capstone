@@ -8,6 +8,8 @@ import Capstone.Capstone.service.dto.AzureCloudDriverDTO;
 import Capstone.Capstone.service.dto.AzureConfigDTO;
 import Capstone.Capstone.service.dto.AzureCredentialDTO;
 import Capstone.Capstone.service.dto.AzureRegionDTO;
+import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
+import Capstone.Capstone.service.dto.CreateVPCResponseDTO;
 import Capstone.Capstone.utils.error.CbSpiderServerException;
 import Capstone.Capstone.utils.error.CloudInfoIncorrectException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -82,6 +85,97 @@ public class ExternalApiService {
             throw new CbSpiderServerException("cbspider not working");
         }
     }
+    public CreateVPCResponseDTO createVPC(CreateVPCRequestDTO createVPCRequestDTO) {
+        String endpoint = "/spider/vpc";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CreateVPCRequestDTO> request = new HttpEntity<>(createVPCRequestDTO, headers);
+        try {
+            log.info("VPC 생성 요청 전송: {}", fullUrl);
+            return restTemplate.postForObject(fullUrl, request, CreateVPCResponseDTO.class);
+        } catch (HttpClientErrorException e) {
+            log.error("VPC 생성 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("VPC 생성 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("VPC 생성 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("VPC 생성 중 예상치 못한 오류 발생", e);
+        }
+    }
+
+    public CreateSecurityGroupResponseDTO createSecurityGroup(CreateSecurityGroupRequestDTO createSecurityGroupRequestDTO) {
+        String endpoint = "/spider/securitygroup";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CreateSecurityGroupRequestDTO> request = new HttpEntity<>(createSecurityGroupRequestDTO, headers);
+        try {
+            log.info("Security Group 생성 요청 전송: {}", fullUrl);
+            return restTemplate.postForObject(fullUrl, request, CreateSecurityGroupResponseDTO.class);
+        } catch (HttpClientErrorException e) {
+            log.error("Security Group 생성 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("Security Group 생성 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("Security Group 생성 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("Security Group 생성 중 예상치 못한 오류 발생", e);
+        }
+    }
+    public CreateKeyPairResponseDTO createKeypair(CreateKeyPairRequestDTO createKeyPairRequestDTO) {
+        String endpoint = "/spider/keypair";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CreateKeyPairRequestDTO> request = new HttpEntity<>(createKeyPairRequestDTO, headers);
+        try {
+            log.info("Key Pair 생성 요청 전송: {}", fullUrl);
+            return restTemplate.postForObject(fullUrl, request, CreateKeyPairResponseDTO.class);
+        } catch (HttpClientErrorException e) {
+            log.error("Key Pair 생성 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("Key Pair 생성 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("Key Pair 생성 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("Key Pair 생성 중 예상치 못한 오류 발생", e);
+        }
+    }
+    public CreateVMResponseDTO createVM(CreateVMRequestDTO createVMRequestDTO) {
+        String endpoint = "/spider/vm";
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CreateVMRequestDTO> request = new HttpEntity<>(createVMRequestDTO, headers);
+        try {
+            log.info("VM 생성 요청 전송: {}", fullUrl);
+            return restTemplate.postForObject(fullUrl, request, CreateVMResponseDTO.class);
+        } catch (HttpClientErrorException e) {
+            log.error("VM 생성 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("VM 생성 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("VM 생성 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("VM 생성 중 예상치 못한 오류 발생", e);
+        }
+    }
+
+
 
     public AWSRegionDTO postToSpiderAWSRegion(AWSRegionDTO awsRegionDTO) {
         String endpoint = "/spider/region";
