@@ -42,4 +42,10 @@ public class AWSVmController {
         awsVmInfoService.createVm(id);
         return ResponseEntity.ok(null);
     }
+
+    @DeleteMapping("/con/{id}")
+    public ResponseEntity<VmResponse> deleteVm(@PathVariable("id")Long id){
+        awsVmInfoService.createVm(id);
+        return ResponseEntity.ok(null);
+    }
 }

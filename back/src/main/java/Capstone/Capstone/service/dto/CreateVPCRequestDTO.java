@@ -1,11 +1,11 @@
 package Capstone.Capstone.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 import java.util.List;
 
@@ -14,12 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateVPCRequestDTO {
+    @NotEmpty
+    @JsonProperty("ConnectionName")
+    private String ConnectionName;
 
     @NotEmpty
-    private String connectionName;
-
-    @NotEmpty
-    private ReqInfo reqInfo;
+    @JsonProperty("ReqInfo")
+    private ReqInfo ReqInfo;
 
     @Getter
     @Setter
@@ -27,12 +28,15 @@ public class CreateVPCRequestDTO {
     @AllArgsConstructor
     public static class ReqInfo {
         @NotEmpty
-        private String name;
+        @JsonProperty("Name")
+        private String Name;
 
         @NotEmpty
-        private String ipv4Cidr;
+        @JsonProperty("IPv4_CIDR")
+        private String IPv4_CIDR;
 
-        private List<SubnetInfo> subnetInfoList;
+        @JsonProperty("SubnetInfoList")
+        private List<SubnetInfo> SubnetInfoList;
     }
 
     @Getter
@@ -41,17 +45,12 @@ public class CreateVPCRequestDTO {
     @AllArgsConstructor
     public static class SubnetInfo {
         @NotEmpty
-        private String name;
+        @JsonProperty("Name")
+        private String Name;
 
         @NotEmpty
-        private String ipv4Cidr;
+        @JsonProperty("IPv4_CIDR")
+        private String IPv4_CIDR;
     }
 
-    @Override
-    public String toString() {
-        return "CreateVPCRequestDTO{" +
-            "connectionName='" + connectionName + '\'' +
-            ", reqInfo=" + reqInfo +
-            '}';
-    }
 }
