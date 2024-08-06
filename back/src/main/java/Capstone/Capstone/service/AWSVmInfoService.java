@@ -2,6 +2,7 @@ package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmResponse;
 import Capstone.Capstone.domain.AWSVmInfo;
 import Capstone.Capstone.domain.AWSVmInfo.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
@@ -57,10 +58,20 @@ public class AWSVmInfoService {
         // 저장된 엔티티를 다시 DTO로 변환하여 반환
         return convertToVmInfoDTO(savedAWSVmInfo);
     }
+
     public String deleteAWSVmInfo(Long id){
         awsVmInfoRepository.deleteById(id);
 
         return "삭제 완료";
+    }
+
+    public VmResponse createVm(Long id){
+        awsVmInfoRepository.findById(id).orElseThrow(
+            () -> new
+        );
+
+
+
     }
 
     private AWSVmInfo.SecurityGroupRule convertToSecurityGroupRule(SecurityGroupRuleDTO dto) {
@@ -104,6 +115,8 @@ public class AWSVmInfoService {
         dto.setDirection(rule.getDirection());
         return dto;
     }
+
+
 
 
 }

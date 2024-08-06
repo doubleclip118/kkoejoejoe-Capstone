@@ -17,4 +17,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.azureCloudInfo WHERE u.id = :id")
     Optional<User> findByUserIdWithAzureCloudInfo(@Param("id") Long id);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.awsVmInfos WHERE u.id = :id")
+    Optional<User> findByUserIdWithVAndAwsVmInfos(@Param("id") Long id);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.azureVmInfos WHERE u.id = :id")
+    Optional<User> findByUserIdWithVAndAzureVmInfos(@Param("id") Long id);
 }

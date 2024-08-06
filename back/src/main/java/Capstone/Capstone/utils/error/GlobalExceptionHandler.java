@@ -36,7 +36,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleCloudInfoIncorrectException(CloudInfoIncorrectException ex,WebRequest request){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
-
+    @ExceptionHandler(VmInfoNotFoundException.class)
+    public ResponseEntity<?> handleVmInfoNotFoundException(VmInfoNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
 
 
 }

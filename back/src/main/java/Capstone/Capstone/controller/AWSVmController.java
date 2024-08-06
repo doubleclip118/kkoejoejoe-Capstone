@@ -2,6 +2,7 @@ package Capstone.Capstone.controller;
 
 
 import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,11 @@ public class AWSVmController {
     public ResponseEntity<String> deleteInfo(@RequestParam("id")Long vmid){
         String vmInfoDTO = awsVmInfoService.deleteAWSVmInfo(vmid);
         return ResponseEntity.ok(vmInfoDTO);
+    }
+
+    @PostMapping("/con/{id}")
+    public ResponseEntity<VmResponse> createVm(@RequestParam("id")Long id){
+        awsVmInfoService.createVm(id);
+        return ResponseEntity.ok(null);
     }
 }
