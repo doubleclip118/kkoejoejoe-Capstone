@@ -40,6 +40,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
+	implementation 'com.jcraft:jsch:0.1.55'
 }
 
 tasks.named('test') {
