@@ -105,6 +105,24 @@ public class AWSVmInfoService {
 
         return new VmcreateResponse(vmInfo.getUserInfo().getId(), vmInfo.getId(), vmInfo.getSecretkey(), vmInfo.getIp());
     }
+    @Transactional
+    public String deleteVm(Long vmid){
+        AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmid).orElseThrow(
+            () -> new VmInfoNotFoundException("Vm info Not Found")
+        );
+        externalApiService.deleteVm(vmInfo.getVmName());
+        awsVmInfoRepository.deleteById(vmid);
+        return "삭제 완료";
+    }
+
+    public List<GetVmDTO> getVmDTOList(Long id){
+        User user = userRepository.findByUserIdWithVAndAwsVmInfos(id).orElseThrow(
+            () -> new UserNotFoundException("User with vm not found")
+        );
+        return user.getAwsVmInfos().stream()
+            .map(awsVmInfo -> new GetVmDTO(awsVmInfo.getId(), awsVmInfo.getVmName()))
+            .collect(Collectors.toList());
+    }
 
     private VmInfoResponse convertToVmInfoDTO(AWSVmInfo awsVmInfo) {
         VmInfoResponse dto = new VmInfoResponse();

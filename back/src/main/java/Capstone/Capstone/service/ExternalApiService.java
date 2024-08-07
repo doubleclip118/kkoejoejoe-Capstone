@@ -485,5 +485,36 @@ public class ExternalApiService {
         }
     }
 
+    public String deleteVm(String vmName) {
+        String endpoint = "/spider/vm/" + vmName;
+        String fullUrl = baseUrl + endpoint;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            log.info("VM 종료 요청 전송: {}", fullUrl);
+            ResponseEntity<String> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.DELETE,
+                request,
+                String.class
+            );
+            log.info("VM 종료 응답 수신: {}", response.getStatusCode());
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("VM 종료 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("VM 종료 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("VM 종료 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("VM 종료 중 예상치 못한 오류 발생", e);
+        }
+    }
+
 
 }

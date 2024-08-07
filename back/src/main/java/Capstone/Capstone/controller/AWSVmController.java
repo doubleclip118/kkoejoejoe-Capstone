@@ -1,11 +1,13 @@
 package Capstone.Capstone.controller;
 
 
+import Capstone.Capstone.controller.dto.GetVmDTO;
 import Capstone.Capstone.controller.dto.VmInfoDTO;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmResponse;
 import Capstone.Capstone.controller.dto.VmcreateResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,9 +47,15 @@ public class AWSVmController {
         return ResponseEntity.ok(vm);
     }
 
-    @DeleteMapping("/con/{id}")
-    public ResponseEntity<String> deleteVm(@PathVariable("id")Long id){
-        awsVmInfoService.createVm(id);
+    @DeleteMapping("/con/{vmid}")
+    public ResponseEntity<String> deleteVm(@PathVariable("vmid")Long vmid){
+        awsVmInfoService.deleteVm(vmid);
         return ResponseEntity.ok("성공");
+    }
+
+    @GetMapping("/con/{id}")
+    public ResponseEntity<List<GetVmDTO>> getVm(@PathVariable("id")Long id){
+        List<GetVmDTO> vmDTOList = awsVmInfoService.getVmDTOList(id);
+        return ResponseEntity.ok(vmDTOList);
     }
 }
