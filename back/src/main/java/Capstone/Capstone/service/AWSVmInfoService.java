@@ -110,7 +110,7 @@ public class AWSVmInfoService {
         AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmid).orElseThrow(
             () -> new VmInfoNotFoundException("Vm info Not Found")
         );
-        externalApiService.deleteVm(vmInfo.getVmName());
+        externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
         awsVmInfoRepository.deleteById(vmid);
         return "삭제 완료";
     }

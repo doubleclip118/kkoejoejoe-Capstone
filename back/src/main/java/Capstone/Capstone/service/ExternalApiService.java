@@ -18,6 +18,8 @@ import Capstone.Capstone.service.dto.CreateVPCRequestDTO;
 import Capstone.Capstone.service.dto.CreateVPCResponseDTO;
 import Capstone.Capstone.utils.error.CbSpiderServerException;
 import Capstone.Capstone.utils.error.CloudInfoIncorrectException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -485,34 +487,42 @@ public class ExternalApiService {
         }
     }
 
-    public String deleteVm(String vmName) {
+    public String deleteVm(String vmName, String connectionName) {
         String endpoint = "/spider/vm/" + vmName;
         String fullUrl = baseUrl + endpoint;
+
+        log.info("VM 삭제 시작: {}", vmName);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> request = new HttpEntity<>(headers);
+        // ConnectionName을 포함한 요청 본문 생성
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("ConnectionName", connectionName);
+
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
 
         try {
-            log.info("VM 종료 요청 전송: {}", fullUrl);
+            log.info("VM 삭제 요청 전송: {}", fullUrl);
             ResponseEntity<String> response = restTemplate.exchange(
                 fullUrl,
                 HttpMethod.DELETE,
                 request,
                 String.class
             );
-            log.info("VM 종료 응답 수신: {}", response.getStatusCode());
+            log.info("VM 삭제 응답 수신: {}", response.getStatusCode());
+
             return response.getBody();
+
         } catch (HttpClientErrorException e) {
-            log.error("VM 종료 중 클라이언트 오류 발생: {}", e.getMessage());
+            log.error("VM 삭제 중 클라이언트 오류 발생: {}", e.getMessage());
             throw new CloudInfoIncorrectException("InfoIncorrect");
         } catch (HttpServerErrorException e) {
-            log.error("VM 종료 중 서버 오류 발생: {}", e.getMessage());
+            log.error("VM 삭제 중 서버 오류 발생: {}", e.getMessage());
             throw new CbSpiderServerException("cbspider not working");
         } catch (RestClientException e) {
-            log.error("VM 종료 중 예상치 못한 오류 발생", e);
-            throw new RuntimeException("VM 종료 중 예상치 못한 오류 발생", e);
+            log.error("VM 삭제 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("VM 삭제 중 예상치 못한 오류 발생", e);
         }
     }
 
