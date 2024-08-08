@@ -118,8 +118,8 @@ public class UserService {
         azureCloudInfo.setTenantIdKey(azureInfoRequest.getTenantIdKey());
         azureCloudInfo.setTenantIdValue(azureInfoRequest.getTenantIdValue());
         azureCloudInfo.setRegionName(azureInfoRequest.getRegionName());
-        azureCloudInfo.setSubscriptionIdKey(azureCloudInfo.getSubscriptionIdKey());
-        azureCloudInfo.setSubscriptionIdValue(azureCloudInfo.getSubscriptionIdValue());
+        azureCloudInfo.setSubscriptionIdKey(azureInfoRequest.getSubscriptionIdKey());
+        azureCloudInfo.setSubscriptionIdValue(azureInfoRequest.getSubscriptionIdValue());
         azureCloudInfo.setRegionKey(azureInfoRequest.getRegionKey());
         azureCloudInfo.setRegionValue(azureInfoRequest.getRegionValue());
         azureCloudInfo.setZoneKey(azureInfoRequest.getZoneKey());
