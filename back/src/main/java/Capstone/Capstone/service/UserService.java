@@ -213,6 +213,8 @@ public class UserService {
         return getAzureInfoResponse(user);
     }
 
+    public Open
+
     private AWSInfoResponse getAwsInfoResponse(User user) {
         return new AWSInfoResponse(
             user.getId(),

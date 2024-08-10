@@ -4,6 +4,7 @@ import Capstone.Capstone.controller.dto.AWSInfoRequest;
 import Capstone.Capstone.controller.dto.AWSInfoResponse;
 import Capstone.Capstone.controller.dto.AzureInfoRequest;
 import Capstone.Capstone.controller.dto.AzureInfoResponse;
+import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
 import Capstone.Capstone.controller.dto.UserRequest;
 import Capstone.Capstone.controller.dto.UserResponse;
 import Capstone.Capstone.domain.OpenstackCloudInfo;
@@ -103,7 +104,7 @@ public class UserController {
     }
 
     @PostMapping("/cloud/openstack")
-    public ResponseEntity<OpenstackCloudInfo> createOpenstackInfo(@RequestBody OpenstackCloudInfo openstackCloudInfo){
-
+    public ResponseEntity<OpenstackCloudInfo> createOpenstackInfo(@RequestBody OpenStackInfoDTO openStackInfoDTO){
+        userService
     }
 }
