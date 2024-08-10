@@ -53,6 +53,9 @@ public class User {
     @JoinColumn(name = "openstack_cloud_info_id")
     private OpenstackCloudInfo openstackCloudInfo;
 
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OpenStackVmInfo> openStackVmInfos = new ArrayList<>();
+
 
     public UserResponse UserconvertToDTO(User user) {
         UserResponse userResponse = new UserResponse();

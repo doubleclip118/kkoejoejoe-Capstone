@@ -62,7 +62,6 @@ public class AWSVmInfoService {
         for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
             SecurityGroupRule rule = new SecurityGroupRule(
                 savedAWSVmInfo,
-                null,
                 ruleDTO.getFromPort(),
                 ruleDTO.getToPort(),
                 ruleDTO.getIpProtocol(),

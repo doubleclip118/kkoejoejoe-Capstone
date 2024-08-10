@@ -25,6 +25,10 @@ public class SecurityGroupRule {
     @JoinColumn(name = "vm_azure_configuration_id")
     private AzureVmInfo azureVmInfo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vm_openstack_configuration_id")
+    private OpenStackVmInfo openstackVmInfo;
+
     @Column(name = "from_port")
     private String fromPort;
 
@@ -37,6 +41,32 @@ public class SecurityGroupRule {
     @Column(name = "direction")
     private String direction;
 
+    // AWS VM Info를 위한 생성자
+    public SecurityGroupRule(AWSVmInfo awsVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
+        this.awsVmInfo = awsVmInfo;
+        this.fromPort = fromPort;
+        this.toPort = toPort;
+        this.ipProtocol = ipProtocol;
+        this.direction = direction;
+    }
+
+    // Azure VM Info를 위한 생성자
+    public SecurityGroupRule(AzureVmInfo azureVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
+        this.azureVmInfo = azureVmInfo;
+        this.fromPort = fromPort;
+        this.toPort = toPort;
+        this.ipProtocol = ipProtocol;
+        this.direction = direction;
+    }
+
+    // OpenStack VM Info를 위한 생성자
+    public SecurityGroupRule(OpenStackVmInfo openstackVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
+        this.openstackVmInfo = openstackVmInfo;
+        this.fromPort = fromPort;
+        this.toPort = toPort;
+        this.ipProtocol = ipProtocol;
+        this.direction = direction;
+    }
 
     public void setAwsVmInfo(AWSVmInfo awsVmInfo) {
         this.awsVmInfo = awsVmInfo;
@@ -52,30 +82,10 @@ public class SecurityGroupRule {
         }
     }
 
-//    public SecurityGroupRule(Long id, AWSVmInfo awsVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
-//        this.awsVmInfo = awsVmInfo;
-//        this.fromPort = fromPort;
-//        this.toPort = toPort;
-//        this.ipProtocol = ipProtocol;
-//        this.direction = direction;
-//    }
-//
-//    // Azure VM Info를 위한 생성자
-//    public SecurityGroupRule(Long id, AzureVmInfo azureVmInfo, String fromPort, String toPort, String ipProtocol, String direction) {
-//        this.azureVmInfo = azureVmInfo;
-//        this.fromPort = fromPort;
-//        this.toPort = toPort;
-//        this.ipProtocol = ipProtocol;
-//        this.direction = direction;
-//    }
-
-    public SecurityGroupRule(AWSVmInfo awsVmInfo, AzureVmInfo azureVmInfo, String fromPort,
-        String toPort, String ipProtocol, String direction) {
-        this.awsVmInfo = awsVmInfo;
-        this.azureVmInfo = azureVmInfo;
-        this.fromPort = fromPort;
-        this.toPort = toPort;
-        this.ipProtocol = ipProtocol;
-        this.direction = direction;
+    public void setOpenstackVmInfo(OpenStackVmInfo openstackVmInfo) {
+        this.openstackVmInfo = openstackVmInfo;
+        if (openstackVmInfo != null && !openstackVmInfo.getSecurityGroupRules().contains(this)) {
+            openstackVmInfo.getSecurityGroupRules().add(this);
+        }
     }
 }

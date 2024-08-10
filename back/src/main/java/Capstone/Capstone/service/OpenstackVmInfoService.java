@@ -1,10 +1,10 @@
 package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.*;
-import Capstone.Capstone.domain.AzureVmInfo;
+import Capstone.Capstone.domain.OpenStackVmInfo;
 import Capstone.Capstone.domain.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
-import Capstone.Capstone.repository.AzureVmInfoRepository;
+import Capstone.Capstone.repository.OpenStackVmInfoRepository;
 import Capstone.Capstone.repository.SecurityGroupRuleRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.*;
@@ -18,27 +18,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AzureVmInfoService {
-    private final AzureVmInfoRepository azureVmInfoRepository;
+public class OpenstackVmInfoService {
+    private final OpenStackVmInfoRepository openStackVmInfoRepository;
     private final UserRepository userRepository;
     private final SecurityGroupRuleRepository securityGroupRuleRepository;
     private final ExternalApiService externalApiService;
 
-    public AzureVmInfoService(AzureVmInfoRepository azureVmInfoRepository, UserRepository userRepository,
+    public OpenstackVmInfoService(OpenStackVmInfoRepository openStackVmInfoRepository, UserRepository userRepository,
         SecurityGroupRuleRepository securityGroupRuleRepository,
         ExternalApiService externalApiService) {
-        this.azureVmInfoRepository = azureVmInfoRepository;
+        this.openStackVmInfoRepository = openStackVmInfoRepository;
         this.userRepository = userRepository;
         this.securityGroupRuleRepository = securityGroupRuleRepository;
         this.externalApiService = externalApiService;
     }
 
     @Transactional
-    public VmInfoResponse createAzureVmInfo(VmInfoDTO vmInfoDTO) {
+    public VmInfoResponse createOpenStackVmInfo(VmInfoDTO vmInfoDTO) {
         User user = userRepository.findById(vmInfoDTO.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
-        AzureVmInfo azureVmInfo = new AzureVmInfo(
+        OpenStackVmInfo openStackVmInfo = new OpenStackVmInfo(
             user,
             vmInfoDTO.getConnectionName(),
             vmInfoDTO.getVmName(),
@@ -57,38 +57,38 @@ public class AzureVmInfoService {
             null
         );
 
-        AzureVmInfo savedAzureVmInfo = azureVmInfoRepository.save(azureVmInfo);
+        OpenStackVmInfo savedOpenStackVmInfo = openStackVmInfoRepository.save(openStackVmInfo);
 
         for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
             SecurityGroupRule rule = new SecurityGroupRule(
-                savedAzureVmInfo,
+                savedOpenStackVmInfo,
                 ruleDTO.getFromPort(),
                 ruleDTO.getToPort(),
                 ruleDTO.getIpProtocol(),
                 ruleDTO.getDirection()
             );
             securityGroupRuleRepository.save(rule);
-            savedAzureVmInfo.addSecurityGroupRule(rule);
+            savedOpenStackVmInfo.addSecurityGroupRule(rule);
         }
 
-        return convertToVmInfoDTO(savedAzureVmInfo);
+        return convertToVmInfoResponse(savedOpenStackVmInfo);
     }
 
     @Transactional
-    public String deleteAzureVmInfo(Long id) {
-        azureVmInfoRepository.deleteById(id);
+    public String deleteOpenStackVmInfo(Long id) {
+        openStackVmInfoRepository.deleteById(id);
         return "삭제 완료";
     }
 
     @Transactional
     public VmcreateResponse createVm(Long id) {
-        AzureVmInfo vmInfo = azureVmInfoRepository.findById(id)
+        OpenStackVmInfo vmInfo = openStackVmInfoRepository.findById(id)
             .orElseThrow(() -> new VmInfoNotFoundException("VM Not Found"));
 
         CreateVPCRequestDTO createVPCRequestDTO = prepareVPCRequest(vmInfo);
         externalApiService.createVPC(createVPCRequestDTO);
 
-        CreateSecurityGroupRequestDTO createSGRequestDTO = prepareSecurityGroupRequest(vmInfo, vmInfo.getVpcName());
+        CreateSecurityGroupRequestDTO createSGRequestDTO = prepareSecurityGroupRequest(vmInfo);
         CreateSecurityGroupResponseDTO sgResponse = externalApiService.createSecurityGroup(createSGRequestDTO);
 
         CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
@@ -96,57 +96,57 @@ public class AzureVmInfoService {
 
         vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
 
-        CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo, vmInfo.getVpcName(), vmInfo.getSecurityGroupName(), vmInfo.getKeypairName());
+        CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo);
         CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
 
         vmInfo.setIp(vmResponse.getPublicIP());
-        azureVmInfoRepository.save(vmInfo);
+        openStackVmInfoRepository.save(vmInfo);
 
         return new VmcreateResponse(vmInfo.getUserInfo().getId(), vmInfo.getId(), vmInfo.getSecretkey(), vmInfo.getIp());
     }
 
     @Transactional
     public String deleteVm(Long vmid) {
-        AzureVmInfo vmInfo = azureVmInfoRepository.findById(vmid).orElseThrow(
+        OpenStackVmInfo vmInfo = openStackVmInfoRepository.findById(vmid).orElseThrow(
             () -> new VmInfoNotFoundException("Vm info Not Found")
         );
-        externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
-        azureVmInfoRepository.deleteById(vmid);
+        externalApiService.deleteVm(vmInfo.getVmName(), vmInfo.getConnectionName());
+        openStackVmInfoRepository.deleteById(vmid);
         return "삭제 완료";
     }
 
     public List<GetVmDTO> getVmDTOList(Long id) {
-        User user = userRepository.findByUserIdWithVAndAzureVmInfos(id).orElseThrow(
+        User user = userRepository.findByUserIdWithVAndOpenstackVmInfos(id).orElseThrow(
             () -> new UserNotFoundException("User with vm not found")
         );
-        return user.getAzureVmInfos().stream()
-            .map(azureVmInfo -> new GetVmDTO(azureVmInfo.getId(), azureVmInfo.getVmName()))
+        return user.getOpenStackVmInfos().stream()
+            .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName()))
             .collect(Collectors.toList());
     }
 
-    private VmInfoResponse convertToVmInfoDTO(AzureVmInfo azureVmInfo) {
-        VmInfoResponse dto = new VmInfoResponse();
-        dto.setUserId(azureVmInfo.getUserInfo().getId());
-        dto.setVmId(azureVmInfo.getId());
-        dto.setConnectionName(azureVmInfo.getConnectionName());
-        dto.setVmName(azureVmInfo.getVmName());
-        dto.setVpcName(azureVmInfo.getVpcName());
-        dto.setVpcIPv4Cidr(azureVmInfo.getVpcIPv4CIDR());
-        dto.setSubnetName(azureVmInfo.getSubnetName());
-        dto.setSubnetIPv4Cidr(azureVmInfo.getSubnetIPv4CIDR());
-        dto.setSecurityGroupName(azureVmInfo.getSecurityGroupName());
-        dto.setKeypairName(azureVmInfo.getKeypairName());
-        dto.setImageName(azureVmInfo.getImageName());
-        dto.setVmSpec(azureVmInfo.getVmSpec());
-        dto.setRegionName(azureVmInfo.getRegionName());
-        dto.setZoneName(azureVmInfo.getZoneName());
+    private VmInfoResponse convertToVmInfoResponse(OpenStackVmInfo openStackVmInfo) {
+        VmInfoResponse response = new VmInfoResponse();
+        response.setUserId(openStackVmInfo.getUserInfo().getId());
+        response.setVmId(openStackVmInfo.getId());
+        response.setConnectionName(openStackVmInfo.getConnectionName());
+        response.setVmName(openStackVmInfo.getVmName());
+        response.setVpcName(openStackVmInfo.getVpcName());
+        response.setVpcIPv4Cidr(openStackVmInfo.getVpcIPv4CIDR());
+        response.setSubnetName(openStackVmInfo.getSubnetName());
+        response.setSubnetIPv4Cidr(openStackVmInfo.getSubnetIPv4CIDR());
+        response.setSecurityGroupName(openStackVmInfo.getSecurityGroupName());
+        response.setKeypairName(openStackVmInfo.getKeypairName());
+        response.setImageName(openStackVmInfo.getImageName());
+        response.setVmSpec(openStackVmInfo.getVmSpec());
+        response.setRegionName(openStackVmInfo.getRegionName());
+        response.setZoneName(openStackVmInfo.getZoneName());
 
-        List<SecurityGroupRuleDTO> ruleDTOs = azureVmInfo.getSecurityGroupRules().stream()
+        List<SecurityGroupRuleDTO> ruleDTOs = openStackVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)
             .collect(Collectors.toList());
-        dto.setSecurityGroupRules(ruleDTOs);
+        response.setSecurityGroupRules(ruleDTOs);
 
-        return dto;
+        return response;
     }
 
     private SecurityGroupRuleDTO convertToSecurityGroupRuleDTO(SecurityGroupRule rule) {
@@ -158,7 +158,7 @@ public class AzureVmInfoService {
         return dto;
     }
 
-    private CreateVPCRequestDTO prepareVPCRequest(AzureVmInfo vmInfo) {
+    private CreateVPCRequestDTO prepareVPCRequest(OpenStackVmInfo vmInfo) {
         CreateVPCRequestDTO.ReqInfo reqInfo = new CreateVPCRequestDTO.ReqInfo();
         reqInfo.setName(vmInfo.getVpcName());
         reqInfo.setIPv4CIDR(vmInfo.getVpcIPv4CIDR());
@@ -178,10 +178,10 @@ public class AzureVmInfoService {
         return createVPCRequestDTO;
     }
 
-    private CreateSecurityGroupRequestDTO prepareSecurityGroupRequest(AzureVmInfo vmInfo, String vpcName) {
+    private CreateSecurityGroupRequestDTO prepareSecurityGroupRequest(OpenStackVmInfo vmInfo) {
         CreateSecurityGroupRequestDTO.ReqInfo reqInfo = new CreateSecurityGroupRequestDTO.ReqInfo();
         reqInfo.setName(vmInfo.getSecurityGroupName());
-        reqInfo.setVpcName(vpcName);
+        reqInfo.setVpcName(vmInfo.getVpcName());
 
         List<CreateSecurityGroupRequestDTO.SecurityRule> securityRules = vmInfo.getSecurityGroupRules().stream()
             .map(rule -> new CreateSecurityGroupRequestDTO.SecurityRule(
@@ -201,7 +201,7 @@ public class AzureVmInfoService {
         return createSGRequestDTO;
     }
 
-    private CreateKeyPairRequestDTO prepareKeyPairRequest(AzureVmInfo vmInfo) {
+    private CreateKeyPairRequestDTO prepareKeyPairRequest(OpenStackVmInfo vmInfo) {
         CreateKeyPairRequestDTO.ReqInfo reqInfo = new CreateKeyPairRequestDTO.ReqInfo();
         reqInfo.setName(vmInfo.getKeypairName());
 
@@ -212,15 +212,15 @@ public class AzureVmInfoService {
         return createKeyPairRequestDTO;
     }
 
-    private CreateVMRequestDTO prepareVMRequest(AzureVmInfo vmInfo, String vpcName, String securityGroupName, String keyPairName) {
+    private CreateVMRequestDTO prepareVMRequest(OpenStackVmInfo vmInfo) {
         CreateVMRequestDTO.ReqInfo reqInfo = new CreateVMRequestDTO.ReqInfo();
         reqInfo.setName(vmInfo.getVmName());
         reqInfo.setImageName(vmInfo.getImageName());
-        reqInfo.setVpcName(vpcName);
+        reqInfo.setVpcName(vmInfo.getVpcName());
         reqInfo.setSubnetName(vmInfo.getSubnetName());
-        reqInfo.setSecurityGroupNames(List.of(securityGroupName));
+        reqInfo.setSecurityGroupNames(List.of(vmInfo.getSecurityGroupName()));
         reqInfo.setVmSpecName(vmInfo.getVmSpec());
-        reqInfo.setKeyPairName(keyPairName);
+        reqInfo.setKeyPairName(vmInfo.getKeypairName());
 
         CreateVMRequestDTO createVMRequestDTO = new CreateVMRequestDTO();
         createVMRequestDTO.setConnectionName(vmInfo.getConnectionName());
