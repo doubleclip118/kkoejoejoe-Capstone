@@ -60,4 +60,31 @@ public class OpenstackCloudInfo {
     @Column
     private String configName;
 
+    public OpenstackCloudInfo(User user, String driverName, String providerName,
+        String driverLibFileName, String credentialName, String identityEndpointKey,
+        String identityEndpointValue, String usernameKey, String usernameValue,
+        String domainNameKey,
+        String domainNameValue, String passwordKey, String passwordValue, String projectIDKey,
+        String projectIDValue, String regionName, String regionKey, String regionValue,
+        String configName) {
+        this.user = user;
+        this.driverName = driverName;
+        this.providerName = providerName;
+        this.driverLibFileName = driverLibFileName;
+        this.credentialName = credentialName;
+        this.identityEndpointKey = identityEndpointKey;
+        this.identityEndpointValue = identityEndpointValue;
+        this.usernameKey = usernameKey;
+        this.usernameValue = usernameValue;
+        this.domainNameKey = domainNameKey;
+        this.domainNameValue = domainNameValue;
+        this.passwordKey = passwordKey;
+        this.passwordValue = passwordValue;
+        this.projectIDKey = projectIDKey;
+        this.projectIDValue = projectIDValue;
+        this.regionName = regionName;
+        this.regionKey = regionKey;
+        this.regionValue = regionValue;
+        this.configName = configName;
+    }
 }

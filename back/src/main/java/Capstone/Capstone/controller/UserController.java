@@ -104,7 +104,8 @@ public class UserController {
     }
 
     @PostMapping("/cloud/openstack")
-    public ResponseEntity<OpenstackCloudInfo> createOpenstackInfo(@RequestBody OpenStackInfoDTO openStackInfoDTO){
-        userService
+    public ResponseEntity<OpenStackInfoDTO> createOpenstackInfo(@RequestBody OpenStackInfoDTO openStackInfoDTO){
+        OpenStackInfoDTO openstackInfo = userService.createOpenstackInfo(openStackInfoDTO);
+        return ResponseEntity.ok(openstackInfo);
     }
 }

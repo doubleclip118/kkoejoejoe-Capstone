@@ -1,7 +1,9 @@
 package Capstone.Capstone.service;
 
+import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
 import Capstone.Capstone.domain.AWSCloudInfo;
 import Capstone.Capstone.domain.AzureCloudInfo;
+import Capstone.Capstone.domain.OpenstackCloudInfo;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.controller.dto.AWSInfoRequest;
 import Capstone.Capstone.controller.dto.AWSInfoResponse;
@@ -11,6 +13,7 @@ import Capstone.Capstone.controller.dto.UserRequest;
 import Capstone.Capstone.controller.dto.UserResponse;
 import Capstone.Capstone.repository.AWSCloudInfoRepository;
 import Capstone.Capstone.repository.AzureCloudInfoRepository;
+import Capstone.Capstone.repository.OpenstackCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.utils.error.AWSCloudInfoNotFoundException;
 import Capstone.Capstone.utils.error.AzureCloudInfoNotFoundException;
@@ -28,12 +31,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final AWSCloudInfoRepository awsCloudInfoRepository;
     private final AzureCloudInfoRepository azureCloudInfoRepository;
+    private final OpenstackCloudInfoRepository openstackCloudInfoRepository;
 
     public UserService(UserRepository userRepository, AWSCloudInfoRepository awsCloudInfoRepository,
-        AzureCloudInfoRepository azureCloudInfoRepository) {
+        AzureCloudInfoRepository azureCloudInfoRepository,
+        OpenstackCloudInfoRepository openstackCloudInfoRepository) {
         this.userRepository = userRepository;
         this.awsCloudInfoRepository = awsCloudInfoRepository;
         this.azureCloudInfoRepository = azureCloudInfoRepository;
+        this.openstackCloudInfoRepository = openstackCloudInfoRepository;
     }
 
 
@@ -213,7 +219,31 @@ public class UserService {
         return getAzureInfoResponse(user);
     }
 
-    public Open
+    public OpenStackInfoDTO createOpenstackInfo(OpenStackInfoDTO openStackInfoDTO){
+        User user = userRepository.findById(openStackInfoDTO.getUserId()).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        OpenstackCloudInfo openstackCloudInfo = new OpenstackCloudInfo(user,
+            openStackInfoDTO.getDriverName(), openStackInfoDTO.getProviderName(),
+            openStackInfoDTO.getDriverLibFileName(), openStackInfoDTO.getCredentialName(),
+            openStackInfoDTO.getIdentityEndpointKey(), openStackInfoDTO.getIdentityEndpointValue(),
+            openStackInfoDTO.getUsernameKey(), openStackInfoDTO.getUsernameValue(),
+            openStackInfoDTO.getDomainNameKey(), openStackInfoDTO.getDomainNameValue(),
+            openStackInfoDTO.getPasswordKey(), openStackInfoDTO.getPasswordValue(),
+            openStackInfoDTO.getProjectIDKey(), openStackInfoDTO.getProjectIDValue(),
+            openStackInfoDTO.getRegionName(), openStackInfoDTO.getRegionKey(),
+            openStackInfoDTO.getRegionValue(), openStackInfoDTO.getConfigName());
+        OpenstackCloudInfo save = openstackCloudInfoRepository.save(openstackCloudInfo);
+        user.setOpenstackCloudInfo(save);
+        log.info("openstack info create");
+        return new OpenStackInfoDTO(openStackInfoDTO.getUserId(),save.getDriverName(),
+            save.getProviderName(),save.getDriverLibFileName(),save.getCredentialName(),
+            save.getIdentityEndpointKey(), save.getIdentityEndpointValue(), save.getUsernameKey(),
+            save.getUsernameValue(),save.getDomainNameKey(),save.getDomainNameValue(),
+            save.getPasswordKey(),save.getPasswordValue(),save.getProjectIDKey(),
+            save.getProjectIDValue(),save.getRegionName(),save.getRegionKey(),save.getRegionValue(),
+            save.getConfigName());
+    }
 
     private AWSInfoResponse getAwsInfoResponse(User user) {
         return new AWSInfoResponse(
