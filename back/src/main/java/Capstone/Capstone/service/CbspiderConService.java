@@ -14,6 +14,10 @@ import Capstone.Capstone.service.dto.AzureCredentialDTO;
 import Capstone.Capstone.service.dto.AzureRegionDTO;
 import Capstone.Capstone.service.dto.KeyValueInfo;
 import Capstone.Capstone.service.dto.AWSRegionDTO;
+import Capstone.Capstone.service.dto.OpenstackCloudDriverDTO;
+import Capstone.Capstone.service.dto.OpenstackConfigDTO;
+import Capstone.Capstone.service.dto.OpenstackCredentialDTO;
+import Capstone.Capstone.service.dto.OpenstackRegionDTO;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import java.util.Arrays;
 import java.util.List;
@@ -215,6 +219,79 @@ public class CbspiderConService {
         externalApiService.deleteSpiderRegion(user.getAzureCloudInfo().getRegionName());
         // 커넥션 삭제
         externalApiService.deleteSpiderConnectionConfig(user.getAzureCloudInfo().getConfigName());
+
+        return "삭제 성공";
+    }
+
+    @Transactional
+    public String conOpenStack(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+
+        // OpenStack 클라우드 드라이버 생성
+        OpenstackCloudDriverDTO openstackCloudDriverDTO = new OpenstackCloudDriverDTO(
+            user.getOpenstackCloudInfo().getDriverName(),
+            user.getOpenstackCloudInfo().getProviderName(),
+            user.getOpenstackCloudInfo().getDriverLibFileName()
+        );
+        externalApiService.postToSpiderOpenstackDriver(openstackCloudDriverDTO);
+
+        // OpenStack 클라우드 크리덴셜 생성
+        List<KeyValueInfo> credentialInfoList = Arrays.asList(
+            new KeyValueInfo(user.getOpenstackCloudInfo().getIdentityEndpointKey(), user.getOpenstackCloudInfo().getIdentityEndpointValue()),
+            new KeyValueInfo(user.getOpenstackCloudInfo().getUsernameKey(), user.getOpenstackCloudInfo().getUsernameValue()),
+            new KeyValueInfo(user.getOpenstackCloudInfo().getPasswordKey(), user.getOpenstackCloudInfo().getPasswordValue()),
+            new KeyValueInfo(user.getOpenstackCloudInfo().getDomainNameKey(), user.getOpenstackCloudInfo().getDomainNameValue()),
+            new KeyValueInfo(user.getOpenstackCloudInfo().getProjectIDKey(), user.getOpenstackCloudInfo().getProjectIDValue())
+        );
+
+        OpenstackCredentialDTO openstackCredentialDTO = new OpenstackCredentialDTO(
+            user.getOpenstackCloudInfo().getCredentialName(),
+            user.getOpenstackCloudInfo().getProviderName(),
+            credentialInfoList
+        );
+        externalApiService.postToSpiderOpenStackCredential(openstackCredentialDTO);
+
+        // OpenStack 클라우드 리전 등록
+        List<KeyValueInfo> regionInfoList = Arrays.asList(
+            new KeyValueInfo(user.getOpenstackCloudInfo().getRegionKey(), user.getOpenstackCloudInfo().getRegionValue())
+        );
+
+        OpenstackRegionDTO openstackRegionDTO = new OpenstackRegionDTO(
+            user.getOpenstackCloudInfo().getRegionName(),
+            user.getOpenstackCloudInfo().getProviderName(),
+            regionInfoList
+        );
+        externalApiService.postToSpiderOpenStackRegion(openstackRegionDTO);
+
+        // OpenStack 커넥트 연결
+        OpenstackConfigDTO openstackConfigDTO = new OpenstackConfigDTO(
+            user.getOpenstackCloudInfo().getConfigName(),
+            user.getOpenstackCloudInfo().getProviderName(),
+            user.getOpenstackCloudInfo().getDriverName(),
+            user.getOpenstackCloudInfo().getCredentialName(),
+            user.getOpenstackCloudInfo().getRegionName()
+        );
+        externalApiService.postToSpiderOpenStackConfig(openstackConfigDTO);
+
+        return "연결 성공";
+    }
+
+    @Transactional
+    public String deleteconOpenStack(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+
+        // 드라이버 삭제
+        externalApiService.deleteSpiderDriver(user.getOpenstackCloudInfo().getDriverName());
+        // 크리덴셜 삭제
+        externalApiService.deleteSpiderCredential(user.getOpenstackCloudInfo().getCredentialName());
+        // 리전 삭제
+        externalApiService.deleteSpiderRegion(user.getOpenstackCloudInfo().getRegionName());
+        // 커넥션 삭제
+        externalApiService.deleteSpiderConnectionConfig(user.getOpenstackCloudInfo().getConfigName());
 
         return "삭제 성공";
     }
