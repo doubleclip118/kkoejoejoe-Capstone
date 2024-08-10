@@ -22,7 +22,7 @@ public class AzureCloudInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(mappedBy = "azureCloudInfo", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "azure_cloud_info", fetch = FetchType.LAZY)
     private User user;
     @Column
     private String DriverName;

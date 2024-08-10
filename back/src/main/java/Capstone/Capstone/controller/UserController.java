@@ -6,6 +6,7 @@ import Capstone.Capstone.controller.dto.AzureInfoRequest;
 import Capstone.Capstone.controller.dto.AzureInfoResponse;
 import Capstone.Capstone.controller.dto.UserRequest;
 import Capstone.Capstone.controller.dto.UserResponse;
+import Capstone.Capstone.domain.OpenstackCloudInfo;
 import Capstone.Capstone.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -99,5 +100,10 @@ public class UserController {
         log.info("aws info change");
         AzureInfoResponse azureInfoResponse = userService.changeAzureInfo(id, azureInfoRequest);
         return ResponseEntity.ok(azureInfoResponse);
+    }
+
+    @PostMapping("/cloud/openstack")
+    public ResponseEntity<OpenstackCloudInfo> createOpenstackInfo(@RequestBody OpenstackCloudInfo openstackCloudInfo){
+
     }
 }
