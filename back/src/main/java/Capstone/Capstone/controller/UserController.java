@@ -108,4 +108,26 @@ public class UserController {
         OpenStackInfoDTO openstackInfo = userService.createOpenstackInfo(openStackInfoDTO);
         return ResponseEntity.ok(openstackInfo);
     }
+
+    @GetMapping("/cloud/aws/{id}")
+    public ResponseEntity<OpenStackInfoDTO> getOpenstackInfo(@PathVariable("id") Long id){
+        log.info("openstack info get");
+        OpenStackInfoDTO openStackInfo = userService.getOpenStackInfo(id);
+        return ResponseEntity.ok(openStackInfo);
+    }
+
+    @DeleteMapping("/cloud/aws/{id}")
+    public ResponseEntity<String> deleteOpenstackInfo(@PathVariable("id") Long id){
+        log.info("openstack info delete");
+        String s = userService.deleteOpenStackInfo(id);
+        return ResponseEntity.ok(s);
+    }
+
+    @PutMapping("/cloud/aws/{id}")
+    public ResponseEntity<OpenStackInfoDTO> changeAWSInfo(@PathVariable("id") Long id,
+        @RequestBody OpenStackInfoDTO openStackInfoDTO){
+        log.info("openstack info change");
+        OpenStackInfoDTO openStack = userService.changeOpenStackInfo(id, openStackInfoDTO);
+        return ResponseEntity.ok(openStack);
+    }
 }

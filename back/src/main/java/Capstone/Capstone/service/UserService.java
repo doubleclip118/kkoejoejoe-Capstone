@@ -220,6 +220,32 @@ public class UserService {
         return getAzureInfoResponse(user);
     }
 
+    public OpenStackInfoDTO createOpenstackInfo(OpenStackInfoDTO openStackInfoDTO){
+        User user = userRepository.findById(openStackInfoDTO.getUserId()).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        OpenstackCloudInfo openstackCloudInfo = new OpenstackCloudInfo(user,
+            openStackInfoDTO.getDriverName(), openStackInfoDTO.getProviderName(),
+            openStackInfoDTO.getDriverLibFileName(), openStackInfoDTO.getCredentialName(),
+            openStackInfoDTO.getIdentityEndpointKey(), openStackInfoDTO.getIdentityEndpointValue(),
+            openStackInfoDTO.getUsernameKey(), openStackInfoDTO.getUsernameValue(),
+            openStackInfoDTO.getDomainNameKey(), openStackInfoDTO.getDomainNameValue(),
+            openStackInfoDTO.getPasswordKey(), openStackInfoDTO.getPasswordValue(),
+            openStackInfoDTO.getProjectIDKey(), openStackInfoDTO.getProjectIDValue(),
+            openStackInfoDTO.getRegionName(), openStackInfoDTO.getRegionKey(),
+            openStackInfoDTO.getRegionValue(), openStackInfoDTO.getConfigName());
+        OpenstackCloudInfo save = openstackCloudInfoRepository.save(openstackCloudInfo);
+        user.setOpenstackCloudInfo(save);
+        log.info("openstack info create");
+        return new OpenStackInfoDTO(openStackInfoDTO.getUserId(),save.getDriverName(),
+            save.getProviderName(),save.getDriverLibFileName(),save.getCredentialName(),
+            save.getIdentityEndpointKey(), save.getIdentityEndpointValue(), save.getUsernameKey(),
+            save.getUsernameValue(),save.getDomainNameKey(),save.getDomainNameValue(),
+            save.getPasswordKey(),save.getPasswordValue(),save.getProjectIDKey(),
+            save.getProjectIDValue(),save.getRegionName(),save.getRegionKey(),save.getRegionValue(),
+            save.getConfigName());
+    }
+
     public OpenStackInfoDTO getOpenStackInfo(Long id) {
         User user = userRepository.findByUserIdWithOpenstackCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
