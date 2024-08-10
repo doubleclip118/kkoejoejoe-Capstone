@@ -3,6 +3,7 @@ package Capstone.Capstone.service;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.AWSCloudInfoRepository;
 import Capstone.Capstone.repository.AzureCloudInfoRepository;
+import Capstone.Capstone.repository.OpenstackCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.AWSCloudDriverDTO;
 import Capstone.Capstone.service.dto.AWSConfigDTO;
@@ -26,14 +27,19 @@ public class CbspiderConService {
     private final UserRepository userRepository;
     private final AWSCloudInfoRepository awsCloudInfoRepository;
     private final AzureCloudInfoRepository azureCloudInfoRepository;
+    private final OpenstackCloudInfoRepository openstackCloudInfoRepository;
+
     private final ExternalApiService externalApiService;
 
     public CbspiderConService(UserRepository userRepository,
         AWSCloudInfoRepository awsCloudInfoRepository,
-        AzureCloudInfoRepository azureCloudInfoRepository, ExternalApiService externalApiService) {
+        AzureCloudInfoRepository azureCloudInfoRepository,
+        OpenstackCloudInfoRepository openstackCloudInfoRepository,
+        ExternalApiService externalApiService) {
         this.userRepository = userRepository;
         this.awsCloudInfoRepository = awsCloudInfoRepository;
         this.azureCloudInfoRepository = azureCloudInfoRepository;
+        this.openstackCloudInfoRepository = openstackCloudInfoRepository;
         this.externalApiService = externalApiService;
     }
     @Transactional
