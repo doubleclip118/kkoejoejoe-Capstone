@@ -17,6 +17,7 @@ import Capstone.Capstone.repository.OpenstackCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.utils.error.AWSCloudInfoNotFoundException;
 import Capstone.Capstone.utils.error.AzureCloudInfoNotFoundException;
+import Capstone.Capstone.utils.error.OpenStackCloudInfoNotFoundException;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.UserRegistrationException;
 import java.util.Optional;
@@ -219,30 +220,39 @@ public class UserService {
         return getAzureInfoResponse(user);
     }
 
-    public OpenStackInfoDTO createOpenstackInfo(OpenStackInfoDTO openStackInfoDTO){
-        User user = userRepository.findById(openStackInfoDTO.getUserId()).orElseThrow(
+    public OpenStackInfoDTO getOpenStackInfo(Long id) {
+        User user = userRepository.findByUserIdWithOpenstackCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
-        OpenstackCloudInfo openstackCloudInfo = new OpenstackCloudInfo(user,
-            openStackInfoDTO.getDriverName(), openStackInfoDTO.getProviderName(),
-            openStackInfoDTO.getDriverLibFileName(), openStackInfoDTO.getCredentialName(),
-            openStackInfoDTO.getIdentityEndpointKey(), openStackInfoDTO.getIdentityEndpointValue(),
-            openStackInfoDTO.getUsernameKey(), openStackInfoDTO.getUsernameValue(),
-            openStackInfoDTO.getDomainNameKey(), openStackInfoDTO.getDomainNameValue(),
-            openStackInfoDTO.getPasswordKey(), openStackInfoDTO.getPasswordValue(),
-            openStackInfoDTO.getProjectIDKey(), openStackInfoDTO.getProjectIDValue(),
-            openStackInfoDTO.getRegionName(), openStackInfoDTO.getRegionKey(),
-            openStackInfoDTO.getRegionValue(), openStackInfoDTO.getConfigName());
-        OpenstackCloudInfo save = openstackCloudInfoRepository.save(openstackCloudInfo);
-        user.setOpenstackCloudInfo(save);
-        log.info("openstack info create");
-        return new OpenStackInfoDTO(openStackInfoDTO.getUserId(),save.getDriverName(),
-            save.getProviderName(),save.getDriverLibFileName(),save.getCredentialName(),
-            save.getIdentityEndpointKey(), save.getIdentityEndpointValue(), save.getUsernameKey(),
-            save.getUsernameValue(),save.getDomainNameKey(),save.getDomainNameValue(),
-            save.getPasswordKey(),save.getPasswordValue(),save.getProjectIDKey(),
-            save.getProjectIDValue(),save.getRegionName(),save.getRegionKey(),save.getRegionValue(),
-            save.getConfigName());
+        if (user.getOpenstackCloudInfo() == null) {
+            throw new OpenStackCloudInfoNotFoundException("OpenStack INFO Not Found");
+        }
+        return getOpenStackInfoResponse(user);
+    }
+
+    @Transactional
+    public String deleteOpenStackInfo(Long id) {
+        User user = userRepository.findByUserIdWithOpenstackCloudInfo(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        openstackCloudInfoRepository.deleteById(user.getOpenstackCloudInfo().getId());
+        user.removeOpenStackCloudInfo();
+
+        return "성공";
+    }
+
+    @Transactional
+    public OpenStackInfoDTO changeOpenStackInfo(Long id, OpenStackInfoDTO openStackInfoDTO) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        OpenstackCloudInfo openstackCloudInfo = user.getOpenstackCloudInfo();
+        if (openstackCloudInfo == null) {
+            throw new OpenStackCloudInfoNotFoundException("OpenStack INFO Not Found");
+        }
+        openstackCloudInfo.updateOpenStackInfo(openStackInfoDTO);
+        openstackCloudInfoRepository.save(openstackCloudInfo);
+        return getOpenStackInfoResponse(user);
     }
 
     private AWSInfoResponse getAwsInfoResponse(User user) {
@@ -286,6 +296,31 @@ public class UserService {
             user.getAzureCloudInfo().getZoneKey(),
             user.getAzureCloudInfo().getZoneValue(),
             user.getAzureCloudInfo().getConfigName()
+        );
+    }
+
+    private OpenStackInfoDTO getOpenStackInfoResponse(User user) {
+        OpenstackCloudInfo info = user.getOpenstackCloudInfo();
+        return new OpenStackInfoDTO(
+            user.getId(),
+            info.getDriverName(),
+            info.getProviderName(),
+            info.getDriverLibFileName(),
+            info.getCredentialName(),
+            info.getIdentityEndpointKey(),
+            info.getIdentityEndpointValue(),
+            info.getUsernameKey(),
+            info.getUsernameValue(),
+            info.getDomainNameKey(),
+            info.getDomainNameValue(),
+            info.getPasswordKey(),
+            info.getPasswordValue(),
+            info.getProjectIDKey(),
+            info.getProjectIDValue(),
+            info.getRegionName(),
+            info.getRegionKey(),
+            info.getRegionValue(),
+            info.getConfigName()
         );
     }
 

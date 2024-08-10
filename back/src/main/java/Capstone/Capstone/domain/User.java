@@ -70,4 +70,8 @@ public class User {
         this.setAzureCloudInfo(null);
     }
 
+    public void removeOpenStackCloudInfo(){
+        this.setOpenstackCloudInfo(null);
+    }
+
 }

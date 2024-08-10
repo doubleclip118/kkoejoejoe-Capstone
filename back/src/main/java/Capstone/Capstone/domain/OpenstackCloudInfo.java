@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -86,5 +87,26 @@ public class OpenstackCloudInfo {
         this.regionKey = regionKey;
         this.regionValue = regionValue;
         this.configName = configName;
+    }
+
+    public void updateOpenStackInfo(OpenStackInfoDTO dto) {
+        if (dto.getDriverName() != null) this.driverName = dto.getDriverName();
+        if (dto.getProviderName() != null) this.providerName = dto.getProviderName();
+        if (dto.getDriverLibFileName() != null) this.driverLibFileName = dto.getDriverLibFileName();
+        if (dto.getCredentialName() != null) this.credentialName = dto.getCredentialName();
+        if (dto.getIdentityEndpointKey() != null) this.identityEndpointKey = dto.getIdentityEndpointKey();
+        if (dto.getIdentityEndpointValue() != null) this.identityEndpointValue = dto.getIdentityEndpointValue();
+        if (dto.getUsernameKey() != null) this.usernameKey = dto.getUsernameKey();
+        if (dto.getUsernameValue() != null) this.usernameValue = dto.getUsernameValue();
+        if (dto.getDomainNameKey() != null) this.domainNameKey = dto.getDomainNameKey();
+        if (dto.getDomainNameValue() != null) this.domainNameValue = dto.getDomainNameValue();
+        if (dto.getPasswordKey() != null) this.passwordKey = dto.getPasswordKey();
+        if (dto.getPasswordValue() != null) this.passwordValue = dto.getPasswordValue();
+        if (dto.getProjectIDKey() != null) this.projectIDKey = dto.getProjectIDKey();
+        if (dto.getProjectIDValue() != null) this.projectIDValue = dto.getProjectIDValue();
+        if (dto.getRegionName() != null) this.regionName = dto.getRegionName();
+        if (dto.getRegionKey() != null) this.regionKey = dto.getRegionKey();
+        if (dto.getRegionValue() != null) this.regionValue = dto.getRegionValue();
+        if (dto.getConfigName() != null) this.configName = dto.getConfigName();
     }
 }

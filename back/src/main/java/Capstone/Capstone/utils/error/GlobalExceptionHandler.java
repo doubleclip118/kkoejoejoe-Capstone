@@ -41,5 +41,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OpenStackCloudInfoNotFoundException.class)
+    public ResponseEntity<?> handleOpenStackCloudInfoNotFoundException(OpenStackCloudInfoNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
 
 }
