@@ -11,9 +11,15 @@ function VMManagement() {
     vmName: '',
     vpcName: '',
     vpcIPv4_CIDR: '',
+    subnetName: '',
+    subnetIPv4_CIDR: '',
+    securityGroupName: '',
+    securityGroupRules: [{ fromPort: '', toPort: '', ipProtocol: '', direction: '' }],
     keypairName: '',
     imageName: '',
-    vmSpec: ''
+    vmSpec: '',
+    regionName: '',
+    zoneName: ''
   });
 
   const toggleVMStatus = (id) => {
@@ -39,7 +45,6 @@ function VMManagement() {
       const result = await response.json();
       console.log('VM created:', result);
 
-      // 서버로부터 받은 응답을 사용하여 새 VM을 목록에 추가
       const newVMEntry = { id: vms.length + 1, ...result };
       setVMs([...vms, newVMEntry]);
       
@@ -49,13 +54,18 @@ function VMManagement() {
         vmName: '',
         vpcName: '',
         vpcIPv4_CIDR: '',
+        subnetName: '',
+        subnetIPv4_CIDR: '',
+        securityGroupName: '',
+        securityGroupRules: [{ fromPort: '', toPort: '', ipProtocol: '', direction: '' }],
         keypairName: '',
         imageName: '',
-        vmSpec: ''
+        vmSpec: '',
+        regionName: '',
+        zoneName: ''
       });
     } catch (error) {
       console.error('Error creating VM:', error);
-      // 여기에 에러 처리 로직을 추가할 수 있습니다 (예: 사용자에게 에러 메시지 표시)
     }
   };
 
@@ -64,22 +74,36 @@ function VMManagement() {
     setNewVM(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSecurityRuleChange = (index, field, value) => {
+    const newSecurityGroupRules = [...newVM.securityGroupRules];
+    newSecurityGroupRules[index][field] = value;
+    setNewVM(prev => ({ ...prev, securityGroupRules: newSecurityGroupRules }));
+  };
+
+  const addSecurityRule = () => {
+    setNewVM(prev => ({ ...prev, securityGroupRules: [...prev.securityGroupRules, { fromPort: '', toPort: '', ipProtocol: '', direction: '' }] }));
+  };
+
   return (
     <div className="management-content">
       <h3>Virtual Machine Management</h3>
       {vms.map(vm => (
-  <div key={vm.id} className="vm-item">
-    <span>{vm.name} - Status: {vm.status}</span>
-    <p>Connection: {vm.connectionName}</p>
-    <p>VPC: {vm.vpcName} ({vm.vpcIPv4_CIDR})</p>
-    <p>Keypair: {vm.keypairName}</p>
-    <p>Image: {vm.imageName}</p>
-    <p>Spec: {vm.vmSpec}</p>
-    <button className="action-button" onClick={() => toggleVMStatus(vm.id)}>
-      {vm.status === 'Running' ? 'Stop' : 'Start'}
-    </button>
-  </div>
-))}
+        <div key={vm.id} className="vm-item">
+          <span>{vm.name} - Status: {vm.status}</span>
+          <p>Connection: {vm.connectionName}</p>
+          <p>VPC: {vm.vpcName} ({vm.vpcIPv4_CIDR})</p>
+          <p>Subnet: {vm.subnetName} ({vm.subnetIPv4_CIDR})</p>
+          <p>Security Group: {vm.securityGroupName}</p>
+          <p>Keypair: {vm.keypairName}</p>
+          <p>Image: {vm.imageName}</p>
+          <p>Spec: {vm.vmSpec}</p>
+          <p>Region: {vm.regionName}</p>
+          <p>Zone: {vm.zoneName}</p>
+          <button className="action-button" onClick={() => toggleVMStatus(vm.id)}>
+            {vm.status === 'Running' ? 'Stop' : 'Start'}
+          </button>
+        </div>
+      ))}
       <button className="action-button" onClick={() => setShowForm(true)}>Create New VM</button>
       {showForm && (
         <div className="new-vm-form">
@@ -126,7 +150,85 @@ function VMManagement() {
                 type="text"
                 value={newVM.vpcIPv4_CIDR}
                 onChange={handleInputChange}
+                required
               />
+            </div>
+            <div>
+              <label htmlFor="subnetName">Subnet Name:</label>
+              <input
+                id="subnetName"
+                name="subnetName"
+                type="text"
+                value={newVM.subnetName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="subnetIPv4_CIDR">Subnet IPv4 CIDR:</label>
+              <input
+                id="subnetIPv4_CIDR"
+                name="subnetIPv4_CIDR"
+                type="text"
+                value={newVM.subnetIPv4_CIDR}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="securityGroupName">Security Group Name:</label>
+              <input
+                id="securityGroupName"
+                name="securityGroupName"
+                type="text"
+                value={newVM.securityGroupName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Security Group Rules:</label>
+              {newVM.securityGroupRules.map((rule, index) => (
+                <div key={index}>
+                  <label htmlFor={`fromPort-${index}`}>From Port:</label>
+                  <input
+                    id={`fromPort-${index}`}
+                    name="fromPort"
+                    type="text"
+                    value={rule.fromPort}
+                    onChange={(e) => handleSecurityRuleChange(index, 'fromPort', e.target.value)}
+                    required
+                  />
+                  <label htmlFor={`toPort-${index}`}>To Port:</label>
+                  <input
+                    id={`toPort-${index}`}
+                    name="toPort"
+                    type="text"
+                    value={rule.toPort}
+                    onChange={(e) => handleSecurityRuleChange(index, 'toPort', e.target.value)}
+                    required
+                  />
+                  <label htmlFor={`ipProtocol-${index}`}>IP Protocol:</label>
+                  <input
+                    id={`ipProtocol-${index}`}
+                    name="ipProtocol"
+                    type="text"
+                    value={rule.ipProtocol}
+                    onChange={(e) => handleSecurityRuleChange(index, 'ipProtocol', e.target.value)}
+                    required
+                  />
+                  <label htmlFor={`direction-${index}`}>Direction:</label>
+                  <input
+                    id={`direction-${index}`}
+                    name="direction"
+                    type="text"
+                    value={rule.direction}
+                    onChange={(e) => handleSecurityRuleChange(index, 'direction', e.target.value)}
+                    required
+                  />
+                </div>
+              ))}
+              <button type="button" onClick={addSecurityRule}>Add Security Rule</button>
             </div>
             <div>
               <label htmlFor="keypairName">Keypair Name:</label>
@@ -147,6 +249,7 @@ function VMManagement() {
                 type="text"
                 value={newVM.imageName}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div>
@@ -157,6 +260,29 @@ function VMManagement() {
                 type="text"
                 value={newVM.vmSpec}
                 onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="regionName">Region Name:</label>
+              <input
+                id="regionName"
+                name="regionName"
+                type="text"
+                value={newVM.regionName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="zoneName">Zone Name:</label>
+              <input
+                id="zoneName"
+                name="zoneName"
+                type="text"
+                value={newVM.zoneName}
+                onChange={handleInputChange}
+                required
               />
             </div>
             <button type="submit" className="action-button">Create</button>
