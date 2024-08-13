@@ -63,24 +63,17 @@ public class OpenStackVmInfo {
     @Column(name = "vm_spec")
     private String vmSpec;
 
-    @Column(name = "region_name")
-    private String regionName;
-
-    @Column(name = "zone_name")
-    private String zoneName;
-
     @Column(name = "secret_key", length = 5000)
     private String secretkey;
 
     @Column(name = "ip")
     private String ip;
 
-
     public OpenStackVmInfo(User userInfo, String connectionName, String vmName, String vpcName,
         String vpcIPv4CIDR, String subnetName, String subnetIPv4CIDR, String securityGroupName,
         List<SecurityGroupRule> securityGroupRules, String keypairName, String imageName,
         String vmSpec,
-        String regionName, String zoneName, String secretkey, String ip) {
+        String secretkey, String ip) {
         this.userInfo = userInfo;
         this.connectionName = connectionName;
         this.vmName = vmName;
@@ -93,8 +86,6 @@ public class OpenStackVmInfo {
         this.keypairName = keypairName;
         this.imageName = imageName;
         this.vmSpec = vmSpec;
-        this.regionName = regionName;
-        this.zoneName = zoneName;
         this.secretkey = secretkey;
         this.ip = ip;
     }

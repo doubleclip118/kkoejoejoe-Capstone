@@ -51,8 +51,6 @@ public class AzureVmInfoService {
             vmInfoDTO.getKeypairName(),
             vmInfoDTO.getImageName(),
             vmInfoDTO.getVmSpec(),
-            vmInfoDTO.getRegionName(),
-            vmInfoDTO.getZoneName(),
             null,
             null
         );
@@ -138,8 +136,7 @@ public class AzureVmInfoService {
         dto.setKeypairName(azureVmInfo.getKeypairName());
         dto.setImageName(azureVmInfo.getImageName());
         dto.setVmSpec(azureVmInfo.getVmSpec());
-        dto.setRegionName(azureVmInfo.getRegionName());
-        dto.setZoneName(azureVmInfo.getZoneName());
+
 
         List<SecurityGroupRuleDTO> ruleDTOs = azureVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)

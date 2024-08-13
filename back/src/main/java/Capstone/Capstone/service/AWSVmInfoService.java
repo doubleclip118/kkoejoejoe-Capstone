@@ -51,8 +51,6 @@ public class AWSVmInfoService {
             vmInfoDTO.getKeypairName(),
             vmInfoDTO.getImageName(),
             vmInfoDTO.getVmSpec(),
-            vmInfoDTO.getRegionName(),
-            vmInfoDTO.getZoneName(),
             null,
             null
         );
@@ -137,8 +135,6 @@ public class AWSVmInfoService {
         dto.setKeypairName(awsVmInfo.getKeypairName());
         dto.setImageName(awsVmInfo.getImageName());
         dto.setVmSpec(awsVmInfo.getVmSpec());
-        dto.setRegionName(awsVmInfo.getRegionName());
-        dto.setZoneName(awsVmInfo.getZoneName());
 
         List<SecurityGroupRuleDTO> ruleDTOs = awsVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)

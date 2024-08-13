@@ -51,8 +51,6 @@ public class OpenstackVmInfoService {
             vmInfoDTO.getKeypairName(),
             vmInfoDTO.getImageName(),
             vmInfoDTO.getVmSpec(),
-            vmInfoDTO.getRegionName(),
-            vmInfoDTO.getZoneName(),
             null,
             null
         );
@@ -138,8 +136,6 @@ public class OpenstackVmInfoService {
         response.setKeypairName(openStackVmInfo.getKeypairName());
         response.setImageName(openStackVmInfo.getImageName());
         response.setVmSpec(openStackVmInfo.getVmSpec());
-        response.setRegionName(openStackVmInfo.getRegionName());
-        response.setZoneName(openStackVmInfo.getZoneName());
 
         List<SecurityGroupRuleDTO> ruleDTOs = openStackVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)
