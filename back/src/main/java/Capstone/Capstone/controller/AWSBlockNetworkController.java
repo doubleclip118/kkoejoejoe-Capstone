@@ -14,9 +14,9 @@ public class AWSBlockNetworkController {
         this.awsVmNetworkService = awsVmNetworkService;
     }
 
-    @GetMapping("/api/test/{id}")
-    public ResponseEntity<String> test(@PathVariable("id")Long id){
-        awsVmNetworkService.sftpToEC2Instance(id);
+    @GetMapping("/api/test/{vmid}")
+    public ResponseEntity<String> test(@PathVariable("vmid")Long vmId){
+        awsVmNetworkService.sftpToEC2Instance(vmId);
         return ResponseEntity.ok("오케이");
     }
 }

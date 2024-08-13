@@ -73,7 +73,9 @@ public class SSHConnector {
     }
 
     private Path createTempKeyFile(String key) throws IOException {
-        Path tempKeyFile = Files.createTempFile("temp", ".pem");
+        String fileName = "temp.pem";
+        Path tempDir = Files.createTempDirectory("my-temp-dir");
+        Path tempKeyFile = tempDir.resolve(fileName);
         Files.write(tempKeyFile, key.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
         Files.setPosixFilePermissions(tempKeyFile, perms);
@@ -157,7 +159,7 @@ public class SSHConnector {
             System.out.println("PEM key file sent successfully.");
 
             // Set appropriate permissions for the PEM key file
-            channelSftp.chmod(0600, remotePemPath);
+            channelSftp.chmod(0777, remotePemPath);
             System.out.println("PEM key file permissions set to 600.");
 
         } finally {
