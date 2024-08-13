@@ -51,7 +51,7 @@ public class OpenStackVmInfo {
     @Column(name = "security_group_name")
     private String securityGroupName;
 
-    @OneToMany(mappedBy = "azureVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "openstackVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SecurityGroupRule> securityGroupRules = new ArrayList<>();
 
     @Column(name = "keypair_name")

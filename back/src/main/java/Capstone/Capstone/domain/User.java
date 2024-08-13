@@ -35,21 +35,20 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "aws_cloud_info_id")
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private AWSCloudInfo awsCloudInfo;
 
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AWSVmInfo> awsVmInfos = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "azure_cloud_info_id")
     private AzureCloudInfo azureCloudInfo;
 
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AzureVmInfo> azureVmInfos = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "openstack_cloud_info_id")
     private OpenstackCloudInfo openstackCloudInfo;
 
