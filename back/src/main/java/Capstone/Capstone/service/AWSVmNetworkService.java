@@ -47,5 +47,30 @@ public class AWSVmNetworkService {
         }
     }
 
+    @Transactional
+    public void sftpToEC2Instance(Long vmId) {
+        AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
+            .orElseThrow(() -> new RuntimeException("VM not found"));
+
+        String privateKey = vmInfo.getSecretkey();
+        String ipAddress = vmInfo.getIp();
+
+        Session session = null;
+        try {
+            session = sshConnector.connectToEC2(privateKey, ipAddress);
+
+            System.out.println("Successfully connected to EC2 instance: " + ipAddress);
+
+
+            sshConnector.sendPemKeyViaSftp(session, privateKey);
+            System.out.println("전송 성공");
+
+        } catch (Exception e) {
+            System.err.println("Failed to connect to EC2 instance: " + e.getMessage());
+        } finally {
+            sshConnector.disconnectFromEC2(session);
+        }
+    }
+
 
 }
