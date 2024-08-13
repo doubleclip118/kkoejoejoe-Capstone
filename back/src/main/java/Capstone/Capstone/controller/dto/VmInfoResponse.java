@@ -34,9 +34,5 @@ public class VmInfoResponse {
     private String imageName;
     @NotEmpty
     private String vmSpec;
-    @NotEmpty
-    private String regionName;
-    @NotEmpty
-    private String zoneName;
 
 }
