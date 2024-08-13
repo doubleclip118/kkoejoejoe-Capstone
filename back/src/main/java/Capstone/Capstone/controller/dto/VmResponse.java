@@ -33,10 +33,6 @@ public class VmResponse {
     @NotEmpty
     private String vmSpec;
     @NotEmpty
-    private String regionName;
-    @NotEmpty
-    private String zoneName;
-    @NotEmpty
     private String privateKey;
     @NotEmpty
     private String ip;

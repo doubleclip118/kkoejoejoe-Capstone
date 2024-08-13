@@ -21,9 +21,6 @@ public class CreateVMResponseDTO {
     @JsonProperty("StartTime")
     private String startTime;
 
-    @JsonProperty("Region")
-    private Region region;
-
     @JsonProperty("ImageType")
     private String imageType;
 
@@ -111,17 +108,6 @@ public class CreateVMResponseDTO {
         private String systemId;
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Region {
-        @JsonProperty("Region")
-        private String region;
-
-        @JsonProperty("Zone")
-        private String zone;
-    }
 
     @Getter
     @Setter
