@@ -73,7 +73,7 @@ public class SSHConnector {
     }
 
     private Path createTempKeyFile(String key) throws IOException {
-        Path tempKeyFile = Files.createTempFile("temp_key", ".pem");
+        Path tempKeyFile = Files.createTempFile("temp", ".pem");
         Files.write(tempKeyFile, key.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
         Files.setPosixFilePermissions(tempKeyFile, perms);
@@ -135,6 +135,39 @@ public class SSHConnector {
         } finally {
             if (channel != null) {
                 channel.disconnect();
+            }
+        }
+    }
+
+    public void sendPemKeyViaSftp(Session session, String privateKeyContent) throws JSchException, SftpException, IOException {
+        Path tempKeyFile = null;
+        ChannelSftp channelSftp = null;
+        String remotePemPath = "/home/ubuntu";
+        try {
+            String formattedKey = formatPrivateKey(privateKeyContent);
+            tempKeyFile = createTempKeyFile(formattedKey);
+
+            System.out.println("Opening SFTP channel...");
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
+            System.out.println("SFTP channel opened.");
+
+            System.out.println("Sending PEM key file to " + remotePemPath);
+            channelSftp.put(tempKeyFile.toString(), remotePemPath);
+            System.out.println("PEM key file sent successfully.");
+
+            // Set appropriate permissions for the PEM key file
+            channelSftp.chmod(0600, remotePemPath);
+            System.out.println("PEM key file permissions set to 600.");
+
+        } finally {
+            if (channelSftp != null) {
+                channelSftp.disconnect();
+                System.out.println("SFTP channel closed.");
+            }
+            if (tempKeyFile != null) {
+                Files.deleteIfExists(tempKeyFile);
+                System.out.println("Temporary key file deleted.");
             }
         }
     }
