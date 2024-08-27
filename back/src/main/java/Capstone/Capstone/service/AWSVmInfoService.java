@@ -34,30 +34,30 @@ public class AWSVmInfoService {
     }
 
     @Transactional
-    public VmInfoResponse createAWSVmInfo(VmInfoDTO vmInfoDTO) {
-        User user = userRepository.findById(vmInfoDTO.getUserId())
+    public VmInfoResponse createAWSVmInfo(VmInfoRequest vmInfoRequest) {
+        User user = userRepository.findById(vmInfoRequest.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         AWSVmInfo awsVmInfo = new AWSVmInfo(
             user,
-            vmInfoDTO.getConnectionName(),
-            vmInfoDTO.getVmName(),
-            vmInfoDTO.getVpcName(),
-            vmInfoDTO.getVpcIPv4Cidr(),
-            vmInfoDTO.getSubnetName(),
-            vmInfoDTO.getSubnetIPv4Cidr(),
-            vmInfoDTO.getSecurityGroupName(),
+            vmInfoRequest.getConnectionName(),
+            vmInfoRequest.getVmName(),
+            vmInfoRequest.getVpcName(),
+            vmInfoRequest.getVpcIPv4Cidr(),
+            vmInfoRequest.getSubnetName(),
+            vmInfoRequest.getSubnetIPv4Cidr(),
+            vmInfoRequest.getSecurityGroupName(),
             new ArrayList<>(),  // SecurityGroupRules will be added separately
-            vmInfoDTO.getKeypairName(),
-            vmInfoDTO.getImageName(),
-            vmInfoDTO.getVmSpec(),
+            vmInfoRequest.getKeypairName(),
+            vmInfoRequest.getImageName(),
+            vmInfoRequest.getVmSpec(),
             null,
             null
         );
 
         AWSVmInfo savedAWSVmInfo = awsVmInfoRepository.save(awsVmInfo);
 
-        for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
+        for (SecurityGroupRuleDTO ruleDTO : vmInfoRequest.getSecurityGroupRules()) {
             SecurityGroupRule rule = new SecurityGroupRule(
                 savedAWSVmInfo,
                 ruleDTO.getFromPort(),

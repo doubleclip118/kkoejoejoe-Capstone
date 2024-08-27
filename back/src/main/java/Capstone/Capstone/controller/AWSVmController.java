@@ -2,7 +2,7 @@ package Capstone.Capstone.controller;
 
 
 import Capstone.Capstone.controller.dto.GetVmDTO;
-import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoRequest;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmcreateResponse;
 import Capstone.Capstone.service.AWSVmInfoService;
@@ -28,8 +28,8 @@ public class AWSVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO){
-        VmInfoResponse awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoDTO);
+    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoRequest vmInfoRequest){
+        VmInfoResponse awsVmInfo = awsVmInfoService.createAWSVmInfo(vmInfoRequest);
         return ResponseEntity.ok(awsVmInfo);
     }
     @DeleteMapping("/{id}")

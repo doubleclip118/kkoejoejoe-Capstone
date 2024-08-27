@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OpenStackInfoDTO {
+public class OpenStackInfoRequest {
     @NotNull
     private Long userId;
 

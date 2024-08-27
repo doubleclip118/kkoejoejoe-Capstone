@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VmInfoDTO {
+public class VmInfoRequest {
     @NotEmpty
     private Long userId;
     @NotEmpty

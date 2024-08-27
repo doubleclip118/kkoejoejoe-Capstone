@@ -1,10 +1,9 @@
 package Capstone.Capstone.controller;
 
 import Capstone.Capstone.controller.dto.GetVmDTO;
-import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoRequest;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmcreateResponse;
-import Capstone.Capstone.service.AzureVmInfoService;
 import Capstone.Capstone.service.OpenstackVmInfoService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +27,8 @@ public class OpenStackVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO) {
-        VmInfoResponse azureVmInfo = openstackVmInfoService.createOpenStackVmInfo(vmInfoDTO);
+    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoRequest vmInfoRequest) {
+        VmInfoResponse azureVmInfo = openstackVmInfoService.createOpenStackVmInfo(vmInfoRequest);
         return ResponseEntity.ok(azureVmInfo);
     }
 

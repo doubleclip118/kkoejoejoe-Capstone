@@ -1,6 +1,6 @@
 package Capstone.Capstone.service;
 
-import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
+import Capstone.Capstone.controller.dto.OpenStackInfoRequest;
 import Capstone.Capstone.domain.AWSCloudInfo;
 import Capstone.Capstone.domain.AzureCloudInfo;
 import Capstone.Capstone.domain.OpenstackCloudInfo;
@@ -220,24 +220,24 @@ public class UserService {
         return getAzureInfoResponse(user);
     }
 
-    public OpenStackInfoDTO createOpenstackInfo(OpenStackInfoDTO openStackInfoDTO){
-        User user = userRepository.findById(openStackInfoDTO.getUserId()).orElseThrow(
+    public OpenStackInfoRequest createOpenstackInfo(OpenStackInfoRequest openStackInfoRequest){
+        User user = userRepository.findById(openStackInfoRequest.getUserId()).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
         OpenstackCloudInfo openstackCloudInfo = new OpenstackCloudInfo(user,
-            openStackInfoDTO.getDriverName(), openStackInfoDTO.getProviderName(),
-            openStackInfoDTO.getDriverLibFileName(), openStackInfoDTO.getCredentialName(),
-            openStackInfoDTO.getIdentityEndpointKey(), openStackInfoDTO.getIdentityEndpointValue(),
-            openStackInfoDTO.getUsernameKey(), openStackInfoDTO.getUsernameValue(),
-            openStackInfoDTO.getDomainNameKey(), openStackInfoDTO.getDomainNameValue(),
-            openStackInfoDTO.getPasswordKey(), openStackInfoDTO.getPasswordValue(),
-            openStackInfoDTO.getProjectIDKey(), openStackInfoDTO.getProjectIDValue(),
-            openStackInfoDTO.getRegionName(), openStackInfoDTO.getRegionKey(),
-            openStackInfoDTO.getRegionValue(), openStackInfoDTO.getConfigName());
+            openStackInfoRequest.getDriverName(), openStackInfoRequest.getProviderName(),
+            openStackInfoRequest.getDriverLibFileName(), openStackInfoRequest.getCredentialName(),
+            openStackInfoRequest.getIdentityEndpointKey(), openStackInfoRequest.getIdentityEndpointValue(),
+            openStackInfoRequest.getUsernameKey(), openStackInfoRequest.getUsernameValue(),
+            openStackInfoRequest.getDomainNameKey(), openStackInfoRequest.getDomainNameValue(),
+            openStackInfoRequest.getPasswordKey(), openStackInfoRequest.getPasswordValue(),
+            openStackInfoRequest.getProjectIDKey(), openStackInfoRequest.getProjectIDValue(),
+            openStackInfoRequest.getRegionName(), openStackInfoRequest.getRegionKey(),
+            openStackInfoRequest.getRegionValue(), openStackInfoRequest.getConfigName());
         OpenstackCloudInfo save = openstackCloudInfoRepository.save(openstackCloudInfo);
         user.setOpenstackCloudInfo(save);
         log.info("openstack info create");
-        return new OpenStackInfoDTO(openStackInfoDTO.getUserId(),save.getDriverName(),
+        return new OpenStackInfoRequest(openStackInfoRequest.getUserId(),save.getDriverName(),
             save.getProviderName(),save.getDriverLibFileName(),save.getCredentialName(),
             save.getIdentityEndpointKey(), save.getIdentityEndpointValue(), save.getUsernameKey(),
             save.getUsernameValue(),save.getDomainNameKey(),save.getDomainNameValue(),
@@ -246,7 +246,7 @@ public class UserService {
             save.getConfigName());
     }
 
-    public OpenStackInfoDTO getOpenStackInfo(Long id) {
+    public OpenStackInfoRequest getOpenStackInfo(Long id) {
         User user = userRepository.findByUserIdWithOpenstackCloudInfo(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
@@ -268,7 +268,7 @@ public class UserService {
     }
 
     @Transactional
-    public OpenStackInfoDTO changeOpenStackInfo(Long id, OpenStackInfoDTO openStackInfoDTO) {
+    public OpenStackInfoRequest changeOpenStackInfo(Long id, OpenStackInfoRequest openStackInfoRequest) {
         User user = userRepository.findById(id).orElseThrow(
             () -> new UserNotFoundException("User Not Found")
         );
@@ -276,7 +276,7 @@ public class UserService {
         if (openstackCloudInfo == null) {
             throw new OpenStackCloudInfoNotFoundException("OpenStack INFO Not Found");
         }
-        openstackCloudInfo.updateOpenStackInfo(openStackInfoDTO);
+        openstackCloudInfo.updateOpenStackInfo(openStackInfoRequest);
         openstackCloudInfoRepository.save(openstackCloudInfo);
         return getOpenStackInfoResponse(user);
     }
@@ -325,9 +325,9 @@ public class UserService {
         );
     }
 
-    private OpenStackInfoDTO getOpenStackInfoResponse(User user) {
+    private OpenStackInfoRequest getOpenStackInfoResponse(User user) {
         OpenstackCloudInfo info = user.getOpenstackCloudInfo();
-        return new OpenStackInfoDTO(
+        return new OpenStackInfoRequest(
             user.getId(),
             info.getDriverName(),
             info.getProviderName(),

@@ -1,9 +1,8 @@
 package Capstone.Capstone.domain;
 
-import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
+import Capstone.Capstone.controller.dto.OpenStackInfoRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -91,7 +90,7 @@ public class OpenstackCloudInfo {
         this.configName = configName;
     }
 
-    public void updateOpenStackInfo(OpenStackInfoDTO dto) {
+    public void updateOpenStackInfo(OpenStackInfoRequest dto) {
         if (dto.getDriverName() != null) this.driverName = dto.getDriverName();
         if (dto.getProviderName() != null) this.providerName = dto.getProviderName();
         if (dto.getDriverLibFileName() != null) this.driverLibFileName = dto.getDriverLibFileName();

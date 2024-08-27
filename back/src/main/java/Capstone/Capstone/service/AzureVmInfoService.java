@@ -34,30 +34,30 @@ public class AzureVmInfoService {
     }
 
     @Transactional
-    public VmInfoResponse createAzureVmInfo(VmInfoDTO vmInfoDTO) {
-        User user = userRepository.findById(vmInfoDTO.getUserId())
+    public VmInfoResponse createAzureVmInfo(VmInfoRequest vmInfoRequest) {
+        User user = userRepository.findById(vmInfoRequest.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         AzureVmInfo azureVmInfo = new AzureVmInfo(
             user,
-            vmInfoDTO.getConnectionName(),
-            vmInfoDTO.getVmName(),
-            vmInfoDTO.getVpcName(),
-            vmInfoDTO.getVpcIPv4Cidr(),
-            vmInfoDTO.getSubnetName(),
-            vmInfoDTO.getSubnetIPv4Cidr(),
-            vmInfoDTO.getSecurityGroupName(),
+            vmInfoRequest.getConnectionName(),
+            vmInfoRequest.getVmName(),
+            vmInfoRequest.getVpcName(),
+            vmInfoRequest.getVpcIPv4Cidr(),
+            vmInfoRequest.getSubnetName(),
+            vmInfoRequest.getSubnetIPv4Cidr(),
+            vmInfoRequest.getSecurityGroupName(),
             new ArrayList<>(),
-            vmInfoDTO.getKeypairName(),
-            vmInfoDTO.getImageName(),
-            vmInfoDTO.getVmSpec(),
+            vmInfoRequest.getKeypairName(),
+            vmInfoRequest.getImageName(),
+            vmInfoRequest.getVmSpec(),
             null,
             null
         );
 
         AzureVmInfo savedAzureVmInfo = azureVmInfoRepository.save(azureVmInfo);
 
-        for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
+        for (SecurityGroupRuleDTO ruleDTO : vmInfoRequest.getSecurityGroupRules()) {
             SecurityGroupRule rule = new SecurityGroupRule(
                 savedAzureVmInfo,
                 ruleDTO.getFromPort(),

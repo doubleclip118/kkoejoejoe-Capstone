@@ -4,10 +4,9 @@ import Capstone.Capstone.controller.dto.AWSInfoRequest;
 import Capstone.Capstone.controller.dto.AWSInfoResponse;
 import Capstone.Capstone.controller.dto.AzureInfoRequest;
 import Capstone.Capstone.controller.dto.AzureInfoResponse;
-import Capstone.Capstone.controller.dto.OpenStackInfoDTO;
+import Capstone.Capstone.controller.dto.OpenStackInfoRequest;
 import Capstone.Capstone.controller.dto.UserRequest;
 import Capstone.Capstone.controller.dto.UserResponse;
-import Capstone.Capstone.domain.OpenstackCloudInfo;
 import Capstone.Capstone.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -104,15 +103,15 @@ public class UserController {
     }
 
     @PostMapping("/cloud/openstack")
-    public ResponseEntity<OpenStackInfoDTO> createOpenstackInfo(@RequestBody OpenStackInfoDTO openStackInfoDTO){
-        OpenStackInfoDTO openstackInfo = userService.createOpenstackInfo(openStackInfoDTO);
+    public ResponseEntity<OpenStackInfoRequest> createOpenstackInfo(@RequestBody OpenStackInfoRequest openStackInfoRequest){
+        OpenStackInfoRequest openstackInfo = userService.createOpenstackInfo(openStackInfoRequest);
         return ResponseEntity.ok(openstackInfo);
     }
 
     @GetMapping("/cloud/openstack/{id}")
-    public ResponseEntity<OpenStackInfoDTO> getOpenstackInfo(@PathVariable("id") Long id){
+    public ResponseEntity<OpenStackInfoRequest> getOpenstackInfo(@PathVariable("id") Long id){
         log.info("openstack info get");
-        OpenStackInfoDTO openStackInfo = userService.getOpenStackInfo(id);
+        OpenStackInfoRequest openStackInfo = userService.getOpenStackInfo(id);
         return ResponseEntity.ok(openStackInfo);
     }
 
@@ -124,10 +123,10 @@ public class UserController {
     }
 
     @PutMapping("/cloud/openstack/{id}")
-    public ResponseEntity<OpenStackInfoDTO> changeOpenStackInfo(@PathVariable("id") Long id,
-        @RequestBody OpenStackInfoDTO openStackInfoDTO){
+    public ResponseEntity<OpenStackInfoRequest> changeOpenStackInfo(@PathVariable("id") Long id,
+        @RequestBody OpenStackInfoRequest openStackInfoRequest){
         log.info("openstack info change");
-        OpenStackInfoDTO openStack = userService.changeOpenStackInfo(id, openStackInfoDTO);
+        OpenStackInfoRequest openStack = userService.changeOpenStackInfo(id, openStackInfoRequest);
         return ResponseEntity.ok(openStack);
     }
 }

@@ -1,7 +1,7 @@
 package Capstone.Capstone.controller;
 
 import Capstone.Capstone.controller.dto.GetVmDTO;
-import Capstone.Capstone.controller.dto.VmInfoDTO;
+import Capstone.Capstone.controller.dto.VmInfoRequest;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmcreateResponse;
 import Capstone.Capstone.service.AzureVmInfoService;
@@ -21,8 +21,8 @@ public class AzureVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoDTO vmInfoDTO) {
-        VmInfoResponse azureVmInfo = azureVmInfoService.createAzureVmInfo(vmInfoDTO);
+    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoRequest vmInfoRequest) {
+        VmInfoResponse azureVmInfo = azureVmInfoService.createAzureVmInfo(vmInfoRequest);
         return ResponseEntity.ok(azureVmInfo);
     }
 

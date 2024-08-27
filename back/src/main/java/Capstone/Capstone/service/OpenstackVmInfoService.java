@@ -34,30 +34,30 @@ public class OpenstackVmInfoService {
     }
 
     @Transactional
-    public VmInfoResponse createOpenStackVmInfo(VmInfoDTO vmInfoDTO) {
-        User user = userRepository.findById(vmInfoDTO.getUserId())
+    public VmInfoResponse createOpenStackVmInfo(VmInfoRequest vmInfoRequest) {
+        User user = userRepository.findById(vmInfoRequest.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         OpenStackVmInfo openStackVmInfo = new OpenStackVmInfo(
             user,
-            vmInfoDTO.getConnectionName(),
-            vmInfoDTO.getVmName(),
-            vmInfoDTO.getVpcName(),
-            vmInfoDTO.getVpcIPv4Cidr(),
-            vmInfoDTO.getSubnetName(),
-            vmInfoDTO.getSubnetIPv4Cidr(),
-            vmInfoDTO.getSecurityGroupName(),
+            vmInfoRequest.getConnectionName(),
+            vmInfoRequest.getVmName(),
+            vmInfoRequest.getVpcName(),
+            vmInfoRequest.getVpcIPv4Cidr(),
+            vmInfoRequest.getSubnetName(),
+            vmInfoRequest.getSubnetIPv4Cidr(),
+            vmInfoRequest.getSecurityGroupName(),
             new ArrayList<>(),
-            vmInfoDTO.getKeypairName(),
-            vmInfoDTO.getImageName(),
-            vmInfoDTO.getVmSpec(),
+            vmInfoRequest.getKeypairName(),
+            vmInfoRequest.getImageName(),
+            vmInfoRequest.getVmSpec(),
             null,
             null
         );
 
         OpenStackVmInfo savedOpenStackVmInfo = openStackVmInfoRepository.save(openStackVmInfo);
 
-        for (SecurityGroupRuleDTO ruleDTO : vmInfoDTO.getSecurityGroupRules()) {
+        for (SecurityGroupRuleDTO ruleDTO : vmInfoRequest.getSecurityGroupRules()) {
             SecurityGroupRule rule = new SecurityGroupRule(
                 savedOpenStackVmInfo,
                 ruleDTO.getFromPort(),
