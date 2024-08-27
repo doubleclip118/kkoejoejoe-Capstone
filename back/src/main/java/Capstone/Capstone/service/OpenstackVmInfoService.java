@@ -1,6 +1,7 @@
 package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.*;
+import Capstone.Capstone.controller.dto.OpenstackVmResponse;
 import Capstone.Capstone.domain.OpenStackVmInfo;
 import Capstone.Capstone.domain.SecurityGroupRule;
 import Capstone.Capstone.domain.User;
@@ -24,8 +25,8 @@ public class OpenstackVmInfoService {
     private final SecurityGroupRuleRepository securityGroupRuleRepository;
     private final ExternalApiService externalApiService;
 
-    public OpenstackVmInfoService(OpenStackVmInfoRepository openStackVmInfoRepository, UserRepository userRepository,
-        SecurityGroupRuleRepository securityGroupRuleRepository,
+    public OpenstackVmInfoService(OpenStackVmInfoRepository openStackVmInfoRepository,
+        UserRepository userRepository, SecurityGroupRuleRepository securityGroupRuleRepository,
         ExternalApiService externalApiService) {
         this.openStackVmInfoRepository = openStackVmInfoRepository;
         this.userRepository = userRepository;
@@ -34,7 +35,7 @@ public class OpenstackVmInfoService {
     }
 
     @Transactional
-    public VmInfoResponse createOpenStackVmInfo(VmInfoRequest vmInfoRequest) {
+    public OpenstackVmResponse createOpenStackVmInfo(OpenstackVmRequest vmInfoRequest) {
         User user = userRepository.findById(vmInfoRequest.getUserId())
             .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
@@ -42,17 +43,19 @@ public class OpenstackVmInfoService {
             user,
             vmInfoRequest.getConnectionName(),
             vmInfoRequest.getVmName(),
+            vmInfoRequest.getImageType(),
+            vmInfoRequest.getImageName(),
+            vmInfoRequest.getVmSpecName(),
             vmInfoRequest.getVpcName(),
-            vmInfoRequest.getVpcIPv4Cidr(),
+            vmInfoRequest.getVpcIPv4CIDR(),
             vmInfoRequest.getSubnetName(),
-            vmInfoRequest.getSubnetIPv4Cidr(),
+            vmInfoRequest.getSubnetIPv4CIDR(),
             vmInfoRequest.getSecurityGroupName(),
             new ArrayList<>(),
-            vmInfoRequest.getKeypairName(),
-            vmInfoRequest.getImageName(),
-            vmInfoRequest.getVmSpec(),
-            null,
-            null
+            vmInfoRequest.getRootDiskType(),
+            vmInfoRequest.getKeyPairName(),
+            vmInfoRequest.getVmUserId(),
+            vmInfoRequest.getVmUserPasswd()
         );
 
         OpenStackVmInfo savedOpenStackVmInfo = openStackVmInfoRepository.save(openStackVmInfo);
@@ -69,11 +72,13 @@ public class OpenstackVmInfoService {
             savedOpenStackVmInfo.addSecurityGroupRule(rule);
         }
 
-        return convertToVmInfoResponse(savedOpenStackVmInfo);
+        return convertToOpenstackVmResponse(savedOpenStackVmInfo);
     }
 
     @Transactional
     public String deleteOpenStackVmInfo(Long id) {
+        openStackVmInfoRepository.findById(id)
+            .orElseThrow(() -> new VmInfoNotFoundException("VM Info Not Found"));
         openStackVmInfoRepository.deleteById(id);
         return "삭제 완료";
     }
@@ -94,8 +99,8 @@ public class OpenstackVmInfoService {
 
         vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
 
-        CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo);
-        CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
+        OpenstackVmCreateRequest createVMRequestDTO = prepareVMRequest(vmInfo);
+        OpenstackVmCreateResponse vmResponse = externalApiService.createOpenstackVM(createVMRequestDTO);
 
         vmInfo.setIp(vmResponse.getPublicIP());
         openStackVmInfoRepository.save(vmInfo);
@@ -105,42 +110,48 @@ public class OpenstackVmInfoService {
 
     @Transactional
     public String deleteVm(Long vmid) {
-        OpenStackVmInfo vmInfo = openStackVmInfoRepository.findById(vmid).orElseThrow(
-            () -> new VmInfoNotFoundException("Vm info Not Found")
-        );
+        OpenStackVmInfo vmInfo = openStackVmInfoRepository.findById(vmid)
+            .orElseThrow(() -> new VmInfoNotFoundException("Vm info Not Found"));
         externalApiService.deleteVm(vmInfo.getVmName(), vmInfo.getConnectionName());
         openStackVmInfoRepository.deleteById(vmid);
         return "삭제 완료";
     }
 
     public List<GetVmDTO> getVmDTOList(Long id) {
-        User user = userRepository.findByUserIdWithVAndOpenstackVmInfos(id).orElseThrow(
-            () -> new UserNotFoundException("User with vm not found")
-        );
+        User user = userRepository.findByUserIdWithVAndOpenstackVmInfos(id)
+            .orElseThrow(() -> new UserNotFoundException("User with vm not found"));
         return user.getOpenStackVmInfos().stream()
             .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName()))
             .collect(Collectors.toList());
     }
 
-    private VmInfoResponse convertToVmInfoResponse(OpenStackVmInfo openStackVmInfo) {
-        VmInfoResponse response = new VmInfoResponse();
-        response.setUserId(openStackVmInfo.getUserInfo().getId());
+    private OpenstackVmResponse convertToOpenstackVmResponse(OpenStackVmInfo openStackVmInfo) {
+        OpenstackVmResponse response = new OpenstackVmResponse();
         response.setVmId(openStackVmInfo.getId());
+        response.setUserId(openStackVmInfo.getUserInfo().getId());
         response.setConnectionName(openStackVmInfo.getConnectionName());
         response.setVmName(openStackVmInfo.getVmName());
-        response.setVpcName(openStackVmInfo.getVpcName());
-        response.setVpcIPv4Cidr(openStackVmInfo.getVpcIPv4CIDR());
-        response.setSubnetName(openStackVmInfo.getSubnetName());
-        response.setSubnetIPv4Cidr(openStackVmInfo.getSubnetIPv4CIDR());
-        response.setSecurityGroupName(openStackVmInfo.getSecurityGroupName());
-        response.setKeypairName(openStackVmInfo.getKeypairName());
+        response.setImageType(openStackVmInfo.getImageType());
         response.setImageName(openStackVmInfo.getImageName());
-        response.setVmSpec(openStackVmInfo.getVmSpec());
+        response.setVmSpecName(openStackVmInfo.getVmSpecName());
+        response.setVpcName(openStackVmInfo.getVpcName());
+        response.setVpcIPv4CIDR(openStackVmInfo.getVpcIPv4CIDR());
+        response.setSubnetName(openStackVmInfo.getSubnetName());
+        response.setSubnetIPv4CIDR(openStackVmInfo.getSubnetIPv4CIDR());
+        response.setSecurityGroupName(openStackVmInfo.getSecurityGroupName());
+        response.setRootDiskType(openStackVmInfo.getRootDiskType());
+        response.setKeyPairName(openStackVmInfo.getKeyPairName());
+        response.setVmUserId(openStackVmInfo.getVmUserId());
+        response.setVmUserPasswd(openStackVmInfo.getVmUserPasswd());
 
         List<SecurityGroupRuleDTO> ruleDTOs = openStackVmInfo.getSecurityGroupRules().stream()
             .map(this::convertToSecurityGroupRuleDTO)
             .collect(Collectors.toList());
         response.setSecurityGroupRules(ruleDTOs);
+
+        // Note: dataDiskNames is not present in the OpenStackVmInfo entity
+        // You may need to add this field to the entity or fetch it from another source
+        response.setDataDiskNames(new ArrayList<>());
 
         return response;
     }
@@ -199,7 +210,7 @@ public class OpenstackVmInfoService {
 
     private CreateKeyPairRequestDTO prepareKeyPairRequest(OpenStackVmInfo vmInfo) {
         CreateKeyPairRequestDTO.ReqInfo reqInfo = new CreateKeyPairRequestDTO.ReqInfo();
-        reqInfo.setName(vmInfo.getKeypairName());
+        reqInfo.setName(vmInfo.getKeyPairName());
 
         CreateKeyPairRequestDTO createKeyPairRequestDTO = new CreateKeyPairRequestDTO();
         createKeyPairRequestDTO.setConnectionName(vmInfo.getConnectionName());
@@ -208,17 +219,22 @@ public class OpenstackVmInfoService {
         return createKeyPairRequestDTO;
     }
 
-    private CreateVMRequestDTO prepareVMRequest(OpenStackVmInfo vmInfo) {
-        CreateVMRequestDTO.ReqInfo reqInfo = new CreateVMRequestDTO.ReqInfo();
+    private OpenstackVmCreateRequest prepareVMRequest(OpenStackVmInfo vmInfo) {
+        OpenstackVmCreateRequest.ReqInfo reqInfo = new OpenstackVmCreateRequest.ReqInfo();
         reqInfo.setName(vmInfo.getVmName());
+        reqInfo.setImageType(vmInfo.getImageType());
         reqInfo.setImageName(vmInfo.getImageName());
+        reqInfo.setVmSpecName(vmInfo.getVmSpecName());
         reqInfo.setVpcName(vmInfo.getVpcName());
         reqInfo.setSubnetName(vmInfo.getSubnetName());
         reqInfo.setSecurityGroupNames(List.of(vmInfo.getSecurityGroupName()));
-        reqInfo.setVmSpecName(vmInfo.getVmSpec());
-        reqInfo.setKeyPairName(vmInfo.getKeypairName());
+        reqInfo.setRootDiskType(vmInfo.getRootDiskType());
+        reqInfo.setDataDiskNames(new ArrayList<>());
+        reqInfo.setKeyPairName(vmInfo.getKeyPairName());
+        reqInfo.setVmUserId(vmInfo.getVmUserId());
+        reqInfo.setVmUserPasswd(vmInfo.getVmUserPasswd());
 
-        CreateVMRequestDTO createVMRequestDTO = new CreateVMRequestDTO();
+        OpenstackVmCreateRequest createVMRequestDTO = new OpenstackVmCreateRequest();
         createVMRequestDTO.setConnectionName(vmInfo.getConnectionName());
         createVMRequestDTO.setReqInfo(reqInfo);
 

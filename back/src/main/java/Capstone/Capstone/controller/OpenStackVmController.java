@@ -1,6 +1,8 @@
 package Capstone.Capstone.controller;
 
 import Capstone.Capstone.controller.dto.GetVmDTO;
+import Capstone.Capstone.controller.dto.OpenstackVmRequest;
+import Capstone.Capstone.controller.dto.OpenstackVmResponse;
 import Capstone.Capstone.controller.dto.VmInfoRequest;
 import Capstone.Capstone.controller.dto.VmInfoResponse;
 import Capstone.Capstone.controller.dto.VmcreateResponse;
@@ -27,9 +29,10 @@ public class OpenStackVmController {
     }
 
     @PostMapping()
-    public ResponseEntity<VmInfoResponse> postVmInfo(@RequestBody VmInfoRequest vmInfoRequest) {
-        VmInfoResponse azureVmInfo = openstackVmInfoService.createOpenStackVmInfo(vmInfoRequest);
-        return ResponseEntity.ok(azureVmInfo);
+    public ResponseEntity<OpenstackVmResponse> postVmInfo(@RequestBody OpenstackVmRequest vmInfoRequest ) {
+        OpenstackVmResponse openStackVmInfo = openstackVmInfoService.createOpenStackVmInfo(
+            vmInfoRequest);
+        return ResponseEntity.ok(openStackVmInfo);
     }
 
     @DeleteMapping("/{id}")

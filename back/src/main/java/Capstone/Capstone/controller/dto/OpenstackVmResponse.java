@@ -1,14 +1,15 @@
 package Capstone.Capstone.controller.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class OpenstackVmRequest {
+public class OpenstackVmResponse {
+    @NotEmpty
+    private Long vmId;
 
     @NotEmpty
     private Long userId;
@@ -18,20 +19,28 @@ public class OpenstackVmRequest {
 
     @NotEmpty
     private String vmName;
+
     @NotEmpty
     private String imageType;
+
     @NotEmpty
     private String imageName;
+
     @NotEmpty
     private String vmSpecName;
+
     @NotEmpty
     private String vpcName;
+
     @NotEmpty
     private String vpcIPv4CIDR;
+
     @NotEmpty
     private String subnetName;
+
     @NotEmpty
     private String subnetIPv4CIDR;
+
     @NotEmpty
     private String securityGroupName;
 

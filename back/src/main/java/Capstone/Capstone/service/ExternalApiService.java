@@ -20,6 +20,8 @@ import Capstone.Capstone.service.dto.OpenstackCloudDriverDTO;
 import Capstone.Capstone.service.dto.OpenstackConfigDTO;
 import Capstone.Capstone.service.dto.OpenstackCredentialDTO;
 import Capstone.Capstone.service.dto.OpenstackRegionDTO;
+import Capstone.Capstone.service.dto.OpenstackVmCreateRequest;
+import Capstone.Capstone.service.dto.OpenstackVmCreateResponse;
 import Capstone.Capstone.utils.error.CbSpiderServerException;
 import Capstone.Capstone.utils.error.CloudInfoIncorrectException;
 import java.util.HashMap;
@@ -627,6 +629,33 @@ public class ExternalApiService {
             throw new RuntimeException("VM 삭제 중 예상치 못한 오류 발생", e);
         }
     }
+    public OpenstackVmCreateResponse createOpenstackVM(OpenstackVmCreateRequest createVMRequestDTO) {
+        String endpoint = "/spider/vm";
+        String fullUrl = baseUrl + endpoint;
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
+        HttpEntity<OpenstackVmCreateRequest> request = new HttpEntity<>(createVMRequestDTO, headers);
+
+        try {
+            log.info("오픈스택 VM 생성 요청 전송 {}", fullUrl);
+            ResponseEntity<OpenstackVmCreateResponse> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.POST,
+                request,
+                OpenstackVmCreateResponse.class
+            );
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("오픈스택 VM 생성 중 클라이언트 오류 발생: {}", e.getMessage());
+            throw new CloudInfoIncorrectException("InfoIncorrect");
+        } catch (HttpServerErrorException e) {
+            log.error("오픈스택 VM 생성 중 서버 오류 발생: {}", e.getMessage());
+            throw new CbSpiderServerException("cbspider not working");
+        } catch (RestClientException e) {
+            log.error("오픈스택 VM 생성 중 예상치 못한 오류 발생", e);
+            throw new RuntimeException("오픈스택 VM 생성 중 예상치 못한 오류 발생", e);
+        }
+    }
 }

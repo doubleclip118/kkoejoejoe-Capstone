@@ -1,5 +1,6 @@
 package Capstone.Capstone.domain;
 
+import Capstone.Capstone.controller.dto.SecurityGroupRuleDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,39 +31,51 @@ public class OpenStackVmInfo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userInfo;
-
-    @Column(name = "connection_name")
+    @Column
     private String connectionName;
 
-    @Column(name = "vm_name")
+    @Column
     private String vmName;
 
-    @Column(name = "vpc_name")
+    @Column
+    private String imageType;
+
+    @Column
+    private String imageName;
+
+    @Column
+    private String vmSpecName;
+
+    @Column
     private String vpcName;
 
-    @Column(name = "vpc_ipv4_cidr")
+    @Column
     private String vpcIPv4CIDR;
 
-    @Column(name = "subnet_name")
+    @Column
     private String subnetName;
 
-    @Column(name = "subnet_ipv4_cidr")
+    @Column
     private String subnetIPv4CIDR;
 
-    @Column(name = "security_group_name")
+    @Column
     private String securityGroupName;
 
     @OneToMany(mappedBy = "openstackVmInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SecurityGroupRule> securityGroupRules = new ArrayList<>();
 
-    @Column(name = "keypair_name")
-    private String keypairName;
+    @Column
+    private String rootDiskType;
 
-    @Column(name = "image_name")
-    private String imageName;
 
-    @Column(name = "vm_spec")
-    private String vmSpec;
+    @Column
+    private String keyPairName;
+
+    @Column
+    private String vmUserId;
+
+    @Column
+    private String vmUserPasswd;
 
     @Column(name = "secret_key", length = 5000)
     private String secretkey;
@@ -69,25 +83,52 @@ public class OpenStackVmInfo {
     @Column(name = "ip")
     private String ip;
 
-    public OpenStackVmInfo(User userInfo, String connectionName, String vmName, String vpcName,
-        String vpcIPv4CIDR, String subnetName, String subnetIPv4CIDR, String securityGroupName,
-        List<SecurityGroupRule> securityGroupRules, String keypairName, String imageName,
-        String vmSpec,
-        String secretkey, String ip) {
+    public OpenStackVmInfo(User userInfo, String connectionName, String vmName, String imageType,
+        String imageName, String vmSpecName, String vpcName, String vpcIPv4CIDR, String subnetName,
+        String subnetIPv4CIDR, String securityGroupName, List<SecurityGroupRule> securityGroupRules,
+        String rootDiskType, String keyPairName, String vmUserId, String vmUserPasswd,
+        String secretkey,
+        String ip) {
         this.userInfo = userInfo;
         this.connectionName = connectionName;
         this.vmName = vmName;
+        this.imageType = imageType;
+        this.imageName = imageName;
+        this.vmSpecName = vmSpecName;
         this.vpcName = vpcName;
         this.vpcIPv4CIDR = vpcIPv4CIDR;
         this.subnetName = subnetName;
         this.subnetIPv4CIDR = subnetIPv4CIDR;
         this.securityGroupName = securityGroupName;
         this.securityGroupRules = securityGroupRules;
-        this.keypairName = keypairName;
-        this.imageName = imageName;
-        this.vmSpec = vmSpec;
+        this.rootDiskType = rootDiskType;
+        this.keyPairName = keyPairName;
+        this.vmUserId = vmUserId;
+        this.vmUserPasswd = vmUserPasswd;
         this.secretkey = secretkey;
         this.ip = ip;
+    }
+
+    public OpenStackVmInfo(User userInfo, String connectionName, String vmName, String imageType,
+        String imageName, String vmSpecName, String vpcName, String vpcIPv4CIDR, String subnetName,
+        String subnetIPv4CIDR, String securityGroupName, List<SecurityGroupRule> securityGroupRules,
+        String rootDiskType, String keyPairName, String vmUserId, String vmUserPasswd) {
+        this.userInfo = userInfo;
+        this.connectionName = connectionName;
+        this.vmName = vmName;
+        this.imageType = imageType;
+        this.imageName = imageName;
+        this.vmSpecName = vmSpecName;
+        this.vpcName = vpcName;
+        this.vpcIPv4CIDR = vpcIPv4CIDR;
+        this.subnetName = subnetName;
+        this.subnetIPv4CIDR = subnetIPv4CIDR;
+        this.securityGroupName = securityGroupName;
+        this.securityGroupRules = securityGroupRules;
+        this.rootDiskType = rootDiskType;
+        this.keyPairName = keyPairName;
+        this.vmUserId = vmUserId;
+        this.vmUserPasswd = vmUserPasswd;
     }
 
     public void addSecurityGroupRule(SecurityGroupRule rule) {
