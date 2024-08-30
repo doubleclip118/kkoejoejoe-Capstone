@@ -84,32 +84,44 @@ public class BlockChainNetworkService {
 
     @Transactional
     public BlockChainNetworkResponse executeStartupScript(BlockChainNetworkRequest network) {
-
-        String privateKey = network.getSecretkey();
-        String ipAddress = network.getIp();
-
-        Session session = null;
         try {
-            session = sshConnector.connectToEC2(privateKey, ipAddress);
-            System.out.println("Successfully connected to EC2 instance: " + ipAddress);
+            // CA VM 설정
+            setupCAVM(network);
 
-            // Execute the curl command to download the script
-            String curlCommand = "curl -L -o $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh";
-            sshConnector.executeCommand(session, curlCommand);
-            System.out.println("Startup script downloaded successfully");
+            // ORG1 VM 설정
+            setupORG1VM(network);
 
-            // Set execute permissions for the script
-            String chmodCommand = "chmod +x startup-ca.sh";
-            sshConnector.executeCommand(session, chmodCommand);
-            System.out.println("Execute permissions set for startup script");
-
-            // Execute the startup script with the VM's IP address
-            String executeCommand = "./startup-ca.sh " + ipAddress;
-            String result = sshConnector.executeCommand(session, executeCommand);
-            System.out.println("Startup script executed. Result: " + result);
-
+            return new BlockChainNetworkResponse(network.getUserId(),network.getNetworkName());
         } catch (Exception e) {
-            System.err.println("Failed to execute startup script on EC2 instance: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setupCAVM(BlockChainNetworkRequest network) throws Exception {
+        Session session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getCaIP());
+        try {
+            // startup-ca.sh 다운로드 및 실행
+            sshConnector.executeCommand(session, "curl -L -o $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh");
+            sshConnector.executeCommand(session, "chmod +x startup-ca.sh");
+            sshConnector.executeCommand(session, "./startup-ca.sh " + network.getCaIP());
+        } finally {
+            sshConnector.disconnectFromEC2(session);
+        }
+    }
+
+    private void setupORG1VM(BlockChainNetworkRequest network) throws Exception {
+        Session session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getOrgIP());
+        try {
+            // temp.pem 파일 전송
+            sshConnector.sendPemKeyViaSftp(session, network.getCaSecretKey());
+
+            // chmod 400 temp.pem
+            sshConnector.executeCommand(session, "chmod 400 temp.pem");
+
+            // startup-org1.sh 다운로드 및 실행
+            sshConnector.executeCommand(session, "curl -L -o $PWD/startup-org1.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-org1.sh");
+            sshConnector.executeCommand(session, "chmod +x startup-org1.sh");
+            sshConnector.executeCommand(session, "./startup-org1.sh " + network.getCaIP());
         } finally {
             sshConnector.disconnectFromEC2(session);
         }
