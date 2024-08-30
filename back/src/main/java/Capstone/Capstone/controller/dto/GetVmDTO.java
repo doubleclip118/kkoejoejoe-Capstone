@@ -13,4 +13,6 @@ import lombok.Setter;
 public class GetVmDTO {
     private Long vmId;
     private String vmName;
+    private String ip;
+    private String privatekey;
 }

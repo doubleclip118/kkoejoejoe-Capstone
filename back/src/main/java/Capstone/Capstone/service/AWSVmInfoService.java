@@ -117,7 +117,7 @@ public class AWSVmInfoService {
             () -> new UserNotFoundException("User with vm not found")
         );
         return user.getAwsVmInfos().stream()
-            .map(awsVmInfo -> new GetVmDTO(awsVmInfo.getId(), awsVmInfo.getVmName()))
+            .map(awsVmInfo -> new GetVmDTO(awsVmInfo.getId(), awsVmInfo.getVmName(),awsVmInfo.getIp(),awsVmInfo.getSecretkey()))
             .collect(Collectors.toList());
     }
 
