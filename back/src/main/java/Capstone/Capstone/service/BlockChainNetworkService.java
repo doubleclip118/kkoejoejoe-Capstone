@@ -1,6 +1,7 @@
 package Capstone.Capstone.service;
 
 import Capstone.Capstone.controller.dto.BlockChainNetworkRequest;
+import Capstone.Capstone.controller.dto.BlockChainNetworkResponse;
 import Capstone.Capstone.domain.AWSVmInfo;
 import Capstone.Capstone.repository.AWSVmInfoRepository;
 import Capstone.Capstone.repository.AzureVmInfoRepository;
@@ -82,12 +83,10 @@ public class BlockChainNetworkService {
     }
 
     @Transactional
-    public void executeStartupScript(BlockChainNetworkRequest network) {
-        AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
-            .orElseThrow(() -> new RuntimeException("VM not found"));
+    public BlockChainNetworkResponse executeStartupScript(BlockChainNetworkRequest network) {
 
-        String privateKey = vmInfo.getSecretkey();
-        String ipAddress = vmInfo.getIp();
+        String privateKey = network.getSecretkey();
+        String ipAddress = network.getIp();
 
         Session session = null;
         try {
