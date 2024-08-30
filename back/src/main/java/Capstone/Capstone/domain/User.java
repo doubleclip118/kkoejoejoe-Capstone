@@ -55,6 +55,9 @@ public class User {
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OpenStackVmInfo> openStackVmInfos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BlockChainNetwork> blockChainNetworks = new ArrayList<>();
+
 
     public UserResponse UserconvertToDTO(User user) {
         UserResponse userResponse = new UserResponse();
