@@ -121,7 +121,7 @@ public class OpenstackVmInfoService {
         User user = userRepository.findByUserIdWithVAndOpenstackVmInfos(id)
             .orElseThrow(() -> new UserNotFoundException("User with vm not found"));
         return user.getOpenStackVmInfos().stream()
-            .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName()))
+            .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName(),openStackVmInfo.getIp(),openStackVmInfo.getSecretkey()))
             .collect(Collectors.toList());
     }
 
