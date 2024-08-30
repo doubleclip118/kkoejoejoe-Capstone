@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class blockChainNetworkRequest {
+public class BlockChainNetworkRequest {
 
     @NotEmpty
     private String networkName;
