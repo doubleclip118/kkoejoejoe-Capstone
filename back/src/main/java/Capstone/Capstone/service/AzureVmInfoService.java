@@ -118,7 +118,7 @@ public class AzureVmInfoService {
             () -> new UserNotFoundException("User with vm not found")
         );
         return user.getAzureVmInfos().stream()
-            .map(azureVmInfo -> new GetVmDTO(azureVmInfo.getId(), azureVmInfo.getVmName()))
+            .map(azureVmInfo -> new GetVmDTO(azureVmInfo.getId(), azureVmInfo.getVmName(),azureVmInfo.getIp(),azureVmInfo.getSecretkey()))
             .collect(Collectors.toList());
     }
 
