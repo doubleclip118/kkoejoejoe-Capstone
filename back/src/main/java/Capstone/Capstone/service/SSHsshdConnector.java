@@ -1,25 +1,24 @@
 package Capstone.Capstone.service;
 
 import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.channel.ClientChannelEvent;
-import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClientFactory;
-import org.apache.sshd.common.util.security.SecurityUtils;
-import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
@@ -32,26 +31,41 @@ public class SSHsshdConnector {
         client.start();
 
         try {
+            logger.info("Attempting to connect to EC2: {}", ec2IpAddress);
             ClientSession session = client.connect("ubuntu", ec2IpAddress, 22)
                 .verify(30, TimeUnit.SECONDS)
                 .getSession();
 
-            session.addPublicKeyIdentity(loadKeyPair(privateKeyContent));
+            logger.info("Session created, attempting to load key pair");
+            KeyPair keyPair = loadKeyPair(privateKeyContent);
+            logger.info("Key pair loaded successfully");
+
+            logger.info("Attempting authentication");
+            session.addPublicKeyIdentity(keyPair);
             session.auth().verify(30, TimeUnit.SECONDS);
 
             logger.info("Connected successfully to {}", ec2IpAddress);
             return session;
         } catch (Exception e) {
+            logger.error("Failed to connect to EC2: {}", e.getMessage(), e);
             client.stop();
             throw new IOException("Failed to connect to EC2", e);
         }
     }
 
     private KeyPair loadKeyPair(String privateKeyContent) throws Exception {
-        try (InputStream is = new ByteArrayInputStream(privateKeyContent.getBytes())) {
-            Iterable<KeyPair> keyPairs = SecurityUtils.loadKeyPairIdentities(null, null, is, null);
-            return keyPairs.iterator().next();
-        }
+        String privateKeyPEM = privateKeyContent
+            .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+            .replaceAll(System.lineSeparator(), "")
+            .replace("-----END RSA PRIVATE KEY-----", "");
+
+        byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+
+        return new KeyPair(null, privateKey);
     }
 
     public String executeCommand(ClientSession session, String command) throws IOException {
@@ -77,45 +91,33 @@ public class SSHsshdConnector {
         }
     }
 
-    public void sendPemKeyViaSftp(ClientSession session, String privateKeyContent) throws IOException {
-        Path tempKeyFile = null;
-        try {
-            tempKeyFile = Files.createTempFile("temp_key", ".pem");
-            Files.write(tempKeyFile, privateKeyContent.getBytes());
-
-            try (SftpClient sftpClient = SftpClientFactory.instance().createSftpClient(session);
-                InputStream is = Files.newInputStream(tempKeyFile)) {
-
-                String remoteFileName = "temp_key.pem";
-                String remotePemPath = "/home/ubuntu/" + remoteFileName;
-
-                logger.info("Sending PEM key file to {}", remotePemPath);
-
-                // SFTP 파일 업로드
-                try (SftpClient.CloseableHandle handle = sftpClient.open(remotePemPath, EnumSet.of(SftpClient.OpenMode.Write, SftpClient.OpenMode.Create))) {
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    long offset = 0;
-                    while ((bytesRead = is.read(buffer)) != -1) {
-                        sftpClient.write(handle, offset, buffer, 0, bytesRead);
-                        offset += bytesRead;
-                    }
-                }
-
-                // 파일 권한 설정 (0600)
-                SftpClient.Attributes attributes = sftpClient.stat(remotePemPath);
-                attributes.setPermissions(0600);
-                sftpClient.setStat(remotePemPath, attributes);
-
-                logger.info("PEM key file sent successfully and permissions set to 600.");
-            }
-        } finally {
-            if (tempKeyFile != null) {
-                Files.deleteIfExists(tempKeyFile);
-                logger.info("Temporary key file deleted.");
-            }
-        }
-    }
+//    public void sendPemKeyViaSftp(ClientSession session, String privateKeyContent) throws IOException {
+//        Path tempKeyFile = null;
+//        try {
+//            tempKeyFile = Files.createTempFile("temp_key", ".pem");
+//            Files.write(tempKeyFile, privateKeyContent.getBytes());
+//
+//            try (SftpClient sftpClient = SftpClientFactory.instance().createSftpClient(session)) {
+//                String remoteFileName = "temp_key.pem";
+//                String remotePemPath = "/home/ubuntu/" + remoteFileName;
+//
+//                logger.info("Sending PEM key file to {}", remotePemPath);
+//                try (InputStream is = Files.newInputStream(tempKeyFile)) {
+//                    sftpClient.write(remotePemPath, is);
+//                }
+//
+//                // Set file permissions (0600)
+//                sftpClient.setAttribute(remotePemPath,
+//                    new SftpClient.Attributes().withPermissions(0600));
+//                logger.info("PEM key file sent successfully and permissions set to 600.");
+//            }
+//        } finally {
+//            if (tempKeyFile != null) {
+//                Files.deleteIfExists(tempKeyFile);
+//                logger.info("Temporary key file deleted.");
+//            }
+//        }
+//    }
 
     public void disconnectFromEC2(ClientSession session) {
         if (session != null) {
