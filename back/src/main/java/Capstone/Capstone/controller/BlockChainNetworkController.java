@@ -30,7 +30,7 @@ public class BlockChainNetworkController {
 
     @PostMapping()
     public ResponseEntity<BlockChainNetworkResponse> createNetwork(@RequestBody BlockChainNetworkRequest network){
-        BlockChainNetworkResponse blockChainNetworkResponse = blockChainNetworkService.executeStartupScript(
+        BlockChainNetworkResponse blockChainNetworkResponse = blockChainNetworkService.postNetwork(
             network);
         return ResponseEntity.ok(blockChainNetworkResponse);
     }

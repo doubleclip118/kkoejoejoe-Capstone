@@ -274,6 +274,20 @@ public class BlockChainNetworkService {
     }
 
     @Transactional
+    public BlockChainNetworkResponse postNetwork(BlockChainNetworkRequest network){
+        User user = userRepository.findById(network.getUserId()).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        BlockChainNetwork blockChainNetwork = new BlockChainNetwork(network.getNetworkName(),
+            network.getCaCSP(), network.getCaIP(),
+            network.getCaSecretKey(), network.getOrgCSP(), network.getOrgIP(),
+            network.getOrgSecretKey(),
+            user);
+        blockChainNetworkRepository.save(blockChainNetwork);
+        return new BlockChainNetworkResponse(blockChainNetwork.getId(),blockChainNetwork.getNetworkName());
+    }
+
+    @Transactional
     public void sftpToEC2Instance(Long vmId) {
         logger.info("Attempting SFTP to EC2 instance with ID: {}", vmId);
         AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
