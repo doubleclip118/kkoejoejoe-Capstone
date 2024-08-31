@@ -41,6 +41,8 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
 	implementation 'com.github.mwiede:jsch:0.2.7'
+	implementation 'org.apache.sshd:sshd-core:2.9.2'
+	implementation 'org.apache.sshd:sshd-sftp:2.9.2'
 }
 
 tasks.named('test') {

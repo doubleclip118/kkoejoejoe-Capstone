@@ -54,7 +54,7 @@ public class SSHConnector {
             configureSession(session);
 
             logger.info("Attempting to connect...");
-            session.connect(300000); // 30 seconds timeout
+            session.connect(300000); // 300 seconds timeout
             logger.info("Connected successfully");
 
             return session;
@@ -101,7 +101,7 @@ public class SSHConnector {
         Path tempDir = Files.createTempDirectory("ssh-temp-dir");
         Path tempKeyFile = tempDir.resolve("temp.pem");
         Files.write(tempKeyFile, key.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
+        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwx------");
         Files.setPosixFilePermissions(tempKeyFile, perms);
         return tempKeyFile;
     }
