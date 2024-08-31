@@ -10,6 +10,7 @@ import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.*;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.VmInfoNotFoundException;
+import java.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,8 +92,7 @@ public class AWSVmInfoService {
 
         CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
         CreateKeyPairResponseDTO keyPairResponse = externalApiService.createKeypair(createKeyPairRequestDTO);
-
-        vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
+        vmInfo.setSecretkey(Base64.getEncoder().encodeToString(keyPairResponse.getPrivateKey().getBytes()));
 
         CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo, vmInfo.getVpcName(), vmInfo.getSecurityGroupName(), vmInfo.getKeypairName());
         CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
