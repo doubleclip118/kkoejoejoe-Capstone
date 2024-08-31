@@ -3,10 +3,14 @@ package Capstone.Capstone.service;
 import Capstone.Capstone.controller.dto.BlockChainNetworkRequest;
 import Capstone.Capstone.controller.dto.BlockChainNetworkResponse;
 import Capstone.Capstone.domain.AWSVmInfo;
+import Capstone.Capstone.domain.BlockChainNetwork;
+import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.AWSVmInfoRepository;
 import Capstone.Capstone.repository.AzureVmInfoRepository;
+import Capstone.Capstone.repository.BlockChainNetworkRepository;
 import Capstone.Capstone.repository.OpenstackCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
+import Capstone.Capstone.utils.error.UserNotFoundException;
 import com.jcraft.jsch.Session;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -23,17 +27,19 @@ public class BlockChainNetworkService {
     private final AzureVmInfoRepository azureVmInfoRepository;
     private final OpenstackCloudInfoRepository openstackCloudInfoRepository;
     private final UserRepository userRepository;
+    private final BlockChainNetworkRepository blockChainNetworkRepository;
 
     public BlockChainNetworkService(SSHConnector sshConnector,
         AWSVmInfoRepository awsVmInfoRepository,
         AzureVmInfoRepository azureVmInfoRepository,
-        OpenstackCloudInfoRepository openstackCloudInfoRepository,
-        UserRepository userRepository) {
+        OpenstackCloudInfoRepository openstackCloudInfoRepository, UserRepository userRepository,
+        BlockChainNetworkRepository blockChainNetworkRepository) {
         this.sshConnector = sshConnector;
         this.awsVmInfoRepository = awsVmInfoRepository;
         this.azureVmInfoRepository = azureVmInfoRepository;
         this.openstackCloudInfoRepository = openstackCloudInfoRepository;
         this.userRepository = userRepository;
+        this.blockChainNetworkRepository = blockChainNetworkRepository;
     }
 
     @Transactional
@@ -95,6 +101,13 @@ public class BlockChainNetworkService {
             setupORG1VM(network);
 
             logger.info("Startup script executed successfully for network: {}", network.getNetworkName());
+            User user = userRepository.findById(network.getUserId()).orElseThrow(
+                () -> new UserNotFoundException("User Not Found")
+            );
+            BlockChainNetwork blockChainNetwork = new BlockChainNetwork(network.getNetworkName(),
+                network.getCaCSP(), network.getCaIP(), network.getCaSecretKey(),
+                network.getOrgCSP(), network.getOrgIP(), network.getOrgSecretKey(), user);
+            blockChainNetworkRepository.save(blockChainNetwork);
             return new BlockChainNetworkResponse(network.getUserId(), network.getNetworkName());
         } catch (Exception e) {
             logger.error("Failed to execute startup script for network: {}", network.getNetworkName(), e);
@@ -122,7 +135,7 @@ public class BlockChainNetworkService {
         logger.info("Setting up ORG1 VM for network: {}", network.getNetworkName());
         Session session = null;
         try {
-            session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getOrgIP());
+            session = sshConnector.connectToEC2(network.getOrgSecretKey(), network.getOrgIP());
 
             sshConnector.sendPemKeyViaSftp(session, network.getCaSecretKey());
             executeCommand(session, "chmod 400 temp.pem");

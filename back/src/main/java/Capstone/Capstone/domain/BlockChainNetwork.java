@@ -24,6 +24,8 @@ public class BlockChainNetwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
+    private String networkName;
+    @Column
     private String caCSP;
     @Column
     private String caIP;
@@ -33,7 +35,21 @@ public class BlockChainNetwork {
     private String orgCSP;
     @Column
     private String orgIP;
+    @Column
+    private String orgSecretKey;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userInfo;
+
+    public BlockChainNetwork(String networkName, String caCSP, String caIP, String caSecretKey,
+        String orgCSP, String orgIP, String orgSecretKey, User userInfo) {
+        this.networkName = networkName;
+        this.caCSP = caCSP;
+        this.caIP = caIP;
+        this.caSecretKey = caSecretKey;
+        this.orgCSP = orgCSP;
+        this.orgIP = orgIP;
+        this.orgSecretKey = orgSecretKey;
+        this.userInfo = userInfo;
+    }
 }
