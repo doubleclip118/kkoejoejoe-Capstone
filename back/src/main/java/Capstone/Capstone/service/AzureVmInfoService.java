@@ -10,6 +10,7 @@ import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.*;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.VmInfoNotFoundException;
+import java.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +93,8 @@ public class AzureVmInfoService {
         CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
         CreateKeyPairResponseDTO keyPairResponse = externalApiService.createKeypair(createKeyPairRequestDTO);
 
-        vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
+        vmInfo.setSecretkey(Base64.getEncoder().encodeToString(keyPairResponse.getPrivateKey().getBytes()));
+
 
         CreateVMRequestDTO createVMRequestDTO = prepareVMRequest(vmInfo, vmInfo.getVpcName(), vmInfo.getSecurityGroupName(), vmInfo.getKeypairName());
         CreateVMResponseDTO vmResponse = externalApiService.createVM(createVMRequestDTO);
@@ -118,7 +120,7 @@ public class AzureVmInfoService {
             () -> new UserNotFoundException("User with vm not found")
         );
         return user.getAzureVmInfos().stream()
-            .map(azureVmInfo -> new GetVmDTO(azureVmInfo.getId(), azureVmInfo.getVmName(),azureVmInfo.getIp(),azureVmInfo.getSecretkey()))
+            .map(azureVmInfo -> new GetVmDTO(azureVmInfo.getId(), azureVmInfo.getVmName(),azureVmInfo.getIp(),new String(Base64.getDecoder().decode(azureVmInfo.getSecretkey()))))
             .collect(Collectors.toList());
     }
 

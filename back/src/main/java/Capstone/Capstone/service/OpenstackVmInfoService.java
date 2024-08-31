@@ -11,6 +11,7 @@ import Capstone.Capstone.repository.UserRepository;
 import Capstone.Capstone.service.dto.*;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import Capstone.Capstone.utils.error.VmInfoNotFoundException;
+import java.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +98,7 @@ public class OpenstackVmInfoService {
         CreateKeyPairRequestDTO createKeyPairRequestDTO = prepareKeyPairRequest(vmInfo);
         CreateKeyPairResponseDTO keyPairResponse = externalApiService.createKeypair(createKeyPairRequestDTO);
 
-        vmInfo.setSecretkey(keyPairResponse.getPrivateKey());
+        vmInfo.setSecretkey(Base64.getEncoder().encodeToString(keyPairResponse.getPrivateKey().getBytes()));
 
         OpenstackVmCreateRequest createVMRequestDTO = prepareVMRequest(vmInfo);
         OpenstackVmCreateResponse vmResponse = externalApiService.createOpenstackVM(createVMRequestDTO);
@@ -121,7 +122,7 @@ public class OpenstackVmInfoService {
         User user = userRepository.findByUserIdWithVAndOpenstackVmInfos(id)
             .orElseThrow(() -> new UserNotFoundException("User with vm not found"));
         return user.getOpenStackVmInfos().stream()
-            .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName(),openStackVmInfo.getIp(),openStackVmInfo.getSecretkey()))
+            .map(openStackVmInfo -> new GetVmDTO(openStackVmInfo.getId(), openStackVmInfo.getVmName(),openStackVmInfo.getIp(),new String(Base64.getDecoder().decode(openStackVmInfo.getSecretkey()))))
             .collect(Collectors.toList());
     }
 
