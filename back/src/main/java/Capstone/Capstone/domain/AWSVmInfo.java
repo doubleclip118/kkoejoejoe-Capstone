@@ -70,7 +70,7 @@ public class AWSVmInfo {
     @Column(name = "vm_spec")
     private String vmSpec;
 
-    @Column(name = "secret_key", length = 2000)
+    @Column(name = "secret_key", length = 5000)
     private String secretkey;
 
     @Column(name = "ip")

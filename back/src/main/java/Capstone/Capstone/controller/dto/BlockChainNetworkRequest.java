@@ -31,4 +31,7 @@ public class BlockChainNetworkRequest {
 
     @NotNull(message = "ORG CSP cannot be null")
     private String orgCSP;
+
+    @NotNull(message = "ORG Secret Key cannot be null")
+    private String orgSecretKey;
 }

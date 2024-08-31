@@ -1,8 +1,6 @@
 package Capstone.Capstone.service;
 
 import com.jcraft.jsch.*;
-import java.net.UnknownHostException;
-import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,9 +33,12 @@ public class SSHConnector {
 
     public Session connectToEC2(String privateKeyContent, String ec2IpAddress) throws JSchException, IOException {
         Path tempKeyFile = null;
+        logger.info(privateKeyContent);
         try {
             String formattedKey = formatPrivateKey(privateKeyContent);
+            logger.info(formattedKey);
             tempKeyFile = createTempKeyFile(formattedKey);
+
 
             JSch jsch = new JSch();
             jsch.addIdentity(tempKeyFile.toString());
@@ -71,28 +72,30 @@ public class SSHConnector {
 
         key = key.trim();
 
-        // 시작과 끝 구분자 제거
-        key = key.replace("-----BEGIN RSA PRIVATE KEY-----", "")
+        // 기존 헤더와 푸터가 존재하는지 확인
+        if (!key.startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
+            key = "-----BEGIN RSA PRIVATE KEY-----\n" + key;
+        }
+        if (!key.endsWith("-----END RSA PRIVATE KEY-----")) {
+            key = key + "\n-----END RSA PRIVATE KEY-----";
+        }
+
+        // 헤더와 푸터 부분을 제외하고 본문만 64자씩 줄바꿈
+        String base64Content = key.replace("-----BEGIN RSA PRIVATE KEY-----", "")
             .replace("-----END RSA PRIVATE KEY-----", "")
-            .replaceAll("\\s+", "");
+            .replaceAll("\\s", "");  // 모든 공백 제거
 
-        // Base64 디코딩 및 인코딩을 통해 유효성 검사
-        try {
-            byte[] decodedKey = Base64.getDecoder().decode(key);
-            key = Base64.getEncoder().encodeToString(decodedKey);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Base64 encoding in private key", e);
-        }
-
-        // 64자마다 줄바꿈 추가
         StringBuilder formattedKey = new StringBuilder("-----BEGIN RSA PRIVATE KEY-----\n");
-        for (int i = 0; i < key.length(); i += 64) {
-            formattedKey.append(key.substring(i, Math.min(i + 64, key.length()))).append("\n");
+        for (int i = 0; i < base64Content.length(); i += 64) {
+            formattedKey.append(base64Content, i, Math.min(i + 64, base64Content.length())).append("\n");
         }
-        formattedKey.append("-----END RSA PRIVATE KEY-----");
+        formattedKey.append("-----END RSA PRIVATE KEY-----\n");
 
-        return formattedKey.toString();
+        logger.info(formattedKey.toString().trim());
+        return formattedKey.toString().trim();
     }
+
+
 
     private Path createTempKeyFile(String key) throws IOException {
         Path tempDir = Files.createTempDirectory("ssh-temp-dir");
@@ -104,22 +107,12 @@ public class SSHConnector {
     }
 
     private void testNetworkConnection(String ec2IpAddress) throws IOException {
-        try {
-            InetAddress address = InetAddress.getByName(ec2IpAddress);
-            logger.info("Attempting to reach host: {}", ec2IpAddress);
-
-            if (address.isReachable(10000)) {  // 타임아웃을 10초로 늘림
-                logger.info("Host is reachable");
-            } else {
-                logger.error("Host is not reachable: {}", ec2IpAddress);
-                throw new IOException("Host is not reachable: " + ec2IpAddress);
-            }
-        } catch (UnknownHostException e) {
-            logger.error("Unknown host: {}", ec2IpAddress, e);
-            throw new IOException("Unknown host: " + ec2IpAddress, e);
-        } catch (IOException e) {
-            logger.error("IO error occurred while testing network connection to {}", ec2IpAddress, e);
-            throw e;
+        InetAddress address = InetAddress.getByName(ec2IpAddress);
+        if (address.isReachable(5000)) {
+            logger.info("Host is reachable");
+        } else {
+            logger.error("Host is not reachable: {}", ec2IpAddress);
+            throw new IOException("Host is not reachable: " + ec2IpAddress);
         }
     }
 
