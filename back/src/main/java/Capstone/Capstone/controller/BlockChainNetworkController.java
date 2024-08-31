@@ -32,5 +32,4 @@ public class BlockChainNetworkController {
         return ResponseEntity.ok(blockChainNetworkResponse);
     }
 
-
 }
