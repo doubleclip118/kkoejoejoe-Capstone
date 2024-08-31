@@ -162,11 +162,14 @@ package Capstone.Capstone.service;
 import Capstone.Capstone.controller.dto.BlockChainNetworkRequest;
 import Capstone.Capstone.controller.dto.BlockChainNetworkResponse;
 import Capstone.Capstone.domain.AWSVmInfo;
+import Capstone.Capstone.domain.AzureVmInfo;
 import Capstone.Capstone.domain.BlockChainNetwork;
+import Capstone.Capstone.domain.OpenStackVmInfo;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.*;
 import Capstone.Capstone.utils.error.NetworkNotFoundException;
 import Capstone.Capstone.utils.error.UserNotFoundException;
+import Capstone.Capstone.utils.error.VmInfoNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -182,22 +185,24 @@ public class BlockChainNetworkService {
     private final SSHConnector sshConnector;
     private final AWSVmInfoRepository awsVmInfoRepository;
     private final AzureVmInfoRepository azureVmInfoRepository;
-    private final OpenstackCloudInfoRepository openstackCloudInfoRepository;
+    private final OpenStackVmInfoRepository openStackVmInfoRepository;
     private final UserRepository userRepository;
     private final BlockChainNetworkRepository blockChainNetworkRepository;
+    private final ExternalApiService externalApiService;
 
     public BlockChainNetworkService(SSHConnector sshConnector,
         AWSVmInfoRepository awsVmInfoRepository,
         AzureVmInfoRepository azureVmInfoRepository,
-        OpenstackCloudInfoRepository openstackCloudInfoRepository,
-        UserRepository userRepository,
-        BlockChainNetworkRepository blockChainNetworkRepository) {
+        OpenStackVmInfoRepository openStackVmInfoRepository, UserRepository userRepository,
+        BlockChainNetworkRepository blockChainNetworkRepository,
+        ExternalApiService externalApiService) {
         this.sshConnector = sshConnector;
         this.awsVmInfoRepository = awsVmInfoRepository;
         this.azureVmInfoRepository = azureVmInfoRepository;
-        this.openstackCloudInfoRepository = openstackCloudInfoRepository;
+        this.openStackVmInfoRepository = openStackVmInfoRepository;
         this.userRepository = userRepository;
         this.blockChainNetworkRepository = blockChainNetworkRepository;
+        this.externalApiService = externalApiService;
     }
 
     @Transactional
@@ -206,9 +211,57 @@ public class BlockChainNetworkService {
             .orElseThrow(
                 () -> new NetworkNotFoundException("Network Not Found")
             );
+        String caIP = blockChainNetwork.getCaIP();
+        String orgIP = blockChainNetwork.getOrgIP();
         if (blockChainNetwork.getCaCSP().equals("aws")){
-
+            AWSVmInfo vmInfo = awsVmInfoRepository.findByIpIs(blockChainNetwork.getCaIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            awsVmInfoRepository.deleteByIp(blockChainNetwork.getCaIP());
         }
+        if (blockChainNetwork.getCaCSP().equals("azure")){
+            AzureVmInfo vmInfo = azureVmInfoRepository.findByIpIs(blockChainNetwork.getCaIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            azureVmInfoRepository.deleteByIp(blockChainNetwork.getCaIP());
+        }
+        if (blockChainNetwork.getCaCSP().equals("openstack")){
+            OpenStackVmInfo vmInfo = openStackVmInfoRepository.findByIpIs(blockChainNetwork.getCaIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            openStackVmInfoRepository.deleteByIp(blockChainNetwork.getCaIP());
+        }
+        if (blockChainNetwork.getOrgCSP().equals("aws")){
+            AWSVmInfo vmInfo = awsVmInfoRepository.findByIpIs(blockChainNetwork.getOrgIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            awsVmInfoRepository.deleteByIp(blockChainNetwork.getOrgIP());
+        }
+        if (blockChainNetwork.getOrgCSP().equals("azure")){
+            AzureVmInfo vmInfo = azureVmInfoRepository.findByIpIs(blockChainNetwork.getOrgIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            azureVmInfoRepository.deleteByIp(blockChainNetwork.getOrgIP());
+        }
+        if (blockChainNetwork.getOrgCSP().equals("openstack")){
+            OpenStackVmInfo vmInfo = openStackVmInfoRepository.findByIpIs(blockChainNetwork.getOrgIP())
+                .orElseThrow(
+                    () -> new VmInfoNotFoundException("Vm Not Found")
+                );
+            externalApiService.deleteVm(vmInfo.getVmName(),vmInfo.getConnectionName());
+            openStackVmInfoRepository.deleteByIp(blockChainNetwork.getOrgIP());
+        }
+        return "성공";
     }
 
     @Transactional
