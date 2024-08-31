@@ -54,7 +54,7 @@ public class SSHConnector {
             configureSession(session);
 
             logger.info("Attempting to connect...");
-            session.connect(30000); // 30 seconds timeout
+            session.connect(300000); // 30 seconds timeout
             logger.info("Connected successfully");
 
             return session;
