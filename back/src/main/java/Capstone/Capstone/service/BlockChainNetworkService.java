@@ -9,10 +9,14 @@ import Capstone.Capstone.repository.OpenstackCloudInfoRepository;
 import Capstone.Capstone.repository.UserRepository;
 import com.jcraft.jsch.Session;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BlockChainNetworkService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BlockChainNetworkService.class);
 
     private final SSHConnector sshConnector;
     private final AWSVmInfoRepository awsVmInfoRepository;
@@ -23,7 +27,8 @@ public class BlockChainNetworkService {
     public BlockChainNetworkService(SSHConnector sshConnector,
         AWSVmInfoRepository awsVmInfoRepository,
         AzureVmInfoRepository azureVmInfoRepository,
-        OpenstackCloudInfoRepository openstackCloudInfoRepository, UserRepository userRepository) {
+        OpenstackCloudInfoRepository openstackCloudInfoRepository,
+        UserRepository userRepository) {
         this.sshConnector = sshConnector;
         this.awsVmInfoRepository = awsVmInfoRepository;
         this.azureVmInfoRepository = azureVmInfoRepository;
@@ -33,8 +38,9 @@ public class BlockChainNetworkService {
 
     @Transactional
     public void connectToEC2Instance(Long vmId) {
+        logger.info("Attempting to connect to EC2 instance with ID: {}", vmId);
         AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
-            .orElseThrow(() -> new RuntimeException("VM not found"));
+            .orElseThrow(() -> new RuntimeException("VM not found with ID: " + vmId));
 
         String privateKey = vmInfo.getSecretkey();
         String ipAddress = vmInfo.getIp();
@@ -42,16 +48,15 @@ public class BlockChainNetworkService {
         Session session = null;
         try {
             session = sshConnector.connectToEC2(privateKey, ipAddress);
+            logger.info("Successfully connected to EC2 instance: {}", ipAddress);
 
-            System.out.println("Successfully connected to EC2 instance: " + ipAddress);
-
-            // 기본 명령어 실행
             String command = "ls -al";
             String result = sshConnector.executeCommand(session, command);
-            System.out.println("Command result: " + result);
+            logger.info("Command result: {}", result);
 
         } catch (Exception e) {
-            System.err.println("Failed to connect to EC2 instance: " + e.getMessage());
+            logger.error("Failed to connect to EC2 instance: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to connect to EC2 instance", e);
         } finally {
             sshConnector.disconnectFromEC2(session);
         }
@@ -59,8 +64,9 @@ public class BlockChainNetworkService {
 
     @Transactional
     public void sftpToEC2Instance(Long vmId) {
+        logger.info("Attempting SFTP to EC2 instance with ID: {}", vmId);
         AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
-            .orElseThrow(() -> new RuntimeException("VM not found"));
+            .orElseThrow(() -> new RuntimeException("VM not found with ID: " + vmId));
 
         String privateKey = vmInfo.getSecretkey();
         String ipAddress = vmInfo.getIp();
@@ -68,15 +74,14 @@ public class BlockChainNetworkService {
         Session session = null;
         try {
             session = sshConnector.connectToEC2(privateKey, ipAddress);
-
-            System.out.println("Successfully connected to EC2 instance: " + ipAddress);
-
+            logger.info("Successfully connected to EC2 instance: {}", ipAddress);
 
             sshConnector.sendPemKeyViaSftp(session, privateKey);
-            System.out.println("전송 성공");
+            logger.info("Successfully sent PEM key via SFTP");
 
         } catch (Exception e) {
-            System.err.println("Failed to connect to EC2 instance: " + e.getMessage());
+            logger.error("Failed SFTP to EC2 instance: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed SFTP to EC2 instance", e);
         } finally {
             sshConnector.disconnectFromEC2(session);
         }
@@ -84,48 +89,57 @@ public class BlockChainNetworkService {
 
     @Transactional
     public BlockChainNetworkResponse executeStartupScript(BlockChainNetworkRequest network) {
+        logger.info("Executing startup script for network: {}", network.getNetworkName());
         try {
-            // CA VM 설정
             setupCAVM(network);
-
-            // ORG1 VM 설정
             setupORG1VM(network);
 
-            return new BlockChainNetworkResponse(network.getUserId(),network.getNetworkName());
+            logger.info("Startup script executed successfully for network: {}", network.getNetworkName());
+            return new BlockChainNetworkResponse(network.getUserId(), network.getNetworkName());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error("Failed to execute startup script for network: {}", network.getNetworkName(), e);
+            throw new RuntimeException("Failed to execute startup script", e);
         }
     }
 
     private void setupCAVM(BlockChainNetworkRequest network) throws Exception {
-        Session session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getCaIP());
+        logger.info("Setting up CA VM for network: {}", network.getNetworkName());
+        Session session = null;
         try {
-            // startup-ca.sh 다운로드 및 실행
-            sshConnector.executeCommand(session, "curl -L -o $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh");
-            sshConnector.executeCommand(session, "chmod +x startup-ca.sh");
-            sshConnector.executeCommand(session, "./startup-ca.sh " + network.getCaIP());
+            session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getCaIP());
+
+            executeCommand(session, "curl -L -o $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh");
+            executeCommand(session, "chmod +x startup-ca.sh");
+            executeCommand(session, "./startup-ca.sh " + network.getCaIP());
+
+            logger.info("CA VM setup completed for network: {}", network.getNetworkName());
         } finally {
             sshConnector.disconnectFromEC2(session);
         }
     }
 
     private void setupORG1VM(BlockChainNetworkRequest network) throws Exception {
-        Session session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getOrgIP());
+        logger.info("Setting up ORG1 VM for network: {}", network.getNetworkName());
+        Session session = null;
         try {
-            // temp.pem 파일 전송
+            session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getOrgIP());
+
             sshConnector.sendPemKeyViaSftp(session, network.getCaSecretKey());
+            executeCommand(session, "chmod 400 temp.pem");
 
-            // chmod 400 temp.pem
-            sshConnector.executeCommand(session, "chmod 400 temp.pem");
+            executeCommand(session, "curl -L -o $PWD/startup-org1.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-org1.sh");
+            executeCommand(session, "chmod +x startup-org1.sh");
+            executeCommand(session, "./startup-org1.sh " + network.getCaIP());
 
-            // startup-org1.sh 다운로드 및 실행
-            sshConnector.executeCommand(session, "curl -L -o $PWD/startup-org1.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-org1.sh");
-            sshConnector.executeCommand(session, "chmod +x startup-org1.sh");
-            sshConnector.executeCommand(session, "./startup-org1.sh " + network.getCaIP());
+            logger.info("ORG1 VM setup completed for network: {}", network.getNetworkName());
         } finally {
             sshConnector.disconnectFromEC2(session);
         }
     }
 
-
+    private void executeCommand(Session session, String command) throws Exception {
+        logger.debug("Executing command: {}", command);
+        String result = sshConnector.executeCommand(session, command);
+        logger.debug("Command result: {}", result);
+    }
 }

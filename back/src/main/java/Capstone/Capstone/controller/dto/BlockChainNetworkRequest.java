@@ -1,29 +1,34 @@
 package Capstone.Capstone.controller.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BlockChainNetworkRequest {
-
-    @NotEmpty
+    @NotNull(message = "Network name cannot be null")
     private String networkName;
 
-    @NotEmpty
+    @NotNull(message = "User ID cannot be null")
     private Long userId;
 
-    @NotEmpty
+    @NotNull(message = "CA CSP cannot be null")
     private String caCSP;
-    @NotEmpty
+
+    @NotNull(message = "CA IP cannot be null")
     private String caIP;
-    @NotEmpty
+
+    @NotNull(message = "CA Secret Key cannot be null")
     private String caSecretKey;
 
-    @NotEmpty
+    @NotNull(message = "ORG IP cannot be null")
     private String orgIP;
-    @NotEmpty
+
+    @NotNull(message = "ORG CSP cannot be null")
     private String orgCSP;
 }

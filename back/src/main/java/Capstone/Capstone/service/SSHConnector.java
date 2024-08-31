@@ -1,6 +1,10 @@
 package Capstone.Capstone.service;
 
 import com.jcraft.jsch.*;
+import java.net.UnknownHostException;
+import java.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -16,6 +20,7 @@ import java.util.Set;
 
 @Service
 public class SSHConnector {
+    private static final Logger logger = LoggerFactory.getLogger(SSHConnector.class);
 
     static {
         JSch.setLogger(new com.jcraft.jsch.Logger() {
@@ -23,12 +28,12 @@ public class SSHConnector {
             public boolean isEnabled(int level) { return true; }
             @Override
             public void log(int level, String message) {
-                System.out.println("JSch Log: " + message);
+                logger.info("JSch Log: {}", message);
             }
         });
     }
 
-    public Session connectToEC2(String privateKeyContent, String ec2IpAddress) throws Exception {
+    public Session connectToEC2(String privateKeyContent, String ec2IpAddress) throws JSchException, IOException {
         Path tempKeyFile = null;
         try {
             String formattedKey = formatPrivateKey(privateKeyContent);
@@ -40,19 +45,16 @@ public class SSHConnector {
             String user = "ubuntu";
             int port = 22;
 
-            System.out.println("Connecting to " + ec2IpAddress + " with user " + user);
+            logger.info("Connecting to {} with user {}", ec2IpAddress, user);
 
-            // 네트워크 연결 테스트
             testNetworkConnection(ec2IpAddress);
 
             Session session = jsch.getSession(user, ec2IpAddress, port);
-
-            // SSH 연결 설정
             configureSession(session);
 
-            System.out.println("Attempting to connect...");
-            session.connect(30000); // 30초 타임아웃 설정
-            System.out.println("Connected successfully");
+            logger.info("Attempting to connect...");
+            session.connect(30000); // 30 seconds timeout
+            logger.info("Connected successfully");
 
             return session;
         } finally {
@@ -63,19 +65,38 @@ public class SSHConnector {
     }
 
     private String formatPrivateKey(String key) {
-        if (!key.startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
-            key = "-----BEGIN RSA PRIVATE KEY-----\n" + key;
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("Private key content cannot be null or empty");
         }
-        if (!key.endsWith("-----END RSA PRIVATE KEY-----")) {
-            key = key + "\n-----END RSA PRIVATE KEY-----";
+
+        key = key.trim();
+
+        // 시작과 끝 구분자 제거
+        key = key.replace("-----BEGIN RSA PRIVATE KEY-----", "")
+            .replace("-----END RSA PRIVATE KEY-----", "")
+            .replaceAll("\\s+", "");
+
+        // Base64 디코딩 및 인코딩을 통해 유효성 검사
+        try {
+            byte[] decodedKey = Base64.getDecoder().decode(key);
+            key = Base64.getEncoder().encodeToString(decodedKey);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid Base64 encoding in private key", e);
         }
-        return key.replace("\\n", "\n");
+
+        // 64자마다 줄바꿈 추가
+        StringBuilder formattedKey = new StringBuilder("-----BEGIN RSA PRIVATE KEY-----\n");
+        for (int i = 0; i < key.length(); i += 64) {
+            formattedKey.append(key.substring(i, Math.min(i + 64, key.length()))).append("\n");
+        }
+        formattedKey.append("-----END RSA PRIVATE KEY-----");
+
+        return formattedKey.toString();
     }
 
     private Path createTempKeyFile(String key) throws IOException {
-        String fileName = "temp.pem";
-        Path tempDir = Files.createTempDirectory("my-temp-dir");
-        Path tempKeyFile = tempDir.resolve(fileName);
+        Path tempDir = Files.createTempDirectory("ssh-temp-dir");
+        Path tempKeyFile = tempDir.resolve("temp.pem");
         Files.write(tempKeyFile, key.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
         Files.setPosixFilePermissions(tempKeyFile, perms);
@@ -83,12 +104,22 @@ public class SSHConnector {
     }
 
     private void testNetworkConnection(String ec2IpAddress) throws IOException {
-        InetAddress address = InetAddress.getByName(ec2IpAddress);
-        if (address.isReachable(5000)) {
-            System.out.println("Host is reachable");
-        } else {
-            System.out.println("Host is not reachable");
-            throw new IOException("Host is not reachable: " + ec2IpAddress);
+        try {
+            InetAddress address = InetAddress.getByName(ec2IpAddress);
+            logger.info("Attempting to reach host: {}", ec2IpAddress);
+
+            if (address.isReachable(10000)) {  // 타임아웃을 10초로 늘림
+                logger.info("Host is reachable");
+            } else {
+                logger.error("Host is not reachable: {}", ec2IpAddress);
+                throw new IOException("Host is not reachable: " + ec2IpAddress);
+            }
+        } catch (UnknownHostException e) {
+            logger.error("Unknown host: {}", ec2IpAddress, e);
+            throw new IOException("Unknown host: " + ec2IpAddress, e);
+        } catch (IOException e) {
+            logger.error("IO error occurred while testing network connection to {}", ec2IpAddress, e);
+            throw e;
         }
     }
 
@@ -100,14 +131,14 @@ public class SSHConnector {
 
     public void disconnectFromEC2(Session session) {
         if (session != null && session.isConnected()) {
-            System.out.println("Disconnecting from EC2...");
+            logger.info("Disconnecting from EC2...");
             session.disconnect();
-            System.out.println("Disconnected successfully");
+            logger.info("Disconnected successfully");
         }
     }
 
-    public String executeCommand(Session session, String command) throws Exception {
-        System.out.println("Executing command: " + command);
+    public String executeCommand(Session session, String command) throws JSchException, IOException {
+        logger.info("Executing command: {}", command);
         ChannelExec channel = null;
         try {
             channel = (ChannelExec) session.openChannel("exec");
@@ -121,18 +152,23 @@ public class SSHConnector {
             channel.connect();
 
             while (channel.isConnected()) {
-                Thread.sleep(100);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Command execution interrupted", e);
+                }
             }
 
             String response = new String(responseStream.toByteArray());
             String error = new String(errorStream.toByteArray());
 
             if (!error.isEmpty()) {
-                System.err.println("Error executing command: " + error);
-                throw new RuntimeException("Error executing command: " + error);
+                logger.error("Error executing command: {}", error);
+                throw new JSchException("Error executing command: " + error);
             }
 
-            System.out.println("Command executed successfully");
+            logger.info("Command executed successfully");
             return response;
         } finally {
             if (channel != null) {
@@ -144,32 +180,33 @@ public class SSHConnector {
     public void sendPemKeyViaSftp(Session session, String privateKeyContent) throws JSchException, SftpException, IOException {
         Path tempKeyFile = null;
         ChannelSftp channelSftp = null;
-        String remotePemPath = "/home/ubuntu";
+        String remoteFileName = "temp_key.pem";
+        String remotePemPath = "/home/ubuntu/" + remoteFileName;
         try {
             String formattedKey = formatPrivateKey(privateKeyContent);
             tempKeyFile = createTempKeyFile(formattedKey);
 
-            System.out.println("Opening SFTP channel...");
+            logger.info("Opening SFTP channel...");
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
-            System.out.println("SFTP channel opened.");
+            logger.info("SFTP channel opened.");
 
-            System.out.println("Sending PEM key file to " + remotePemPath);
+            logger.info("Sending PEM key file to {}", remotePemPath);
             channelSftp.put(tempKeyFile.toString(), remotePemPath);
-            System.out.println("PEM key file sent successfully.");
+            logger.info("PEM key file sent successfully.");
 
             // Set appropriate permissions for the PEM key file
-            channelSftp.chmod(0777, remotePemPath);
-            System.out.println("PEM key file permissions set to 600.");
+            channelSftp.chmod(0600, remotePemPath);
+            logger.info("PEM key file permissions set to 600.");
 
         } finally {
             if (channelSftp != null) {
                 channelSftp.disconnect();
-                System.out.println("SFTP channel closed.");
+                logger.info("SFTP channel closed.");
             }
             if (tempKeyFile != null) {
                 Files.deleteIfExists(tempKeyFile);
-                System.out.println("Temporary key file deleted.");
+                logger.info("Temporary key file deleted.");
             }
         }
     }
