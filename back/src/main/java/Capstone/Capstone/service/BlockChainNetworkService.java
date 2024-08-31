@@ -121,8 +121,8 @@ public class BlockChainNetworkService {
         try {
             session = sshConnector.connectToEC2(network.getCaSecretKey(), network.getCaIP());
 
-            executeCommand(session, "curl -L -o $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh");
-            executeCommand(session, "sudo chmod 777 startup-ca.sh");
+            executeCommand(session, "curl -L -o -x  $PWD/startup-ca.sh https://raw.githubusercontent.com/okcdbu/kkoejoejoe-script-vm/main/startup-ca.sh");
+//            executeCommand(session, "sudo chmod 100 startup-ca.sh");
             executeCommand(session, "./startup-ca.sh " + network.getCaIP());
 
             logger.info("CA VM setup completed for network: {}", network.getNetworkName());
