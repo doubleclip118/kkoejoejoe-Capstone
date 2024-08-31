@@ -156,12 +156,13 @@ public class SSHConnector {
             String response = new String(responseStream.toByteArray());
             String error = new String(errorStream.toByteArray());
 
-            if (!error.isEmpty()) {
+            // curl 명령어의 진행 상황 출력을 에러로 간주하지 않도록 수정
+            if (!error.isEmpty() && !error.contains("% Total    % Received % Xferd")) {
                 logger.error("Error executing command: {}", error);
                 throw new JSchException("Error executing command: " + error);
             }
 
-            logger.info("Command executed successfully");
+            logger.info("Command executed successfully. Response: {}", response);
             return response;
         } finally {
             if (channel != null) {
