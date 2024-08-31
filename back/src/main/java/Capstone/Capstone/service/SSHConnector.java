@@ -31,14 +31,31 @@ public class SSHConnector {
         });
     }
 
-    public Session connectToEC2(String privateKeyContent, String ec2IpAddress) throws JSchException, IOException {
+    public String executeCommandWithNewSession(String privateKeyContent, String ec2IpAddress, String command) throws JSchException, IOException {
+        Session session = null;
+        try {
+            session = connectToEC2(privateKeyContent, ec2IpAddress);
+            return executeCommand(session, command);
+        } finally {
+            disconnectFromEC2(session);
+        }
+    }
+
+    public void sendPemKeyViaSftpWithNewSession(String privateKeyContent, String ec2IpAddress, String keyToSend) throws JSchException, SftpException, IOException {
+        Session session = null;
+        try {
+            session = connectToEC2(privateKeyContent, ec2IpAddress);
+            sendPemKeyViaSftp(session, keyToSend);
+        } finally {
+            disconnectFromEC2(session);
+        }
+    }
+
+    private Session connectToEC2(String privateKeyContent, String ec2IpAddress) throws JSchException, IOException {
         Path tempKeyFile = null;
-        logger.info(privateKeyContent);
         try {
             String formattedKey = formatPrivateKey(privateKeyContent);
-            logger.info(formattedKey);
             tempKeyFile = createTempKeyFile(formattedKey);
-
 
             JSch jsch = new JSch();
             jsch.addIdentity(tempKeyFile.toString());
@@ -122,7 +139,7 @@ public class SSHConnector {
         session.setConfig(config);
     }
 
-    public void disconnectFromEC2(Session session) {
+    private void disconnectFromEC2(Session session) {
         if (session != null && session.isConnected()) {
             logger.info("Disconnecting from EC2...");
             session.disconnect();
@@ -130,7 +147,7 @@ public class SSHConnector {
         }
     }
 
-    public String executeCommand(Session session, String command) throws JSchException, IOException {
+    private String executeCommand(Session session, String command) throws JSchException, IOException {
         logger.info("Executing command: {}", command);
         ChannelExec channel = null;
         try {
@@ -156,7 +173,6 @@ public class SSHConnector {
             String response = new String(responseStream.toByteArray());
             String error = new String(errorStream.toByteArray());
 
-            // curl 명령어의 진행 상황 출력을 에러로 간주하지 않도록 수정
             if (!error.isEmpty() && !error.contains("% Total    % Received % Xferd")) {
                 logger.error("Error executing command: {}", error);
                 throw new JSchException("Error executing command: " + error);

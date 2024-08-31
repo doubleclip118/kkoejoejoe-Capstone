@@ -46,10 +46,19 @@ public class SSHsshjConnector {
             String error = new String(cmd.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
             cmd.join();
 
-            if (!error.isEmpty()) {
+            // curl 진행 상황 출력 패턴
+            String curlProgressPattern = "\\s*%\\s+Total\\s+%\\s+Received\\s+%\\s+Xferd\\s+Average\\s+Speed\\s+Time\\s+Time\\s+Time\\s+Current.*\\n?";
+
+            // curl 진행 상황 출력을 제거
+            error = error.replaceAll(curlProgressPattern, "");
+
+            if (!error.trim().isEmpty()) {
                 logger.error("Error executing command: {}", error);
                 throw new IOException("Error executing command: " + error);
             }
+
+            // curl 진행 상황 출력을 output에서도 제거
+            output = output.replaceAll(curlProgressPattern, "");
 
             logger.info("Command executed successfully. Output: {}", output);
             return output;
