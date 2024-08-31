@@ -165,8 +165,11 @@ import Capstone.Capstone.domain.AWSVmInfo;
 import Capstone.Capstone.domain.BlockChainNetwork;
 import Capstone.Capstone.domain.User;
 import Capstone.Capstone.repository.*;
+import Capstone.Capstone.utils.error.NetworkNotFoundException;
 import Capstone.Capstone.utils.error.UserNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -198,21 +201,23 @@ public class BlockChainNetworkService {
     }
 
     @Transactional
-    public void connectToEC2Instance(Long vmId) {
-        logger.info("Attempting to connect to EC2 instance with ID: {}", vmId);
-        AWSVmInfo vmInfo = awsVmInfoRepository.findById(vmId)
-            .orElseThrow(() -> new RuntimeException("VM not found with ID: " + vmId));
+    public String deleteNetwork(Long networkId){
+        BlockChainNetwork blockChainNetwork = blockChainNetworkRepository.findById(networkId)
+            .orElseThrow(
+                () -> new NetworkNotFoundException("Network Not Found")
+            );
+        if (blockChainNetwork.getCaCSP().equals("aws")){
 
-        String privateKey = vmInfo.getSecretkey();
-        String ipAddress = vmInfo.getIp();
-
-        try {
-            String result = sshConnector.executeCommandWithNewSession(privateKey, ipAddress, "ls -al");
-            logger.info("Command result: {}", result);
-        } catch (Exception e) {
-            logger.error("Failed to connect to EC2 instance: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to connect to EC2 instance", e);
         }
+    }
+
+    @Transactional
+    public List<BlockChainNetworkResponse> getNetwork(Long userId){
+        User user = userRepository.findByUserIdWithVAndbAndBlockChainNetworks(userId).orElseThrow(
+            () -> new UserNotFoundException("User Not Found")
+        );
+        return user.getBlockChainNetworks().stream().map(blockChainNetwork -> new BlockChainNetworkResponse(blockChainNetwork.getId(),blockChainNetwork.getNetworkName()))
+            .collect(Collectors.toList());
     }
 
     @Transactional

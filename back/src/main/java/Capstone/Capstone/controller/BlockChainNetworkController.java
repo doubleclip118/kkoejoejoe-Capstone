@@ -3,7 +3,9 @@ package Capstone.Capstone.controller;
 import Capstone.Capstone.controller.dto.BlockChainNetworkRequest;
 import Capstone.Capstone.controller.dto.BlockChainNetworkResponse;
 import Capstone.Capstone.service.BlockChainNetworkService;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,16 @@ public class BlockChainNetworkController {
         BlockChainNetworkResponse blockChainNetworkResponse = blockChainNetworkService.executeStartupScript(
             network);
         return ResponseEntity.ok(blockChainNetworkResponse);
+    }
+    @DeleteMapping("/{networkId}")
+    public ResponseEntity<String> deleteNetwork(@PathVariable("networkId")Long networkId){
+        String s = blockChainNetworkService.deleteNetwork(networkId);
+        return ResponseEntity.ok(s);
+    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<BlockChainNetworkResponse>> getNetworkList(@PathVariable("userId")Long userId){
+        List<BlockChainNetworkResponse> network = blockChainNetworkService.getNetwork(userId);
+        return ResponseEntity.ok(network);
     }
 
 }

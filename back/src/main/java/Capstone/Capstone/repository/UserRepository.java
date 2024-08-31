@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.openStackVmInfos WHERE u.id = :id")
     Optional<User> findByUserIdWithVAndOpenstackVmInfos(@Param("id") Long id);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.blockChainNetworks WHERE u.id = :id")
+    Optional<User> findByUserIdWithVAndbAndBlockChainNetworks(@Param("id") Long id);
 }

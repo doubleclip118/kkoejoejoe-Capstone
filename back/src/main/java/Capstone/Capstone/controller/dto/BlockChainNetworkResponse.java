@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BlockChainNetworkResponse {
     @NotEmpty
-    private Long userId;
+    private Long networkId;
 
     @NotEmpty
     private String networkName;
