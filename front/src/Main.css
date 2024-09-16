@@ -1,5 +1,9 @@
 /* Main.css */
-
+.management-content {
+  min-height: 100vh; /* 화면 전체의 높이를 차지하도록 설정 */
+  padding-top: 20px; /* 상단 여백 추가 */
+  box-sizing: border-box; /* 패딩이 포함된 크기로 설정 */
+}
 .App {
   text-align: center;
 }

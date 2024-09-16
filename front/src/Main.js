@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import './Main.css';
 import pusanLogo from './pusan.png';
 import CloudInfo from './CloudInfo';
-import VMManagement from './VMManagement';
-import BlockchainManagement from './BlockchainManagement';
+import VMManagement from './VMManagement/VMManagement';
+import BlockchainManagement from './BlockchainManagement/BlockchainManagement';
 
 function Main() {
   const [activeTab, setActiveTab] = useState('cloud');
