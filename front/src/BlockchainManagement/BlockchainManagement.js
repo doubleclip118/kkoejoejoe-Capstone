@@ -31,10 +31,7 @@ function BlockchainManagement() {
       <h3>Blockchain Management</h3>
       <div className="tabs">
         <button onClick={() => setSelectedFunction('network')}>Network Creation</button>
-        <button onClick={() => setSelectedFunction('contractCreation')}>Smart Contract Creation</button>
-        <button onClick={() => setSelectedFunction('contractDeployment')}>Smart Contract Deployment</button>
-        <button onClick={() => setSelectedFunction('chaincodeQuery')}>Chaincode Query</button>
-        <button onClick={() => setSelectedFunction('chaincodeInvoke')}>Chaincode Invoke</button>
+        <button onClick={() => setSelectedFunction('contractCreation')}>Smart Contract</button>
       </div>
 
       {/* 선택한 기능을 렌더링 */}

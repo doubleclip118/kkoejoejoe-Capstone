@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './App.css';
+import './App.css';
 import pusanLogo from './pusan.png';
 import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
 import Main from './Main';
