@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './App.css';
+import './App.css';
 import pusanLogo from './pusan.png';
 import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
 import Main from './Main';
@@ -24,7 +24,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://3.34.135.215:8080/api/login', {
+      const response = await fetch('http://192.168.20.38:8080/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch('http://3.34.135.215:8080/api/register', {
+      const response = await fetch('http://192.168.20.38:8080/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

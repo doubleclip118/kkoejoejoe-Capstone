@@ -12,12 +12,14 @@ function ViewConnection() {
     setConnectionStatus(null);
 
     try {
-      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}/connect`, {
+      const userId = localStorage.getItem('userId');
+      
+      // userId를 URL의 {id} 부분에 포함시킴
+      const response = await fetch(`http://192.168.20.38:8080/api/cloud/${cloudProvider.toLowerCase()}/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: localStorage.getItem('userId') }),
       });
 
       if (!response.ok) {

@@ -12,6 +12,7 @@ function CloudInfoForm({ cloudProvider, setCloudProvider, fetchExistingCloudInfo
     regionValue: '',
     zoneKey: '',
     zoneValue: '',
+    configName:''
   });
 
   const [awsSpecificData, setAwsSpecificData] = useState({
@@ -61,10 +62,11 @@ function CloudInfoForm({ cloudProvider, setCloudProvider, fetchExistingCloudInfo
       regionValue: formData.regionValue,
       zoneKey: formData.zoneKey,
       zoneValue: formData.zoneValue,
+      configName: formData.configName
     };
 
     try {
-      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}`, {
+      const response = await fetch(`http://192.168.20.38:8080/api/cloud/${cloudProvider.toLowerCase()}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +103,7 @@ function CloudInfoForm({ cloudProvider, setCloudProvider, fetchExistingCloudInfo
     };
 
     try {
-      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}`, {
+      const response = await fetch(`http://192.168.20.38:8080/api/cloud/${cloudProvider.toLowerCase()}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,6 +139,7 @@ function CloudInfoForm({ cloudProvider, setCloudProvider, fetchExistingCloudInfo
       <input type="text" name="regionValue" value={formData.regionValue} onChange={handleChange} placeholder="Region Value" required />
       <input type="text" name="zoneKey" value={formData.zoneKey} onChange={handleChange} placeholder="Zone Key" required />
       <input type="text" name="zoneValue" value={formData.zoneValue} onChange={handleChange} placeholder="Zone Value" required />
+      <input type="text" name="configName" value={formData.configName} onChange={handleChange} placeholder="Config Name"required/>
 
       {cloudProvider === 'AWS' && (
         <>

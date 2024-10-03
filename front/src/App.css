@@ -1,75 +1,78 @@
-body {
-  background-color: #ddd;
-  font-family: Arial, sans-serif;
-}
-
-.logo {
-  width: 100px;  /* 로고 크기를 조절하세요 */
-  margin-bottom: 20px;
-}
-.success {
-  color: green;
-  font-weight: bold;
-  margin-top: 10px;
-}
 .App {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100vh; /* Makes the height of the App component fill the entire viewport */
+  background-color: #f0f0f0; /* Optional: A subtle background color */
 }
 
-  .card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 30px;
-    width: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-  }
+.card {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 350px; /* Adjust to your preference */
+}
+
+.logo {
+  width: 100px; /* Adjust logo size */
+  margin-bottom: 20px;
+}
 
 h2 {
-  margin-top: 0;
   margin-bottom: 20px;
-  color: #333;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
+  width: 100%; /* Make the form take the full width of the card */
 }
 
 input {
-  margin-bottom: 15px;
+  width: 100%; /* Inputs will fill the available width */
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
-  background-color: #00a86b;
+  width: 100%; /* Buttons will fill the available width */
+  padding: 10px;
+  background-color: #3498db;
   color: white;
   border: none;
-  padding: 12px;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px;
 }
 
-.switch-text {
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.switch-text a {
-  color: #00a86b;
-  text-decoration: none;
+button:hover {
+  background-color: #2980b9;
 }
 
 .error {
   color: red;
-  font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.success {
+  color: green;
+  margin-bottom: 15px;
+}
+
+.switch-text {
+  margin-top: 20px;
+}
+
+.switch-text a {
+  color: #3498db;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
 }
