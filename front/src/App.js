@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import './App.css';
 import pusanLogo from './pusan.png';
-import CloudInfo from './CloudInfo'; // CloudInfo 컴포넌트를 import 합니다.
 import Main from './Main';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태를 관리하는 상태를 추가합니다.
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
-    setError('');
-    setSuccessMessage('');
     setUsername('');
     setPassword('');
     setConfirmPassword('');
+    setMessage('');
   };
 
   const handleLogin = async () => {
@@ -38,12 +35,11 @@ function App() {
 
       const data = await response.json();
       console.log('Login successful:', data);
-      setSuccessMessage('Login successful!');
-      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
-      setIsLoggedIn(true); // 로그인 성공 시 상태를 변경합니다.
-      // 여기서 로그인 성공 후 처리 (예: 토큰 저장, 리다이렉트 등)
+      setMessage('Login successful!');
+      localStorage.setItem('userId', data.id);
+      setIsLoggedIn(true);
     } catch (error) {
-      setError('Login failed: ' + error.message);
+      setMessage('Login failed: ' + error.message);
     }
   };
 
@@ -63,26 +59,24 @@ function App() {
 
       const data = await response.json();
       console.log('Signup successful:', data);
-      setSuccessMessage('Signup successful!');
-      localStorage.setItem('userId', data.id); // userId를 local storage에 저장합니다.
-      setIsLoggedIn(true); // 회원가입 성공 시 상태를 변경합니다.
-      // 여기서 회원가입 성공 후 처리
+      setMessage('Signup successful!');
+      localStorage.setItem('userId', data.id);
+      setIsLoggedIn(true);
     } catch (error) {
-      setError('Signup failed: ' + error.message);
+      setMessage('Signup failed: ' + error.message);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    setMessage('');
 
     if (!username || !password || (!isLogin && !confirmPassword)) {
-      setError('All fields are required');
+      setMessage('All fields are required');
       return;
     }
     if (!isLogin && password !== confirmPassword) {
-      setError('Passwords do not match');
+      setMessage('Passwords do not match');
       return;
     }
 
@@ -101,45 +95,52 @@ function App() {
     return <Main />;
   }
 
-  return (        <div className="App">
-    <div className="card">
-      <img src={pusanLogo} alt="Pusan Logo" className="logo" />
-      <h2>{isLogin ? 'Login' : 'Signup'}</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter your username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder={isLogin ? "Enter your password" : "Create a password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {!isLogin && (
+  return (
+    <div className="ec2-app">
+      <div className="ec2-card">
+        <img src={pusanLogo} alt="Pusan Logo" className="ec2-logo" />
+        <h2>{isLogin ? 'Login' : 'Signup'}</h2>
+        <form onSubmit={handleSubmit} className="ec2-form">
+          <input
+            type="text"
+            placeholder="Enter your username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="ec2-input"
+          />
           <input
             type="password"
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={isLogin ? "Enter your password" : "Create a password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
+            className="ec2-input"
           />
-        )}
-        {error && <p className="error">{error}</p>}
-        {successMessage && <p className="success">{successMessage}</p>}
-        <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
-      </form>
-        {<button onClick={handleTestLogin}>Test Login</button>}
-      <p className="switch-text">
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
-        <a href="#" onClick={handleSwitch}>{isLogin ? 'Signup' : 'Login'}</a>
-      </p>
+          {!isLogin && (
+            <input
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="ec2-input"
+            />
+          )}
+          <button type="submit" className="ec2-button">
+            {isLogin ? 'Login' : 'Signup'}
+          </button>
+        </form>
+        <button onClick={handleTestLogin} className="ec2-button ec2-secondary">Test Login</button>
+        {message && <p className="ec2-message">{message}</p>}
+        <p className="ec2-switch-text">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button onClick={handleSwitch} className="ec2-link-button">
+            {isLogin ? 'Signup' : 'Login'}
+          </button>
+        </p>
+      </div>
     </div>
-  </div>
   );
 }
 

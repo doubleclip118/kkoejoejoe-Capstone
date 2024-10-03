@@ -76,3 +76,81 @@ button:hover {
 .switch-text a:hover {
   text-decoration: underline;
 }
+.ec2-app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f1f3f4;
+}
+
+.ec2-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  width: 300px;
+}
+
+.ec2-logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.ec2-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.ec2-input {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.ec2-button {
+  background-color: #ff9900;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.ec2-button:hover {
+  background-color: #e88e00;
+}
+
+.ec2-secondary {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.ec2-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.ec2-message {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.ec2-switch-text {
+  font-size: 14px;
+}
+
+.ec2-link-button {
+  background: none;
+  border: none;
+  color: #0066c0;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.ec2-link-button:hover {
+  text-decoration: none;
+}
