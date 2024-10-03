@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-function DeleteVM({ userid }) {
+function DeleteVM({}) {
   const [csp, setCsp] = useState('');
   const [vmList, setVmList] = useState([]);
   const [selectedVmId, setSelectedVmId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const userId = parseInt(localStorage.getItem('userId'));
 
   // CSP 변경 시 VM 목록 가져오기
   useEffect(() => {
@@ -16,7 +17,7 @@ function DeleteVM({ userid }) {
       setError(null);
 
       try {
-        const response = await fetch(`/api/vm/${csp}/con/${userid}`, {
+        const response = await fetch(`http://192.168.20.38:8080/api/vm/${csp}/con/${userId}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -36,7 +37,7 @@ function DeleteVM({ userid }) {
     };
 
     fetchVmList();
-  }, [csp, userid]);
+  }, [csp, userId]);
 
   const handleDeleteVM = async () => {
     if (!csp || !selectedVmId) {
@@ -45,7 +46,7 @@ function DeleteVM({ userid }) {
     }
 
     try {
-      const response = await fetch(`/api/vm/${csp}/delete-vm/${selectedVmId}`, {
+      const response = await fetch(`http://192.168.20.38:8080/api/vm/${csp}/con/${selectedVmId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -54,8 +55,13 @@ function DeleteVM({ userid }) {
         throw new Error('Failed to delete VM');
       }
 
-      const result = await response.json();
-      alert('VM이 성공적으로 삭제되었습니다.');
+      const result = await response.text();  // 텍스트 응답을 받음
+      if (result === '성공') {
+        alert('VM이 성공적으로 삭제되었습니다.');
+      } else {
+        throw new Error('Unexpected response: ' + result);
+      }
+
     } catch (error) {
       console.error('Error deleting VM:', error);
       setError(error.message);

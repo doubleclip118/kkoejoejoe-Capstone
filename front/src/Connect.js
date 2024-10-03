@@ -12,24 +12,31 @@ function Connect() {
         setConnectionStatus(null);
 
         try {
-            const response = await fetch('http://3.34.135.215:8080/api/cloud/connect', {
+            const userId = localStorage.getItem('userId');
+
+            const response = await fetch(`http://192.168.20.38:8080/api/spider/${cloudProvider.toLowerCase()}/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    provider: cloudProvider,
-                    userId: parseInt(localStorage.getItem('userId'), 10)
-                })
+                }
             });
 
             if (!response.ok) {
                 throw new Error('Failed to connect');
             }
 
-            const result = await response.json();
-            setConnectionStatus(`Successfully connected to ${cloudProvider}`);
+            // 응답이 JSON인지 아닌지를 확인 후 처리
+            const contentType = response.headers.get("content-type");
+            let result;
+            
+            if (contentType && contentType.includes("application/json")) {
+                result = await response.json();
+            } else {
+                result = await response.text();  // JSON이 아닌 경우 텍스트로 처리
+            }
+
             console.log('Connection result:', result);
+            setConnectionStatus(result === "생성 완료" ? `Successfully connected to ${cloudProvider}` : result);
         } catch (error) {
             console.error('Error:', error);
             setError(`Failed to connect to ${cloudProvider}. Please try again.`);
@@ -48,6 +55,7 @@ function Connect() {
             >
                 <option value="AWS">AWS</option>
                 <option value="AZURE">Azure</option>
+                <option value="OPENSTACK">Openstack</option>
             </select>
             <button 
                 onClick={connectToCloudProvider} 

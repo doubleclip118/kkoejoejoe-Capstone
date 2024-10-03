@@ -16,7 +16,7 @@ function VMConnect({ userid }) {
       setError(null);
 
       try {
-        const response = await fetch(`/api/vm/${csp}/con/${userid}`, {
+        const response = await fetch(`http://192.168.20.38:8080/api/vm/${csp}/con/${userid}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -48,7 +48,7 @@ function VMConnect({ userid }) {
     setError(null);
 
     try {
-      const response = await fetch(`/api/vm/${csp}/con/${selectedVmId}`, {
+      const response = await fetch(`http://192.168.20.38:8080/api/vm/${csp}/con/${selectedVmId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });

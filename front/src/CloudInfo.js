@@ -18,19 +18,30 @@ function CloudInfo() {
     fetchExistingCloudInfo();
   }, []);
 
-
   const fetchExistingCloudInfo = async () => {
     try {
-      const response = await fetch('http://3.34.135.215:8080/api/cloud');
+      // cloudProvider와 id 값을 사용하여 URL을 동적으로 구성
+      const userId = parseInt(localStorage.getItem('userId'))
+      const url = `http://192.168.20.38:8080/api/cloud/${cloudProvider.toLowerCase()}/${userId}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
       if (!response.ok) {
-        throw new Error('Failed to fetch cloud info');
+        throw new Error('Failed to get cloud info');
       }
+  
       const data = await response.json();
       setExistingCloudInfo(data);
     } catch (error) {
       console.error('Error fetching cloud info:', error);
     }
   };
+  
 
   return (
     <div className="management-content">

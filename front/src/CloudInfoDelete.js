@@ -8,16 +8,13 @@ function CloudInfoDelete({ cloudProvider, setCloudProvider, fetchExistingCloudIn
   const handleDelete = async () => {
     setIsDeleting(true);
     setError(null);
-
+    const userId = parseInt(localStorage.getItem('userId'))
     try {
-      const response = await fetch(`http://3.34.135.215:8080/api/cloud/${cloudProvider.toLowerCase()}`, {
+      const response = await fetch(`http:/192.168.20.38:80800/api/cloud/${cloudProvider.toLowerCase()}/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: parseInt(localStorage.getItem('userId'), 10)
-        })
+        }
       });
 
       if (!response.ok) {
@@ -45,6 +42,7 @@ function CloudInfoDelete({ cloudProvider, setCloudProvider, fetchExistingCloudIn
       >
         <option value="AWS">AWS</option>
         <option value="AZURE">Azure</option>
+        <option value="OPENSTACK">Openstack</option>
       </select>
       <button 
         onClick={handleDelete} 

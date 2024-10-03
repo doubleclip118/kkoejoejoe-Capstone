@@ -26,6 +26,9 @@ function VMConnectionForm() {
     vmUserId: '',
     vmUserPasswd: '',
   });
+  const [vmId, setVmId] = useState(''); // vmId를 저장하는 상태
+  const [loading, setLoading] = useState(false);  // <-- 여기서 로딩 상태와 setLoading 함수 선언
+
 
   useEffect(() => {
     // Reset form when cloud provider changes
@@ -69,32 +72,84 @@ function VMConnectionForm() {
     let apiEndpoint = '';
     switch (cloudProvider) {
       case 'aws':
-        apiEndpoint = 'http://your-api-ip-address/api/vm/aws';
+        apiEndpoint = 'http://192.168.20.38:8080/api/vm/aws';
         break;
       case 'azure':
-        apiEndpoint = 'http://your-api-ip-address/api/vm/azure';
+        apiEndpoint = 'http://192.168.20.38:8080/api/vm/azure';
         break;
       case 'openstack':
-        apiEndpoint = 'http://your-api-ip-address/api/vm/openstack';
+        apiEndpoint = 'http://192.168.20.38:8080/api/vm/openstack';
         break;
       default:
         alert('클라우드 제공자를 선택해주세요.');
         return;
     }
+    setLoading(true);
+
+    try {
+      // 요청 시작 시 5분(300000 ms) 동안 기다리도록 설정
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000);
+  
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newVM),
+        signal: controller.signal // 타임아웃 시 요청 취소
+      });
+  
+      clearTimeout(timeoutId);
+  
+      if (!response.ok) {
+        throw new Error('Failed to save VM information');
+      }
+  
+      const result = await response.json();
+      alert('VM 정보가 DB에 저장되었습니다.');
+  
+      // VM 생성 후 받은 vmId를 이용해 생성 요청
+      const vmId = result.vmId;
+      const vmCreateResponse = await fetch(`http://192.168.20.38:8080/api/vm/${cloudProvider}/con/${vmId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+  
+      if (!vmCreateResponse.ok) {
+        throw new Error('VM 생성 실패');
+      }
+  
+      alert('VM 생성 성공!');
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        alert('요청이 너무 오래 걸려서 중단되었습니다.');
+      } else {
+        alert(`에러 발생: ${error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createVMOnServer = async (vmId) => {
+    if (!vmId) {
+      alert('vmId가 없습니다. 저장된 VM 정보에서 vmId를 가져오세요.');
+      return;
+    }
+
+    const apiEndpoint = `http://192.168.20.38:8080/api/vm/${cloudProvider}/con/${vmId}`;
 
     try {
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newVM),
       });
 
-      if (!response.ok) throw new Error('Failed to save VM information');
+      if (!response.ok) throw new Error('Failed to create VM on server');
 
       const result = await response.json();
-      alert('VM 정보가 DB에 저장되었습니다.');
+      alert('VM이 성공적으로 생성되었습니다.');
     } catch (error) {
-      console.error('Error saving VM to DB:', error);
+      console.error('Error creating VM on server:', error);
     }
   };
 
