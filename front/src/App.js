@@ -98,7 +98,9 @@ function App() {
   return (
     <div className="ec2-app">
       <div className="ec2-card">
-        <img src={pusanLogo} alt="Pusan Logo" className="ec2-logo" />
+        <div className='ec2-logo-container'>
+          <img src={pusanLogo} alt="Pusan Logo" className="ec2-logo" />
+        </div>
         <h2>{isLogin ? 'Login' : 'Signup'}</h2>
         <form onSubmit={handleSubmit} className="ec2-form">
           <input

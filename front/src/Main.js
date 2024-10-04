@@ -24,9 +24,8 @@ function Main() {
   return (
     <div className="App">
       <div className="navbar">
-        <div className="navbar-left">
-          <img src={pusanLogo} alt="Pusan Logo" className="logo" />
-          <h2>Dashboard</h2>
+        <div className="navbar-left"> 
+          <h2 style={{ color: '#fff'}}>Dashboard</h2>
         </div>
         <div className="navbar-menu">
           <button
