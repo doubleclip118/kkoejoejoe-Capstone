@@ -8,7 +8,8 @@ const BlockchainManagement = () => {
   const [vms, setVMs] = useState([]);
   const [newNetwork, setNewNetwork] = useState({ networkName: '', orgVMId: '', caVMId: '' });
   const [message, setMessage] = useState('');
-
+  const userId = parseInt(localStorage.getItem('userId'))
+  
   useEffect(() => {
     fetchNetworks();
     fetchVMs();
@@ -17,7 +18,8 @@ const BlockchainManagement = () => {
   const fetchNetworks = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.20.2:5000/api/networks');
+      
+      const response = await fetch(`http://192.168.20.38:8080/api/network/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch networks');
       const data = await response.json();
       setNetworks(data);
@@ -53,9 +55,11 @@ const BlockchainManagement = () => {
     try {
       const orgVM = vms.find(vm => vm.vmId === parseInt(newNetwork.orgVMId));
       const caVM = vms.find(vm => vm.vmId === parseInt(newNetwork.caVMId));
+      const userId = parseInt(localStorage.getItem('userId'));
+  
       const networkPayload = {
         networkName: newNetwork.networkName,
-        userId: parseInt(localStorage.getItem('userId')),
+        userId,
         caCSP: caVM.csp,
         caIP: caVM.ip,
         caSecretKey: caVM.privatekey,
@@ -63,21 +67,38 @@ const BlockchainManagement = () => {
         orgIP: orgVM.ip,
         orgSecretKey: orgVM.privatekey,
       };
-
+  
+      // 1. 네트워크 생성 요청
       const response = await fetch('http://192.168.20.2:5000/api/network', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(networkPayload),
       });
-
+  
       if (!response.ok) throw new Error('Failed to create network');
+  
+      // 네트워크 생성 성공 시 메시지 설정
       setMessage('Network created successfully');
+  
+      // 2. 네트워크 정보 데이터베이스에 저장 요청
+      const dbResponse = await fetch(`http://192.168.20.38:8080/api/network/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(networkPayload),
+      });
+  
+      if (!dbResponse.ok) throw new Error('Failed to save network to database');
+  
+      // 3. 네트워크 정보를 성공적으로 저장한 후 네트워크 목록 새로 고침
+      setMessage('Network created and saved to database successfully');
       setModalVisible(false);
       setNewNetwork({ networkName: '', orgVMId: '', caVMId: '' });
+  
+      // 대시보드에 표시할 네트워크 목록을 다시 조회
       fetchNetworks();
     } catch (error) {
-      console.error('Error creating network:', error);
-      setMessage(`Network creation failed: ${error.message}`);
+      console.error('Error creating or saving network:', error);
+      setMessage(`Network creation or saving failed: ${error.message}`);
     } finally {
       setLoading(false);
     }
