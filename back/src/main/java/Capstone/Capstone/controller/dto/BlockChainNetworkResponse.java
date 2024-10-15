@@ -16,4 +16,17 @@ public class BlockChainNetworkResponse {
 
     @NotEmpty
     private String networkName;
+
+    @NotEmpty
+    private String caCSP;
+
+    @NotEmpty
+    private String caIp;
+
+    @NotEmpty
+    private String orgCSP;
+
+    @NotEmpty
+    private String orgIp;
+
 }
