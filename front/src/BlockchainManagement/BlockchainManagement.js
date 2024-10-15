@@ -8,8 +8,8 @@ const BlockchainManagement = () => {
   const [vms, setVMs] = useState([]);
   const [newNetwork, setNewNetwork] = useState({ networkName: '', orgVMId: '', caVMId: '' });
   const [message, setMessage] = useState('');
-  const userId = parseInt(localStorage.getItem('userId'))
-  
+  const userId = parseInt(localStorage.getItem('userId'));
+
   useEffect(() => {
     fetchNetworks();
     fetchVMs();
@@ -18,7 +18,6 @@ const BlockchainManagement = () => {
   const fetchNetworks = async () => {
     setLoading(true);
     try {
-      
       const response = await fetch(`http://192.168.20.38:8080/api/network/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch networks');
       const data = await response.json();
@@ -56,7 +55,7 @@ const BlockchainManagement = () => {
       const orgVM = vms.find(vm => vm.vmId === parseInt(newNetwork.orgVMId));
       const caVM = vms.find(vm => vm.vmId === parseInt(newNetwork.caVMId));
       const userId = parseInt(localStorage.getItem('userId'));
-  
+
       const networkPayload = {
         networkName: newNetwork.networkName,
         userId,
@@ -67,34 +66,29 @@ const BlockchainManagement = () => {
         orgIP: orgVM.ip,
         orgSecretKey: orgVM.privatekey,
       };
-  
-      // 1. 네트워크 생성 요청
+
       const response = await fetch('http://192.168.20.2:5000/api/network', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(networkPayload),
       });
-  
+
       if (!response.ok) throw new Error('Failed to create network');
-  
-      // 네트워크 생성 성공 시 메시지 설정
+
       setMessage('Network created successfully');
-  
-      // 2. 네트워크 정보 데이터베이스에 저장 요청
-      const dbResponse = await fetch(`http://192.168.20.38:8080/api/network/${userId}`, {
+
+      const dbResponse = await fetch(`http://192.168.20.38:8080/api/network`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(networkPayload),
       });
-  
+
       if (!dbResponse.ok) throw new Error('Failed to save network to database');
-  
-      // 3. 네트워크 정보를 성공적으로 저장한 후 네트워크 목록 새로 고침
+
       setMessage('Network created and saved to database successfully');
       setModalVisible(false);
       setNewNetwork({ networkName: '', orgVMId: '', caVMId: '' });
-  
-      // 대시보드에 표시할 네트워크 목록을 다시 조회
+
       fetchNetworks();
     } catch (error) {
       console.error('Error creating or saving network:', error);
@@ -104,18 +98,46 @@ const BlockchainManagement = () => {
     }
   };
 
-  const handleDeleteNetwork = async (networkId) => {
+  const handleDeleteNetwork = async (network) => {
     try {
-      const response = await fetch(`http://192.168.20.2:5000/api/network/${networkId}`, {
+      const { caCSP, orgCSP, caIp, orgIp } = network;
+      const userId = parseInt(localStorage.getItem('userId'));
+  
+      // 1. CA VM 삭제
+      const caResponse = await fetch(`http://192.168.20.38:8080/api/vm/${caCSP}/con/${userId}`);
+      if (!caResponse.ok) throw new Error(`Failed to fetch CA VM for ${caCSP}`);
+      const caVMs = await caResponse.json();
+      const caVM = caVMs.find(vm => vm.ip === caIp);
+      if (!caVM) throw new Error('CA VM not found');
+      
+      await fetch(`http://192.168.20.38:8080/api/vm/${caCSP}/con/${caVM.vmId}`, {
         method: 'DELETE',
       });
-      if (!response.ok) throw new Error('Failed to delete network');
-      setMessage('Network deleted successfully');
+  
+      // 2. Organization VM 삭제
+      const orgResponse = await fetch(`http://192.168.20.38:8080/api/vm/${orgCSP}/con/${userId}`);
+      if (!orgResponse.ok) throw new Error(`Failed to fetch Org VM for ${orgCSP}`);
+      const orgVMs = await orgResponse.json();
+      const orgVM = orgVMs.find(vm => vm.ip === orgIp);
+      if (!orgVM) throw new Error('Org VM not found');
+      
+      await fetch(`http://192.168.20.38:8080/api/vm/${orgCSP}/con/${orgVM.vmId}`, {
+        method: 'DELETE',
+      });
+  
+      // 3. 성공 메시지 및 UI 업데이트
+      setMessage('Network and associated VMs deleted successfully');
       fetchNetworks();
     } catch (error) {
-      console.error('Error deleting network:', error);
-      setMessage(`Failed to delete network: ${error.message}`);
+      console.error('Error deleting network or VMs:', error);
+      setMessage(`Failed to delete network or VMs: ${error.message}`);
     }
+  };
+  
+
+  const handleSCMS = (orgIP) => {
+    // SCMS 리다이렉트 코드
+    window.location.href = `http://${orgIP}:3000`;
   };
 
   return (
@@ -124,7 +146,6 @@ const BlockchainManagement = () => {
         <h2>Blockchain Networks</h2>
         <div className="aws-actions">
           <button className="aws-button aws-button-primary" onClick={() => setModalVisible(true)}>Create Network</button>
-          <button className="aws-button" onClick={fetchNetworks}>Refresh</button>
         </div>
       </div>
       {message && <div className="aws-message">{message}</div>}
@@ -133,21 +154,28 @@ const BlockchainManagement = () => {
           <thead>
             <tr>
               <th>Network Name</th>
-              <th>Org VM</th>
-              <th>CA VM</th>
-              <th>Status</th>
+              <th>Org VM IP</th>
+              <th>Org CSP</th>
+              <th>CA VM IP</th>
+              <th>CA CSP</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {networks.map(network => (
-              <tr key={network.id}>
+              <tr key={network.networkId}>
                 <td>{network.networkName}</td>
-                <td>{network.orgIP}</td>
-                <td>{network.caIP}</td>
-                <td>{network.status}</td>
+                <td>{network.orgIp}</td>
+                <td>{network.orgCSP}</td>
+                <td>{network.caIp}</td>
+                <td>{network.caCSP}</td>
                 <td>
-                  <button className="aws-button aws-button-small aws-button-danger" onClick={() => handleDeleteNetwork(network.id)}>Delete</button>
+                  <button className="aws-button aws-button-small aws-button-danger" onClick={() => handleDeleteNetwork(network.networkId)}>
+                    Delete
+                  </button>
+                  <button className="aws-button aws-button-small aws-button-secondary" onClick={() => handleSCMS(network.orgIP)}>
+                    SCMS
+                  </button>
                 </td>
               </tr>
             ))}
@@ -190,7 +218,7 @@ const BlockchainManagement = () => {
                   value={newNetwork.caVMId}
                   onChange={(e) => setNewNetwork({...newNetwork, caVMId: e.target.value})}
                   required
->
+                >
                   <option value="">Select CA VM</option>
                   {vms.map((vm) => (
                     <option key={vm.vmId} value={vm.vmId}>
