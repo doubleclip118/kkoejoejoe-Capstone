@@ -1,0 +1,152 @@
+.vm-management-container {
+    font-family: "Amazon Ember", Arial, sans-serif;
+    color: #16191f;
+    padding: 20px;
+    background-color: #f2f3f3;
+  }
+  
+  .vm-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .vm-management-tabs {
+    display: flex;
+    border-bottom: 1px solid #d5dbdb;
+    margin-bottom: 20px;
+  }
+  
+  .vm-management-tab {
+    background-color: transparent;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #545b64;
+  }
+  
+  .vm-management-tab.active {
+    border-bottom: 2px solid #ff9900;
+    color: #16191f;
+  }
+  
+  .vm-management-content {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #eaeded;
+    border-radius: 2px;
+  }
+  
+  .vm-management-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .vm-management-table th,
+  .vm-management-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #eaeded;
+  }
+  
+  .vm-management-table th {
+    background-color: #fafafa;
+    font-weight: bold;
+  }
+  
+  .vm-management-button {
+    background-color: #fff;
+    border: 1px solid #d5dbdb;
+    color: #16191f;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 2px;
+    width: 130px;
+  }
+  
+  .vm-management-button:hover {
+    background-color: #f7fafa;
+  }
+  
+  .vm-management-button-primary {
+    background-color: #ff9900;
+    border-color: #e88b01;
+    color: #fff;
+  }
+  
+  .vm-management-button-primary:hover {
+    background-color: #ffa724;
+  }
+  
+  .vm-management-button-danger {
+    color: #d13212;
+  }
+  
+  .vm-management-button-danger:hover {
+    background-color: #fdf3f2;
+  }
+  
+  .vm-management-message {
+    background-color: #f1faff;
+    border: 1px solid #9cd5f4;
+    color: #12718f;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 2px;
+  }
+  
+  .vm-management-loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #687078;
+  }
+  
+  .vm-management-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .vm-management-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 2px;
+    width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .vm-management-form-group {
+    margin-bottom: 15px;
+  }
+  
+  .vm-management-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .vm-management-form-group input,
+  .vm-management-form-group select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #d5dbdb;
+    border-radius: 2px;
+  }
+  
+  .vm-management-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }

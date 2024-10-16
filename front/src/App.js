@@ -133,7 +133,6 @@ function App() {
             {isLogin ? 'Login' : 'Signup'}
           </button>
         </form>
-        <button onClick={handleTestLogin} className="ec2-button ec2-secondary">Test Login</button>
         {message && <p className="ec2-message">{message}</p>}
         <p className="ec2-switch-text">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
